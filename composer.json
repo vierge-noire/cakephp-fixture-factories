@@ -1,0 +1,25 @@
+{
+    "name": "b-projects/test-fixture-factories",
+    "description": "An alternative to the CakePHP fixture approach",
+    "authors": [
+        {
+            "name": "Nicolas Masson",
+            "email": "nicolas@b-projects.tech"
+        },
+        {
+            "name": "Juan Pablo Ramìrez",
+            "email": "pablo@b-projects.tech"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.0.0",
+        "cakephp/cakephp": "3.7.*",
+        "cakephp/migrations": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "TestFixtureFactories": "src/"
+        }
+    }
+}
