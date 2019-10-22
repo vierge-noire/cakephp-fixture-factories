@@ -11,34 +11,35 @@ use Cake\Filesystem\File;
  */
 class FixtureManagerShell extends Shell
 {
-    public function init()
+    public function init($runWithMigrations = false)
     {
         $connections = ConnectionManager::configured();
 
-        foreach ($connections as $connectionName) {
-            if (strpos('test', $connectionName) === 0) {
-                $this->dropTables($connectionName);
+        if ($runWithMigrations == false || $runWithMigrations == 0) {
+            foreach ($connections as $connectionName) {
+
+                // Drop the tables of a test connection
+                if (strpos('test', $connectionName) === 0) {
+                    $this->dropTables($connectionName);
+                } else {
+                    continue;
+                }
+
+                $masterDB = ($connectionName === 'test') ? 'default' : str_replace('test_', '', $connectionName);
+
+                try {
+                    // Dump the schema form the exiting DBs
+                    $this->dumpDBSchema(
+                        ConnectionManager::get($masterDB)->config()['database'],
+                        ConnectionManager::get($connectionName)->config()['database']
+                    );
+                } catch (MissingDatasourceConfigException $e) {
+                    $this->out($e->getMessage());
+                }
             }
+        } else {
+             $this->dispatchShell('migrations migrate -c test --no-lock');
         }
-
-        // Activate this line when we have migrations ready to be imported
-        // $this->dispatchShell('migrations migrate -c test --no-lock');
-
-        // And deactivate these dumps
-        $this->dumpDBSchema(
-            ConnectionManager::get('default')->config()['database'],
-            ConnectionManager::get('test')->config()['database']
-        );
-
-        try {
-            $this->dumpDBSchema(
-                ConnectionManager::get('newton_util')->config()['database'],
-                ConnectionManager::get('test_newton_util')->config()['database']
-            );
-        } catch (MissingDatasourceConfigException $e) {
-            $this->out($e->getMessage());
-        }
-
 
         $this->dispatchShell('cache clear _cake_model_');
         $this->dispatchShell('schema_cache clear');
