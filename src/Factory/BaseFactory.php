@@ -40,7 +40,7 @@ abstract class BaseFactory
      */
     protected $reviewableBehaviorConfig;
 
-    protected function __construct(array $data, array $options = [])
+    protected function __construct(array $data = [], array $options = [])
     {
         $this->data = $data;
         $this->options = array_merge($this->options, $options);
@@ -51,7 +51,7 @@ abstract class BaseFactory
         }
     }
 
-    public static function make(array $data, array $options = [])
+    public static function make(array $data = [], array $options = [])
     {
         return new static($data, $options);
     }
