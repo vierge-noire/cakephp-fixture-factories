@@ -1,5 +1,5 @@
 {
-    "name": "b-projects/test-fixture-factories",
+    "name": "bprojects/test-fixture-factories",
     "description": "An alternative to the CakePHP fixture approach",
     "authors": [
         {
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TestFixtureFactories": "src/"
+            "TestFixtureFactories\\": "src"
         }
     }
 }
