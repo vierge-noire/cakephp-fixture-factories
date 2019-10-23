@@ -19,7 +19,7 @@ class FixtureManagerShell extends Shell
             foreach ($connections as $connectionName) {
 
                 // Drop the tables of a test connection
-                if (strpos('test', $connectionName) === 0) {
+                if (strpos($connectionName, 'test') === 0) {
                     $this->dropTables($connectionName);
                 } else {
                     continue;
