@@ -12,7 +12,7 @@ use Cake\Filesystem\File;
  */
 class FixtureManagerShell extends Shell
 {
-    public function init($runWithMigrations = false)
+    public function init($runWithMigrations = false, array $plugins)
     {
         $connections = ConnectionManager::configured();
 
@@ -41,8 +41,10 @@ class FixtureManagerShell extends Shell
                 }
             }
         } else {
-             $this->dispatchShell('migrations migrate -c test --no-lock');
-             $this->dispatchShell('migrations migrate -c test -p ' . Configure::read('site_plugin') . ' --no-lock');
+            $this->dispatchShell('migrations migrate -c test --no-lock');
+            foreach ($plugins as $p) {
+                $this->dispatchShell('migrations migrate -c test -p ' . $p . ' --no-lock');
+            }
         }
 
         $this->dispatchShell('cache clear _cake_model_');
