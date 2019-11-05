@@ -2,6 +2,7 @@
 namespace TestFixtureFactories\TestSuite;
 
 use Cake\Console\Shell;
+use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\Datasource\Exception\MissingDatasourceConfigException;
 use Cake\Filesystem\File;
@@ -15,15 +16,17 @@ class FixtureManagerShell extends Shell
     {
         $connections = ConnectionManager::configured();
 
+        foreach ($connections as $connectionName) {
+            // Drop the tables of a test connection
+            if (strpos($connectionName, 'test') === 0) {
+                $this->dropTables($connectionName);
+            } else {
+                continue;
+            }
+        }
+
         if ($runWithMigrations == false || $runWithMigrations == 0) {
             foreach ($connections as $connectionName) {
-
-                // Drop the tables of a test connection
-                if (strpos($connectionName, 'test') === 0) {
-                    $this->dropTables($connectionName);
-                } else {
-                    continue;
-                }
 
                 $masterDB = ($connectionName === 'test') ? 'default' : str_replace('test_', '', $connectionName);
 
@@ -39,6 +42,7 @@ class FixtureManagerShell extends Shell
             }
         } else {
              $this->dispatchShell('migrations migrate -c test --no-lock');
+             $this->dispatchShell('migrations migrate -c test -p ' . Configure::read('site_plugin') . ' --no-lock');
         }
 
         $this->dispatchShell('cache clear _cake_model_');
