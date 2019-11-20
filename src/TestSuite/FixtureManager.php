@@ -35,6 +35,12 @@ class FixtureManager extends BaseFixtureManager
     {
         $tables = $this->getConnection($connectionName)->getSchemaCollection()->listTables();
 
+        foreach ($tables as $i => $table) {
+            if (strpos($table, 'phinxlog') !== false) {
+                unset($tables[$i]);
+            }
+        }
+
         if (!empty($tables)) {
             $this->getConnection($connectionName)->execute(
                 "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `", $tables) . "`; SET FOREIGN_KEY_CHECKS=1;"
