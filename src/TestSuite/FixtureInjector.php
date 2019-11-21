@@ -45,6 +45,16 @@ class FixtureInjector extends BaseTestListener
             parent::endTest($test, $time);
         }
     }
+    
+    /**
+     * Skip the Cake EndTestSuite because it drops fixture loaded tables
+     * and we do not want any tables to be dropped
+     * @param TestSuite $suite
+     */
+    public function endTestSuite(TestSuite $suite)
+    {
+        // do nothing, do not drop any tables
+    }
 
     private function isNewSchool(Test $test)
     {
