@@ -22,7 +22,7 @@ class FixtureManager extends BaseFixtureManager
         $connections = ConnectionManager::configured();
 
         foreach ($connections as $connectionName) {
-            if (strpos('test', $connectionName) === 0) {
+            if (strpos($connectionName, 'test') === 0) {
                 $this->_truncateTables($connectionName);
             }
         }
