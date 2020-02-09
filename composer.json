@@ -14,12 +14,22 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.0.0",
-        "cakephp/cakephp": ">=3.6",
+        "cakephp/cakephp": "3.7.*",
+        "fzaninotto/faker": "^1.9@dev",
         "cakephp/migrations": "^2.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7|^6.0"
     },
     "autoload": {
         "psr-4": {
             "TestFixtureFactories\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TestFixtureFactories\\Test\\": "tests",
+            "TestApp\\": "tests/TestApp/src"
         }
     }
 }
