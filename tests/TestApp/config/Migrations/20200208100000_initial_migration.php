@@ -11,9 +11,14 @@ class InitialMigration extends AbstractMigration
             ->addColumn('name', 'string', [
                 'default' => null,
                 'limit' => 128,
-                'null' => false,
+                'null' => true,
             ])
             ->addColumn('entity_type_id', 'integer', [
+                'default' => null,
+                'limit' => 11,
+                'null' => true,
+            ])
+            ->addColumn('address_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
                 'null' => true,
@@ -25,7 +30,7 @@ class InitialMigration extends AbstractMigration
             ->addColumn('name', 'string', [
                 'default' => null,
                 'limit' => 128,
-                'null' => false,
+                'null' => true,
             ])
             ->create();
 
@@ -33,12 +38,12 @@ class InitialMigration extends AbstractMigration
             ->addColumn('entity_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
-                'null' => false,
+                'null' => true,
             ])
             ->addColumn('project_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
-                'null' => false,
+                'null' => true,
             ])
             ->addIndex([
                 'entity_id',
@@ -53,7 +58,45 @@ class InitialMigration extends AbstractMigration
             ->addColumn('name', 'string', [
                 'default' => null,
                 'limit' => 128,
-                'null' => false,
+                'null' => true,
+            ])
+            ->addColumn('project_id', 'integer', [
+                'default' => null,
+                'limit' => 11,
+                'null' => true,
+            ])
+            ->create();
+
+        $this->table('addresses')
+            ->addPrimaryKey(['id'])
+            ->addColumn('name', 'string', [
+                'default' => null,
+                'limit' => 128,
+                'null' => true,
+            ])
+            ->addColumn('country_id', 'integer', [
+                'default' => null,
+                'limit' => 11,
+                'null' => true,
+            ])
+            ->addColumn('project_id', 'integer', [
+                'default' => null,
+                'limit' => 11,
+                'null' => true,
+            ])
+            ->create();
+
+        $this->table('countries')
+            ->addPrimaryKey(['id'])
+            ->addColumn('name', 'string', [
+                'default' => null,
+                'limit' => 128,
+                'null' => true,
+            ])
+            ->addColumn('continent_id', 'integer', [
+                'default' => null,
+                'limit' => 11,
+                'null' => true,
             ])
             ->create();
     }

@@ -18,6 +18,7 @@ use Cake\Chronos\Chronos;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
+use Cake\Utility\Inflector;
 use Cake\Utility\Security;
 use Migrations\Migrations;
 
@@ -162,6 +163,14 @@ ini_set('session.gc_divisor', '1');
 // does not allow the sessionid to be set after stdout
 // has been written to.
 session_id('cli');
+
+Inflector::rules('irregular', array(
+    'contacthrdata' => 'contacthrdatas',
+    'debttranche' => 'debttranches',
+    'tranche' => 'tranches',
+));
+
+Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
 $migrations = new Migrations(['connection' => 'test', 'source' => 'Migrations']);
 $migrations->migrate();

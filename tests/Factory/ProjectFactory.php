@@ -4,20 +4,15 @@ namespace TestFixtureFactories\Test\Factory;
 
 use TestFixtureFactories\Factory\BaseFactory;
 
-class EntityFactory extends BaseFactory
+class ProjectFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return 'Entities';
+        return 'projects';
     }
 
-    public function withAddress($parameter)
+    public function withAddress($parameter): ProjectFactory
     {
         return $this->with('address', AddressFactory::make($parameter));
-    }
-
-    public function withProjects($parameter, $times)
-    {
-        return $this->with('project', ProjectFactory::make($parameter, $times));
     }
 }

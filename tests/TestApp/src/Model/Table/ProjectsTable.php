@@ -11,9 +11,19 @@ class ProjectsTable extends Table
         parent::initialize($config);
 
         $this->addAssociations([
+            'hasOne' => [
+                'Address' => [
+                    'className' => 'Addresses'
+                ]
+            ],
             'belongsToMany' => [
                 'Entity' => [
                     'className' => 'Entities'
+                ],
+            ],
+            'hasMany' => [
+                'Tags' => [
+                    'className' => 'Options'
                 ]
             ]
         ]);

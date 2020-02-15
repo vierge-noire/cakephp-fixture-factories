@@ -12,10 +12,14 @@ class EntitiesTable extends Table
 
         $this->addAssociations([
             'belongsTo' => [
+                'Address' => [
+                    'className' => 'Addresses',
+                    'foreignKey' => 'address_id',
+                ],
                 'EntityType' => [
                     'className' => 'Options',
                     'foreignKey' => 'entity_type_id',
-                ]
+                ],
             ],
             'belongsToMany' => [
                 'Project' => [
