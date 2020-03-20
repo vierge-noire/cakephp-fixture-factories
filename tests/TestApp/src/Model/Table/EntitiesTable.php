@@ -2,6 +2,9 @@
 
 namespace TestApp\Model\Table;
 
+use ArrayObject;
+use Cake\Event\Event;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 
 class EntitiesTable extends Table
@@ -9,6 +12,8 @@ class EntitiesTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
+
+        $this->addBehavior('Timestamp');
 
         $this->addAssociations([
             'belongsTo' => [
@@ -34,4 +39,8 @@ class EntitiesTable extends Table
         ]);
     }
 
+    public function beforeFind(Event $event, Query $query, ArrayObject $options, $primary)
+    {
+        return $event;
+    }
 }

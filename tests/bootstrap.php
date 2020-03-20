@@ -114,7 +114,7 @@ ConnectionManager::setConfig('default', [
 ConnectionManager::setConfig('test', [
     'className' => 'Cake\Database\Connection',
     'driver' => 'Cake\Database\Driver\Mysql',
-    'persistent' => false,
+    'persistent ' => false,
     'host' => 'localhost',
     //'port' => 'non_standard_port_number',
     'username' => 'root',

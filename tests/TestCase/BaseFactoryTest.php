@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace TestFixtureFactories\Test\TestCase;
 
 use Cake\Datasource\EntityInterface;
-use Cake\ORM\Association;
+use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Inflector;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -19,23 +21,64 @@ use TestFixtureFactories\Test\Factory\CountryFactory;
 use TestFixtureFactories\Test\Factory\EntityFactory;
 use TestFixtureFactories\Test\Factory\OptionFactory;
 use TestFixtureFactories\Test\Factory\ProjectFactory;
-use function debug;
+use function count;
 use function is_array;
 use function is_int;
 
 class BaseFactoryTest extends TestCase
 {
-    public function testGetEntity()
+    public function testGetEntityWithArray()
     {
         $entity = EntityFactory::make(['name' => 'blah'])->getEntity();
         $this->assertSame(true, $entity instanceof EntityInterface);
         $this->assertSame(true, $entity instanceof Entity);
+        $this->assertSame('blah', $entity->name);
+    }
+
+    public function testGetEntityWithCallbackReturningArray()
+    {
+        $entity = EntityFactory::make(function (EntityFactory $factory, Generator $faker){
+            return [
+                'name' => 'blah'
+            ];
+        })->getEntity();
+
+        $this->assertSame(true, $entity instanceof EntityInterface);
+        $this->assertSame(true, $entity instanceof Entity);
+        $this->assertSame('blah', $entity->name);
+    }
+
+    public function testGetEntitiesWithArray()
+    {
+        $entities = EntityFactory::make(['name' => 'blah'], 3)->getEntities();
+
+        $this->assertSame(3, count($entities));
+        foreach($entities as $entity) {
+            $this->assertInstanceOf(EntityInterface::class, $entity);
+            $this->assertInstanceOf(Entity::class, $entity);
+            $this->assertSame('blah', $entity->name);
+        }
+    }
+
+    public function testGetEntitiesWithCallbackReturningArray()
+    {
+        $entities = EntityFactory::make(function (EntityFactory $factory, Generator $faker){
+            return [
+                'name' => $faker->name
+            ];
+        }, 3)->getEntities();
+
+        $this->assertSame(3, count($entities));
+        foreach($entities as $entity) {
+            $this->assertInstanceOf(EntityInterface::class, $entity);
+            $this->assertInstanceOf(Entity::class, $entity);
+        }
     }
 
     public function testGetTable()
     {
         $table = EntityFactory::make()->getTable();
-        $this->assertSame(true, $table instanceof EntitiesTable);
+        $this->assertInstanceOf(EntitiesTable::class, $table);
     }
 
     /**
@@ -59,7 +102,7 @@ class BaseFactoryTest extends TestCase
         $this->assertSame(true, is_int($entity->entity_type_id));
     }
 
-    public function testMakeCallable()
+    public function testMakeMultipleWithArray()
     {
         $entities = EntityFactory::make(function (EntityFactory $factory, Generator $faker) {
             return [
@@ -68,36 +111,151 @@ class BaseFactoryTest extends TestCase
         }, 3)->persist();
 
         $this->assertSame(3, count($entities));
+        $previousName = '';
+        foreach ($entities as $entity) {
+            $this->assertSame(true, $entity instanceof EntityInterface);
+            $this->assertNotSame($previousName, $entity->name);
+            $previousName = $entity->name;
+        }
+    }
+
+    public function testMakeFromArrayMultiple()
+    {
+        $entities = EntityFactory::make([
+            'name' => 'test name'
+        ], 3)->persist();
+
+        $this->assertSame(3, count($entities));
+        $previousName = '';
+        foreach ($entities as $entity) {
+            $this->assertSame(true, $entity instanceof EntityInterface);
+            $previousName = $entity->name;
+            $this->assertSame($previousName, $entity->name);
+        }
+    }
+
+    public function testMakeFromArrayMultipleWithMakeFromArray()
+    {
+        $entities = EntityFactory::make([
+            'name' => 'test name'
+        ], 3)
+            ->withAddress([
+                'name' => 'blah'
+            ])
+            ->persist();
+
+        $this->assertSame(3, count($entities));
+
+        foreach ($entities as $entity) {
+            $this->assertInstanceOf(Entity::class, $entity);
+            $this->assertSame(true, is_int($entity->id));
+            $this->assertInstanceOf(Address::class, $entity->address);
+            $this->assertSame(true, is_int($entity->address->id));
+        }
+    }
+
+    public function testMakeFromArrayMultipleWithMakeFromCallable()
+    {
+        $entities = EntityFactory::make([
+            'name' => 'test name'
+        ], 3)
+            ->withAddress(function (AddressFactory $factory, Generator $faker){
+                return [
+                    'name' => $faker->streetAddress
+                ];
+            })
+            ->persist();
+
+        $this->assertSame(3, count($entities));
+
+        foreach ($entities as $entity) {
+            $this->assertInstanceOf(Entity::class, $entity);
+            $this->assertSame(true, is_int($entity->id));
+            $this->assertInstanceOf(Address::class, $entity->address);
+            $this->assertSame(true, is_int($entity->address->id));
+        }
+    }
+
+    public function testMakeSingleWithArray()
+    {
+        $entity = EntityFactory::make(function (EntityFactory $factory, Generator $faker) {
+            return [
+                'name' => $faker->name
+            ];
+        })->persist();
+
+        $this->assertSame(true, $entity instanceof EntityInterface);
+    }
+
+    public function testMakeSingleWithArrayWithSubFactory()
+    {
+        $entity = EntityFactory::make(function (EntityFactory $factory, Generator $faker) {
+            $factory->withAddress(function (AddressFactory $factory, Generator $faker) {
+                return [
+                    'name' => $faker->address
+                ];
+            });
+            return [
+                'name' => $faker->name
+            ];
+        })->persist();
+
+        $this->assertSame(true, $entity instanceof EntityInterface);
+        $this->assertSame(true, is_int($entity->id));
+        $this->assertSame(true, $entity->address instanceof EntityInterface);
+        $this->assertSame(true, is_int($entity->address->id));
+    }
+
+    public function testMakeMultipleWithArrayWithSubFactory()
+    {
+        $entities = EntityFactory::make(function (EntityFactory $factory, Generator $faker) {
+            $factory->withAddress(function (AddressFactory $factory, Generator $faker) {
+                return [
+                    'name' => $faker->address
+                ];
+            });
+            return [
+                'name' => $faker->name
+            ];
+        }, 3)->persist();
+
+        foreach($entities as $entity) {
+            $this->assertSame(true, $entity instanceof EntityInterface);
+            $this->assertSame(true, is_int($entity->id));
+            $this->assertSame(true, $entity->address instanceof EntityInterface);
+            $this->assertSame(true, is_int($entity->address->id));
+        }
     }
 
     public function testMakeMultipleFromArray()
     {
         $entities = EntityFactory::make(['name' => 'test entity'], 10)
-            ->withProjects(function (ProjectFactory $factory, Generator $faker){
-                $factory->withAddress(function (AddressFactory $factory, Generator $faker){
-                    $factory->withCountry(function (CountryFactory $factory, Generator $faker){
+            ->withProjects(function (ProjectFactory $factory, Generator $faker) {
+                $factory->withAddress(function (AddressFactory $factory, Generator $faker) {
+                    $factory->withCountry(function (CountryFactory $factory, Generator $faker) {
                         return [
                             'name' => $faker->country
                         ];
                     });
+                    return [
+                        'name' => $faker->streetAddress
+                    ];
                 });
-                return [
-                    'name' => $faker->address
-                ];
+                return ['name' => $faker->colorName];
             }, 3)
-            ->withAddress(function (AddressFactory $factory, Generator $faker){
+            ->withAddress(function (AddressFactory $factory, Generator $faker) {
                 return [
                     'name' => $faker->address
                 ];
             })
             ->persist();
 
-        debug($entities);
-
         $this->assertSame(10, count($entities));
 
-        foreach($entities as $entity) {
-            $this->assertSame(true, $entity instanceof Entity);
+        foreach ($entities as $entity) {
+            $this->assertInstanceOf(Entity::class, $entity);
+            $this->assertSame(3, count($entity->project));
+            $this->assertInstanceOf(Project::class, $entity->project[0]);
         }
     }
 
@@ -118,7 +276,6 @@ class BaseFactoryTest extends TestCase
                         'name' => $faker->country
                     ];
                 });
-
                 // data for AddressFactory
                 return [
                     'name' => $faker->address
@@ -160,11 +317,10 @@ class BaseFactoryTest extends TestCase
             })
             ->persist();
 
-        debug($entities);
-
         $this->assertSame(10, count($entities));
 
-        foreach($entities as $entity) {
+        foreach ($entities as $entity) {
+            $this->assertSame(3, count($entity->project));
             $this->assertSame(true, $entity->address instanceof Address);
             $this->assertSame(true, is_int($entity->address_id));
             $this->assertSame(true, $entity->address->country instanceof Country);
@@ -197,6 +353,8 @@ class BaseFactoryTest extends TestCase
                 ];
             })
             ->getEntity();
+
+        //debug($entity);
 
         $this->assertSame(true, $entity->address instanceof Address);
         //$this->assertSame(true, is_int($entity->address_id));
@@ -314,8 +472,8 @@ class BaseFactoryTest extends TestCase
 
     public function testMakeHasOneAssociationFromCallableThenPersist()
     {
-        $entity = ProjectFactory::make(function (ProjectFactory $factory, Generator $faker){
-            $factory->withAddress(function (AddressFactory $factory, Generator $faker){
+        $entity = ProjectFactory::make(function (ProjectFactory $factory, Generator $faker) {
+            $factory->withAddress(function (AddressFactory $factory, Generator $faker) {
                 return [
                     'name' => $faker->streetAddress
                 ];
@@ -333,7 +491,7 @@ class BaseFactoryTest extends TestCase
 
     public function testMakeHasOneAssociationFromCallableWithAssociatedDataInSingleArrayThenPersist()
     {
-        $entity = ProjectFactory::make(function (ProjectFactory $factory, Generator $faker){
+        $entity = ProjectFactory::make(function (ProjectFactory $factory, Generator $faker) {
             return [
                 'name' => $faker->name,
                 'address' => [
@@ -395,5 +553,40 @@ class BaseFactoryTest extends TestCase
         $this->assertSame(true, $entitiesTable->hasAssociation('Address'));
         $this->assertSame(true, $entitiesTable->hasAssociation('entitytype'));
         $this->assertSame(true, $entitiesTable->hasAssociation('EntityType'));
+    }
+
+    public function testAssociationByPropertyName()
+    {
+        $entitiesTable = EntityFactory::make()->getTable();
+        $this->assertSame(true, $entitiesTable->hasAssociation(Inflector::camelize('entity_type')));
+    }
+
+    public function testEvaluateCallableThatReturnsArray()
+    {
+        $callable = function () {
+            return [
+                'name' => 'blah'
+            ];
+        };
+
+        $evaluation = $callable();
+        $this->assertSame(['name' => 'blah'], $evaluation);
+    }
+
+    public function testCreatingFixtureWithPrimaryKey()
+    {
+        $entity = EntityFactory::make(function (EntityFactory $factory, Generator $faker){
+            return [
+                'id' => 100,
+                'name' => $faker->name
+             ];
+        })->persist();
+
+        $entitiesTable = TableRegistry::getTableLocator()->get('Entities');
+        $entities = $entitiesTable->find()->toArray();
+
+        $this->assertSame(100, $entity->id);
+        $this->assertSame(1, count($entities));
+        $this->assertSame(100, $entities[0]->id);
     }
 }

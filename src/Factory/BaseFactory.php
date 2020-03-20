@@ -14,6 +14,7 @@ use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
 use RuntimeException;
+use TestFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use function array_merge;
 use function count;
 use function debug;
@@ -23,21 +24,17 @@ use function is_callable;
 /**
  * Class BaseFactory
  *
- * @TODO : add way to manage default values easily
- * @TODO : throw exception when passing $times > 1 on hasOne association
+ * @TODO    : add way to manage default values easily
+ * @TODO    : throw exception when passing $times > 1 on hasOne association
  *
  * @package TestFixtureFactories\Factory
  */
 abstract class BaseFactory
 {
     //use LocatorAwareTrait;
-
-    /**
-     * The number of records the factory should create
-     *
-     * @var int
-     */
-    private $times = 1;
+    const WITH_ARRAY = 'WITH_ARRAY';
+    const FROM_ARRAY = 'FROM_ARRAY';
+    const FROM_CALLABLE = 'FROM_CALLABLE';
     /**
      * @var Generator
      */
@@ -50,10 +47,6 @@ abstract class BaseFactory
      * @var array
      */
     protected $data = [];
-    /**
-     * @var array
-     */
-    private $templateData = [];
     /**
      * @var array
      */
@@ -88,6 +81,24 @@ abstract class BaseFactory
      * @var array
      */
     protected $reviewableBehaviorConfig;
+    /**
+     * The number of records the factory should create
+     *
+     * @var int
+     */
+    private $times = 1;
+    /**
+     * @var array
+     */
+    private $templateData = [];
+    /**
+     * @var array
+     */
+    private $compiledTemplateData = [];
+    /**
+     * @var bool
+     */
+    private $isRootLevel = true;
 
     /**
      * BaseFactory constructor.
@@ -106,16 +117,10 @@ abstract class BaseFactory
         }
     }
 
-    private function getFaker(): Generator
-    {
-        if (is_null(self::$faker)) {
-            $faker = Factory::create();
-            $faker->seed(1234);
-            self::$faker = $faker;
-        }
-
-        return self::$faker;
-    }
+    /**
+     * @return string
+     */
+    abstract protected function getRootTableRegistryName(): string;
 
     /**
      * @param array|callable|null $data
@@ -136,22 +141,14 @@ abstract class BaseFactory
             return self::makeFromCallable($makeParameter, $times);
         }
 
-        throw new InvalidArgumentException("make only accepts null, an array or a callable as parameter");
+        throw new InvalidArgumentException("make only accepts null, an array or a callable as the first parameter");
     }
 
     public static function makeFromArray(array $data, $times = 1)
     {
         $factory = new static();
         $factory->times = $times;
-        //$factory->mergeData($data);
-
-        if ($times === 1) {
-            $factory->mergeData($data);
-        } else {
-            for ($i = 0; $i < $times; $i++) {
-                $factory->data[] = $data;
-            }
-        }
+        $factory->templateData[self::FROM_ARRAY] = $data;
 
         return $factory;
     }
@@ -161,24 +158,24 @@ abstract class BaseFactory
         $factory = new static();
         $factory->times = $times;
 
-        if ($times === 1) {
-            $returnedData = $fn($factory, $factory->getFaker());
-            $factoryInjectedData = $factory->data;
-            $tmpData = [];
-            if (is_array($returnedData)) {
-                $factory->mergeData($returnedData);
-            }
-        } else {
-            $fn($factory, $factory->getFaker());
-            $factoryInjectedData = $factory->data;
-            $tmpData = [];
-            for ($i = 0; $i < $times; $i++) {
-                $tmpData[] = array_merge($factoryInjectedData, $fn($factory, $factory->getFaker()));
-            }
-            $factory->data = $tmpData;
+        // if the callable returns an array, add it the the templateData array, so it will be compiled
+        $returnValue = $fn($factory, $factory->getFaker());
+        if (is_array($returnValue)) {
+            $factory->withArray($fn);
         }
 
         return $factory;
+    }
+
+    private function getFaker(): Generator
+    {
+        if (is_null(self::$faker)) {
+            $faker = Factory::create();
+            $faker->seed(1234);
+            self::$faker = $faker;
+        }
+
+        return self::$faker;
     }
 
     /**
@@ -189,18 +186,108 @@ abstract class BaseFactory
         if ($this->times > 1) {
             throw new RuntimeException("Cannot call getEntity on a factory with {$this->times} records");
         }
-        return $this->rootTable->newEntity($this->data, $this->getMarshallerOptions());
+        $data = $this->toArray();
+
+        return $this->rootTable->newEntity($data[0], $this->getMarshallerOptions());
+    }
+
+    private function getMarshallerOptions()
+    {
+        return array_merge($this->marshallerOptions, [
+            'associated' => $this->getAssociated()
+        ]);
+    }
+
+    public function getAssociated()
+    {
+        return $this->associated;
+    }
+
+    public function toEntities()
+    {
+        return $this->rootTable->newEntities($this->toArray(), $this->getMarshallerOptions());
+    }
+
+    public function toArray()
+    {
+        $this->data = [];
+        for ($i = 0; $i < $this->times; $i++) {
+            $this->data[] = $this->compileTemplateData();
+        }
+
+        return $this->data;
+    }
+
+    private function compileTemplateData()
+    {
+        $this->compiledTemplateData = [];
+
+        foreach ($this->templateData as $propertyName => $data) {
+            $association = $this->getAssociationByPropertyName($propertyName);
+            if ($association) {
+                $dataIsFactory = $data instanceof BaseFactory;
+                if ($dataIsFactory) {
+                    /** @var BaseFactory $factory */
+                    $factory = $data;
+                    if ($association instanceof HasOne || $association instanceof BelongsTo) {
+                        $this->compiledTemplateData[$propertyName] = $factory->toArray()[0];
+                    } else {
+                        $this->compiledTemplateData[$propertyName] = $factory->toArray();
+                    }
+                }
+            }
+
+            $isWithArray = $propertyName === self::WITH_ARRAY;
+            if ($isWithArray) {
+                $callable = $data;
+                $array = $callable($this, $this->getFaker());
+                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $array);
+            }
+
+            $isFromArray = $propertyName === self::FROM_ARRAY;
+            if ($isFromArray) {
+                $array = $data;
+                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $array);
+            }
+
+            $isFromCallable = $propertyName === self::FROM_CALLABLE;
+            if ($isFromCallable) {
+                $callable = $data;
+                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $callable($this, $this->getFaker()));
+            }
+        }
+
+        return $this->compiledTemplateData;
     }
 
     /**
-     * @return EntityInterface
+     * @param string $propertyName
+     * @return bool
      */
-    public function getEntities()
+    private function getAssociationByPropertyName(string $propertyName)
     {
-        if ($this->times === 1) {
-            throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
+        try {
+            return $this->getTable()->getAssociation(Inflector::camelize($propertyName));
+        } catch (InvalidArgumentException $e) {
+            return false;
         }
-        return $this->rootTable->newEntities($this->data, $this->getMarshallerOptions());
+    }
+
+    public function getTable(): Table
+    {
+        return $this->rootTable;
+    }
+
+    public function persist()
+    {
+        for ($i = 0; $i < $this->times; $i++) {
+            $this->data[] = $this->compileTemplateData();
+        }
+        if ($this->times === 1) {
+            return $this->persistOne();
+        } else {
+            return $this->persistMany();
+        }
     }
 
     /**
@@ -212,12 +299,12 @@ abstract class BaseFactory
         // create the entity, but patch to the existing one
         $primaryKey = $this->rootTable->getPrimaryKey();
         if (
-            isset($this->data[$primaryKey]) &&
-            $entity = $this->rootTable->find()->where([$this->rootTable->aliasField($primaryKey) => $this->data[$primaryKey]])->first()
+            isset($this->data[0][$primaryKey]) &&
+            $entity = $this->rootTable->find()->where([$this->rootTable->aliasField($primaryKey) => $this->data[0][$primaryKey]])->first()
         ) {
-            $entity = $this->rootTable->patchEntity($entity, $this->data, $this->getMarshallerOptions());
+            $entity = $this->rootTable->patchEntity($entity, $this->data[0], $this->getMarshallerOptions());
         } else {
-            $entity = $this->rootTable->newEntity($this->data, $this->getMarshallerOptions());
+            $entity = $this->rootTable->newEntity($this->data[0], $this->getMarshallerOptions());
         }
 
         $this->rootTable->saveOrFail($entity, $this->getSaveOptions());
@@ -235,24 +322,17 @@ abstract class BaseFactory
         return $entity;
     }
 
+    private function getSaveOptions()
+    {
+        return array_merge($this->saveOptions, [
+            'associated' => $this->getAssociated()
+        ]);
+    }
+
     private function persistMany()
     {
         $entities = $this->rootTable->newEntities($this->data, $this->getMarshallerOptions());
         return $this->rootTable->saveMany($entities, $this->getSaveOptions());
-    }
-
-    private function buildDataTemplate()
-    {
-
-    }
-
-    public function persist()
-    {
-        if ($this->times === 1) {
-            return $this->persistOne();
-        } else {
-            return $this->persistMany();
-        }
     }
 
     /**
@@ -267,14 +347,9 @@ abstract class BaseFactory
         return $this;
     }
 
-    public function getTable()
+    public function with(string $associationName, BaseFactory $factory)
     {
-        return $this->rootTable;
-    }
-
-    public function with(string $association, BaseFactory $factory)
-    {
-        $association = $this->getTable()->getAssociation($association);
+        $association = $this->getTable()->getAssociation($associationName);
         if ($association instanceof HasOne || $association instanceof BelongsTo) {
             return $this->withOne($association->getProperty(), $factory);
         }
@@ -293,7 +368,7 @@ abstract class BaseFactory
      */
     private function withOne(string $association, BaseFactory $factory): self
     {
-        $this->data[$association] = $factory->getEntity()->toArray();
+        //$this->data[$association] = $factory->getEntity()->toArray();
         $this->templateData[$association] = $factory;
 
         $this->associated[] = Inflector::camelize($association);
@@ -303,19 +378,6 @@ abstract class BaseFactory
         }
 
         return $this;
-    }
-
-    /**
-     *  converts an array of entities to an array of arrays representing those entities
-     */
-    private function entitiesToArrays()
-    {
-        $arrays = [];
-        foreach ($this->getEntities() as $entity) {
-            /** @var $entity EntityInterface */
-            $arrays[] = $entity->toArray();
-        }
-        return $arrays;
     }
 
     /**
@@ -325,7 +387,7 @@ abstract class BaseFactory
      */
     private function withMany(string $association, BaseFactory $factory): self
     {
-        $this->data[$association] = $factory->entitiesToArrays();
+        //$this->data[$association] = $factory->entitiesToArrays();
         $this->templateData[$association] = $factory;
 
         $this->associated[] = Inflector::camelize($association);
@@ -337,9 +399,9 @@ abstract class BaseFactory
         return $this;
     }
 
-    public function getAssociated()
+    private function withArray(callable $fn)
     {
-        return $this->associated;
+        $this->templateData[self::WITH_ARRAY] = $fn;
     }
 
     public function mergeAssociated($data)
@@ -349,27 +411,14 @@ abstract class BaseFactory
         return $this;
     }
 
-    private function getSaveOptions()
-    {
-        return array_merge($this->saveOptions, [
-            'associated' => $this->getAssociated()
-        ]);
-    }
-
-    private function getMarshallerOptions()
-    {
-        return array_merge($this->marshallerOptions, [
-            'associated' => $this->getAssociated()
-        ]);
-    }
-
-    public function getTemplateData()
-    {
-        return $this->templateData;
-    }
-
     /**
-     * @return string
+     * @return EntityInterface
      */
-    abstract protected function getRootTableRegistryName(): string;
+    public function getEntities()
+    {
+        if ($this->times === 1) {
+            throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
+        }
+        return $this->rootTable->newEntities($this->toArray(), $this->getMarshallerOptions());
+    }
 }
