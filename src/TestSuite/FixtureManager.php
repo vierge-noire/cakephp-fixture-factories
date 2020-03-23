@@ -27,13 +27,13 @@ class FixtureManager extends BaseFixtureManager
         return ConnectionManager::get($name);
     }
 
-    /**
-     *
-     */
-    public function startTest()
+    public function initDb()
     {
         $this->_initDb();
+    }
 
+    public function truncateDirtyTablesForAllConnections()
+    {
         $connections = ConnectionManager::configured();
 
         foreach ($connections as $connectionName) {
@@ -78,11 +78,14 @@ class FixtureManager extends BaseFixtureManager
         $res = $connection->execute("
             SELECT table_name, table_rows
             FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_SCHEMA = '$databaseName' and table_rows > 0;
+            WHERE TABLE_SCHEMA = '$databaseName' and AUTO_INCREMENT > 1;
         ");
-        $dirtyTables = array_map(function ($tableData) {
-            return $tableData[0];
-        }, $res->fetchAll());
+        $dirtyTables = [];
+        foreach($res->fetchAll() as $tableData) {
+            if ($tableData[0] !== 'phinxlog') {
+                $dirtyTables[] = $tableData[0];
+            }
+        }
         if (count($dirtyTables)) {
             $truncateStatement = "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `", $dirtyTables) . "`; SET FOREIGN_KEY_CHECKS=1;";
             $connection->execute($truncateStatement);

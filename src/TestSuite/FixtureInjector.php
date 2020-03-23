@@ -2,12 +2,10 @@
 
 namespace TestFixtureFactories\TestSuite;
 
-use Core\Test\TestSuite\FixtureManager;
 use PHPUnit\Framework\BaseTestListener;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestSuite;
-use function class_uses;
-use function in_array;
+use TestListenerDefaultImplementation;
 
 /**
  * This class has to be used along the fixture factories
@@ -24,9 +22,6 @@ class FixtureInjector extends BaseTestListener
 
     public function __construct(\Cake\TestSuite\Fixture\FixtureManager $manager)
     {
-        if (isset($_SERVER['argv'])) {
-            $manager->setDebug(in_array('--debug', $_SERVER['argv']));
-        }
         $this->_fixtureManager = $manager;
     }
 
@@ -36,10 +31,11 @@ class FixtureInjector extends BaseTestListener
      */
     public function startTestSuite(TestSuite $suite)
     {
-        // noop
+        $this->_fixtureManager->initDb();
     }
 
     /**
+     * Cleanup before test starts
      * Truncates the tables that were used by the previous test before starting a new one
      *
      * @param \PHPUnit\Framework\Test $test The test case
@@ -47,11 +43,11 @@ class FixtureInjector extends BaseTestListener
      */
     public function startTest(Test $test)
     {
-        $this->_fixtureManager->startTest();
+        $this->_fixtureManager->truncateDirtyTablesForAllConnections();
     }
 
     /**
-     * Do not do anything here, startTest will do the cleanup before running the next test
+     * Do not do anything here, startTest will do the database cleanup before running the next test
      *
      * @param \PHPUnit\Framework\Test $test The test case
      * @param float                   $time current time
@@ -63,13 +59,12 @@ class FixtureInjector extends BaseTestListener
     }
 
     /**
-     * Skip the Cake EndTestSuite because it drops fixture loaded tables
-     * and we do not want any tables to be dropped
+     * Truncate all dirty tables at the end of the test suite to leave a clean database
      *
      * @param TestSuite $suite
      */
     public function endTestSuite(TestSuite $suite)
     {
-        // noop, see method description
+        $this->_fixtureManager->truncateDirtyTablesForAllConnections();
     }
 }
