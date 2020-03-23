@@ -4,7 +4,7 @@ namespace TestFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Locator\LocatorAwareTrait;
-use Cake\ORM\TableRegistry;
+use TestFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use function array_merge;
 use function count;
 
@@ -57,7 +57,7 @@ abstract class BaseFactory
     {
         $this->data = $data;
         $this->options = array_merge($this->options, $options);
-        $this->rootTable = TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
+        $this->rootTable = FactoryTableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         if ($this->rootTable->hasBehavior('Reviewable')) {
             $this->reviewableBehaviorConfig = $this->rootTable->getBehavior('Reviewable')->getConfig();
             $this->rootTable->removeBehavior('Reviewable');
