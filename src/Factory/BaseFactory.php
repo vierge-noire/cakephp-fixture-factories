@@ -7,8 +7,6 @@ use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Association\HasOne;
-use Cake\ORM\Locator\LocatorAwareTrait;
-use TestFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use Cake\Utility\Inflector;
 use Faker\Factory;
 use Faker\Generator;
@@ -17,9 +15,9 @@ use RuntimeException;
 use TestFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use function array_merge;
 use function count;
-use function debug;
 use function is_array;
 use function is_callable;
+use Cake\ORM\Table;
 
 /**
  * Class BaseFactory
@@ -108,8 +106,8 @@ abstract class BaseFactory
      */
     protected function __construct()
     {
-        $this->data = $data;
-        $this->marshallerOptions = array_merge($this->marshallerOptions, $options);
+//        $this->data = $data;
+//        $this->marshallerOptions = array_merge($this->marshallerOptions, $options);
         $this->rootTable = FactoryTableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         if ($this->rootTable->hasBehavior('Reviewable')) {
             $this->reviewableBehaviorConfig = $this->rootTable->getBehavior('Reviewable')->getConfig();

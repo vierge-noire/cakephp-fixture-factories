@@ -25,8 +25,8 @@ class FactoryTableLocatorTest extends TestCase
             $this->assertSame(true, $factoryEntitiesTable->hasAssociation($association->getName()));
         }
 
-        // EntitiesTable from factory table locator should not have a Timestamp behavior
-        $this->assertSame(false, $factoryEntitiesTable->hasBehavior('Timestamp'));
+        // EntitiesTable from factory table locator should not have a Timestamp behavior. This is the only behavior that is allowed
+        $this->assertSame(true, $factoryEntitiesTable->hasBehavior('Timestamp'));
         // EntitiesTable from application table locator should have a Timestamp behavior
         $this->assertSame(true, $entitiesTable->hasBehavior('Timestamp'));
     }
