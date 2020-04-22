@@ -95,12 +95,12 @@ Cache::setConfig([
 
 ConnectionManager::setConfig('default', [
     'className' => 'Cake\Database\Connection',
-    'driver' => 'Cake\Database\Driver\Mysql',
+    'driver' => \Cake\Database\Driver\Sqlite::class,
     'persistent' => false,
     'host' => 'localhost',
     //'port' => 'non_standard_port_number',
     'username' => 'root',
-    'password' => 'vagrant',
+    'password' => 'vagrant',    
     'database' => 'test_fixture_factories',
     'encoding' => 'utf8',
     'timezone' => 'UTC',
@@ -113,7 +113,8 @@ ConnectionManager::setConfig('default', [
 
 ConnectionManager::setConfig('test', [
     'className' => 'Cake\Database\Connection',
-    'driver' => 'Cake\Database\Driver\Mysql',
+    'driver' => \Cake\Database\Driver\Sqlite::class,
+//    'driver' => \Cake\Database\Driver\Mysql::class,
     'persistent ' => false,
     'host' => 'localhost',
     //'port' => 'non_standard_port_number',
