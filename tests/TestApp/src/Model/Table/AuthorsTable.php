@@ -4,20 +4,20 @@ namespace TestApp\Model\Table;
 
 use Cake\ORM\Table;
 
-class AddressesTable extends Table
+class AuthorsTable extends Table
 {
     public function initialize(array $config)
     {
         $this->addBehavior('Timestamp');
 
         $this->addAssociations([
-            'belongsTo' => [
-                'Author' => [
-                    'className' => 'Authors'
+            'hasOne' => [
+                'Address' => [
+                    'className' => 'Addresses'
                 ],
-                'City' => [
-                    'className' => 'Cities'
-                ]
+            ],
+            'hasMany' => [
+                'Articles'
             ],
         ]);
 

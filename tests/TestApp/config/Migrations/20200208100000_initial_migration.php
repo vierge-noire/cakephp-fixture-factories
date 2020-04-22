@@ -6,68 +6,69 @@ class InitialMigration extends AbstractMigration
 {
     public function up()
     {
-        $this->table('entities')
+        $this->table('authors')
             ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
+                'limit' => 128,
+                'null' => false,
+            ])
+            ->addTimestamps()
+            ->create();
+
+        $this->table('articles')
+            ->addPrimaryKey(['id'])
+            ->addColumn('title', 'string', [
+                'limit' => 128,
+                'null' => false,
+            ])
+            ->addColumn('content', 'string', [
                 'default' => null,
                 'limit' => 128,
                 'null' => true,
             ])
-            ->addColumn('entity_type_id', 'integer', [
-                'default' => null,
-                'limit' => 11,
-                'null' => true,
-            ])
-            ->addColumn('address_id', 'integer', [
-                'default' => null,
-                'limit' => 11,
-                'null' => true,
-            ])
+            ->addTimestamps()
             ->create();
 
-        $this->table('projects')
-            ->addPrimaryKey(['id'])
-            ->addColumn('name', 'string', [
-                'default' => null,
-                'limit' => 128,
-                'null' => true,
-            ])
-            ->create();
-
-        $this->table('entities_projects')
-            ->addColumn('entity_id', 'integer', [
+        $this->table('authors_articles')
+            ->addColumn('author_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
-                'null' => true,
+                'null' => false,
             ])
-            ->addColumn('project_id', 'integer', [
+            ->addColumn('article_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
-                'null' => true,
+                'null' => false,
             ])
             ->addIndex([
-                'entity_id',
+                'author_id',
             ])
             ->addIndex([
-                'project_id',
-            ])
-            ->create();
-
-        $this->table('options')
-            ->addPrimaryKey(['id'])
-            ->addColumn('name', 'string', [
-                'default' => null,
-                'limit' => 128,
-                'null' => true,
-            ])
-            ->addColumn('project_id', 'integer', [
-                'default' => null,
-                'limit' => 11,
-                'null' => true,
+                'article_id',
             ])
             ->create();
 
         $this->table('addresses')
+            ->addPrimaryKey(['id'])
+            ->addColumn('street', 'string', [
+                'default' => null,
+                'limit' => 128,
+                'null' => false,
+            ])
+            ->addColumn('author_id', 'integer', [
+                'default' => null,
+                'limit' => 11,
+                'null' => true,
+            ])
+            ->addColumn('city_id', 'integer', [
+                'default' => null,
+                'limit' => 11,
+                'null' => false,
+            ])
+            ->addTimestamps()
+            ->create();
+
+        $this->table('cities')
             ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
                 'default' => null,
@@ -77,13 +78,9 @@ class InitialMigration extends AbstractMigration
             ->addColumn('country_id', 'integer', [
                 'default' => null,
                 'limit' => 11,
-                'null' => true,
+                'null' => false,
             ])
-            ->addColumn('project_id', 'integer', [
-                'default' => null,
-                'limit' => 11,
-                'null' => true,
-            ])
+            ->addTimestamps()
             ->create();
 
         $this->table('countries')
@@ -93,11 +90,7 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => true,
             ])
-            ->addColumn('continent_id', 'integer', [
-                'default' => null,
-                'limit' => 11,
-                'null' => true,
-            ])
+            ->addTimestamps()
             ->create();
     }
 }

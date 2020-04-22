@@ -4,7 +4,7 @@ namespace TestApp\Model\Table;
 
 use Cake\ORM\Table;
 
-class AddressesTable extends Table
+class CitiesTable extends Table
 {
     public function initialize(array $config)
     {
@@ -12,12 +12,9 @@ class AddressesTable extends Table
 
         $this->addAssociations([
             'belongsTo' => [
-                'Author' => [
-                    'className' => 'Authors'
+                'Country' => [
+                    'className' => 'Countries'
                 ],
-                'City' => [
-                    'className' => 'Cities'
-                ]
             ],
         ]);
 

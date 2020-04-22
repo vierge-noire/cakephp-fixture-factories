@@ -2,24 +2,31 @@
 
 namespace TestApp\Model\Table;
 
+use Cake\ORM\Query;
 use Cake\ORM\Table;
-use TestApp\Model\Entity\Country;
+use Cake\Validation\Validator;
 
 class CountriesTable extends Table
 {
+    const NAME_MAX_LENGTH = 100;
+
     public function initialize(array $config)
     {
-        $this->setEntityClass(Country::class);
+        $this->addBehavior('Timestamp');
 
         $this->addAssociations([
-            'belongsTo' => [
-                'Continent' => [
-                    'className' => 'Options',
-                    'foreignkey' => 'continent_id'
-                ]
-            ]
+            'hasMany' => [
+                'Cities',
+            ],
         ]);
 
         parent::initialize($config);
+    }
+
+    public function validationDefault(Validator $validator)
+    {
+        $validator->maxLength('name', self::NAME_MAX_LENGTH);
+
+        return $validator;
     }
 }

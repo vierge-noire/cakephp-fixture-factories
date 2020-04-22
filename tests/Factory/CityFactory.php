@@ -4,15 +4,15 @@ namespace TestFixtureFactories\Test\Factory;
 
 use TestFixtureFactories\Factory\BaseFactory;
 
-class AddressFactory extends BaseFactory
+class CityFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return 'addresses';
+        return 'cities';
     }
 
-    public function withCity($parameter)
+    public function withCountry($parameter)
     {
-        return $this->with('city', CityFactory::make($parameter));
+        return $this->with('country', CountryFactory::make($parameter));
     }
 }

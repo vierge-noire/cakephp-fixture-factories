@@ -8,11 +8,6 @@ class CountryFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return "countries";
-    }
-
-    public function withContinent($parameter)
-    {
-        $this->with('continent', OptionFactory::make($parameter));
+        return 'countries';
     }
 }
