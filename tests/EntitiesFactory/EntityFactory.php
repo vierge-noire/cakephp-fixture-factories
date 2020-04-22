@@ -13,7 +13,7 @@ class EntityFactory extends BaseFactory
 
     public function withAddress($parameter)
     {
-        return $this->with('address', AddressFactory::make($parameter));
+        return $this->with('address', AuthorFactory::make($parameter));
     }
 
     public function withProjects($parameter, $times)

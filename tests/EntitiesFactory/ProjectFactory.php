@@ -13,6 +13,6 @@ class ProjectFactory extends BaseFactory
 
     public function withAddress($parameter): ProjectFactory
     {
-        return $this->with('address', AddressFactory::make($parameter));
+        return $this->with('address', AuthorFactory::make($parameter));
     }
 }
