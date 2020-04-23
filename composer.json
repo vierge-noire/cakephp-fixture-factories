@@ -1,5 +1,5 @@
 {
-    "name": "bprojects/test-fixture-factories",
+    "name": "pakacuda/cakephp-fixture-factories",
     "description": "An alternative to the CakePHP fixture approach",
     "authors": [
         {
@@ -8,7 +8,7 @@
         },
         {
             "name": "Juan Pablo Ramìrez",
-            "email": "pablo@b-projects.tech"
+            "email": "pabloelcolombiano@gmail.com"
         }
     ],
     "minimum-stability": "dev",
