@@ -6,6 +6,7 @@ namespace TestFixtureFactories\Test\TestCase;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use PHPUnit\Framework\TestCase;
@@ -112,7 +113,17 @@ class FactoryTableLocatorTest extends TestCase
 
         $this->assertEquals('This-Article', $article->slug);
 
-        $article = ArticleFactory::make(compact('title'));
+        $article = ArticleFactory::make(compact('title'))->persist();
         $this->assertNull($article->slug ?? null);
+        $this->assertTrue(is_int($article->id));
+    }
+
+    public function testTimeStampIsSet()
+    {
+        $title = "This Article";
+        $article = ArticleFactory::make(compact('title'))->persist();
+
+        $article = TableRegistry::getTableLocator()->get('Articles')->get($article->id);
+        $this->assertInstanceOf(\DateTime::class, $article->created_at);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace TestApp\Model\Table;
+namespace TestPlugin\Model\Table;
 
 use Cake\ORM\Table;
 
-class ArticlesTable extends Table
+class CustomersTable extends Table
 {
     public function initialize(array $config)
     {
@@ -14,10 +14,8 @@ class ArticlesTable extends Table
             'hasMany' => [
                 'TestPlugin.Bills',
             ],
-            'belongsToMany' => [
-                'Authors'
-            ],
         ]);
+
         parent::initialize($config);
     }
 }

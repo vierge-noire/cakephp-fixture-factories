@@ -15,4 +15,9 @@ class ArticleFactory extends BaseFactory
     {
         return $this->with('authors', AuthorFactory::make($parameter, $n));
     }
+
+    public function withBills($parameter, int $n = 1)
+    {
+        return $this->with('bills', BillFactory::make($parameter, $n));
+    }
 }

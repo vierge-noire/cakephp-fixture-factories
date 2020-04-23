@@ -18,8 +18,11 @@ use TestApp\Model\Table\ArticlesTable;
 use TestFixtureFactories\Test\Factory\AddressFactory;
 use TestFixtureFactories\Test\Factory\AuthorFactory;
 use TestFixtureFactories\Test\Factory\ArticleFactory;
+use TestFixtureFactories\Test\Factory\BillFactory;
 use TestFixtureFactories\Test\Factory\CityFactory;
 use TestFixtureFactories\Test\Factory\CountryFactory;
+use TestFixtureFactories\Test\Factory\CustomerFactory;
+use TestPlugin\Model\Entity\Bill;
 use function count;
 use function is_array;
 use function is_int;
@@ -535,5 +538,97 @@ class BaseFactoryTest extends TestCase
         $this->assertSame($id, $article->id);
         $this->assertSame(1, $articles->count());
         $this->assertSame($id, $articles->firstOrFail()->id);
+    }
+
+    public function testPatchingWithAssociationPluginToApp()
+    {
+        $title = 'Some title';
+        $amount = 10;
+        $bill = BillFactory::make(compact('amount'))
+            ->withArticle(compact('title'))
+            ->getEntity();
+        $this->assertEquals($title, $bill->article->title);
+        $this->assertEquals($amount, $bill->amount);
+    }
+
+    public function testSavingWithAssociationPluginToApp()
+    {
+        $title = 'Some title';
+        $amount = 10;
+        $bill = BillFactory::make(compact('amount'))
+            ->withArticle(compact('title'))
+            ->persist();
+        $this->isTrue(is_int($bill->id));
+        $this->isTrue(is_int($bill->article->id));
+        $this->assertEquals($title, $bill->article->title);
+        $this->assertEquals($amount, $bill->amount);
+        $this->assertEquals($bill->article_id, $bill->article->id);
+    }
+
+    public function testPatchingWithAssociationAppToPlugin()
+    {
+        $title = 'Some title';
+        $amount = 10;
+        $n = 2;
+        $article = ArticleFactory::make(compact('title'))
+            ->withBills(compact('amount'), $n)
+            ->getEntity();
+        $this->assertEquals($title, $article->title);
+        $this->assertEquals($n, count($article->bills));
+
+    }
+
+    public function testSavingWithAssociationAppToPlugin()
+    {
+        $title = 'Some title';
+        $amount = 10;
+        $n = 2;
+        $article = ArticleFactory::make(compact('title'))
+            ->withBills(compact('amount'), $n)
+            ->persist();
+
+        $this->isTrue(is_int($article->id));
+        $this->equalTo($n, count($article->bills));
+        $this->assertEquals($title, $article->title);
+        foreach ($article->bills as $bill) {
+            $this->assertEquals($bill->article_id, $article->id);
+            $this->assertEquals($amount, $bill->amount);
+            $this->assertInstanceOf(Bill::class, $bill);
+        }
+    }
+
+    public function testPatchingWithAssociationWithinPlugin()
+    {
+        $name = 'Some name';
+        $amount = 10;
+        $n = 2;
+        $customer = CustomerFactory::make(compact('name'))
+            ->withBills(compact('amount'), $n)
+            ->getEntity();
+        $this->assertEquals($name, $customer->name);
+        $this->assertEquals($n, count($customer->bills));
+        foreach ($customer->bills as $bill) {
+            $this->assertEquals($amount, $bill->amount);
+            $this->assertInstanceOf(Bill::class, $bill);
+        }
+    }
+
+    public function testSavingWithAssociationWithinlugin()
+    {
+        $name = 'Some name';
+        $amount = 10;
+        $n = 2;
+        $customer = CustomerFactory::make(compact('name'))
+            ->withBills(compact('amount'), $n)
+            ->persist();
+
+        $this->isTrue(is_int($customer->id));
+        $this->equalTo($n, count($customer->bills));
+        $this->assertEquals($name, $customer->name);
+        foreach ($customer->bills as $bill) {
+            $this->assertEquals($bill->customer_id, $customer->id);
+            $this->assertEquals($amount, $bill->amount);
+            $this->assertInstanceOf(Bill::class, $bill);
+        }
     }
 }

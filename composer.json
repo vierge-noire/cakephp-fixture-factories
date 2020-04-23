@@ -29,7 +29,8 @@
     "autoload-dev": {
         "psr-4": {
             "TestFixtureFactories\\Test\\": "tests",
-            "TestApp\\": "tests/TestApp/src"
+            "TestApp\\": "tests/TestApp/src",
+            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src"
         }
     }
 }
