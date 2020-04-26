@@ -1,7 +1,6 @@
 <?php
 namespace TestFixtureFactories\Test\TestCase\Shell\Task;
 
-use Cake\TestSuite\ConsoleIntegrationTestTrait;
 use TestFixtureFactories\Shell\Task\TestFixtureFactoryTask;
 use Cake\TestSuite\TestCase;
 
@@ -10,8 +9,6 @@ use Cake\TestSuite\TestCase;
  */
 class TestFixtureFactoryTaskTest extends TestCase
 {
-    use ConsoleIntegrationTestTrait;
-
     /**
      * ConsoleIo mock
      *
