@@ -14,7 +14,7 @@ jobs:
         run: composer validate
 
       - name: Install lowest dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --prefer-lowest --prefer-stable
+        run: composer update --prefer-dist --no-progress --no-suggest --prefer-lowest --prefer-stable
 
       - name: Run test suite
         run: composer run-tests
