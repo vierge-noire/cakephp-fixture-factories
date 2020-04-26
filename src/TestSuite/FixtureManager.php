@@ -48,30 +48,6 @@ class FixtureManager extends BaseFixtureManager
     }
 
     /**
-     * @param string $connectionName
-     * @deprecated
-     */
-    private function truncateDirtyTablesUsingCount(string $connectionName)
-    {
-        // not fully implemented as truncateDirtyTables seem sufficient
-        $connection = $this->getConnection($connectionName);
-        $databaseName = $connection->config()['database'];
-        $tables = $connection->getSchemaCollection()->listTables();
-        $tables = array_filter($tables, function ($table) {
-            if (strpos($table, 'phinxlog') !== false) {
-                return false;
-            }
-            return true;
-        });
-        $truncateStatement = null;
-        foreach ($tables as $table) {
-            $truncateStatement .= "SELECT '$table' AS table_name, COUNT(*) AS count FROM $databaseName.$table HAVING count > 0 UNION ";
-        }
-        $res = $connection->execute($truncateStatement);
-        debug($res->fetchAll());
-    }
-
-    /**
      * Truncate tables that are reported dirty by the database behind the given connection name
      * This is much faster than truncating all the tables for large databases
      * Currently, only an implementation supporting Mysql and MariaDB is supported
@@ -141,32 +117,5 @@ class FixtureManager extends BaseFixtureManager
             }
             $connection->execute('pragma foreign_keys = on;');
         });
-    }
-
-    /**
-     * Truncate all tables for the given connection name
-     * @deprecated
-     */
-    private function truncateAllTables(string $connectionName)
-    {
-        $tables = $this->getConnection($connectionName)->getSchemaCollection()->listTables();
-
-        foreach ($tables as $i => $table) {
-            if (strpos($table, 'phinxlog') !== false) {
-                unset($tables[$i]);
-            }
-        }
-
-        if (!empty($tables)) {
-            $start = microtime(true);
-            $this->getConnection($connectionName)->execute(
-                "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `",
-                    $tables) . "`; SET FOREIGN_KEY_CHECKS=1;"
-            );
-            debug("SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `",
-                    $tables) . "`; SET FOREIGN_KEY_CHECKS=1;");
-            $time_elapsed_secs = microtime(true) - $start;
-            debug("elapsed time : $time_elapsed_secs");
-        }
     }
 }
