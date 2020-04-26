@@ -1,3 +1,5 @@
 /vendor/
 tmp/
 .idea
+composer.lock
+**/test_fixture_factories

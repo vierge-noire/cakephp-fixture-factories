@@ -46,3 +46,20 @@ Make sure you inject the fixture manager inside your phpunit xml config file
 Between each test, The fixture manager will truncate all the test tables that have been used during the previous test
 
 All the test tables are truncated before each test.
+
+###BaseFactory
+
+The BaseFactory class relies behind the scene on the Marshaller to create entities from arrays.
+Have a look at the cakephp doc below to get a an overview on how to define associated data in your array.
+It is important to understand this in order to know how to define your data arrays
+
+https://book.cakephp.org/3.next/en/orm/saving-data.html#converting-request-data-into-entities
+
+###Running the tests
+
+Create a database called 'test_fixture_factories' like described in the tests/bootstrap.php.
+To access the database, make sure the following credentials are working
+Username should be : root
+Password should be : vagrant
+
+The migrations are run eaach time the Applicatio bootstraps so you shouldn't worry about that.

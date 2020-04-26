@@ -1,5 +1,5 @@
 {
-    "name": "bprojects/test-fixture-factories",
+    "name": "pakacuda/cakephp-fixture-factories",
     "description": "An alternative to the CakePHP fixture approach",
     "authors": [
         {
@@ -8,18 +8,33 @@
         },
         {
             "name": "Juan Pablo Ramìrez",
-            "email": "pablo@b-projects.tech"
+            "email": "pabloelcolombiano@gmail.com"
         }
     ],
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.0.0",
-        "cakephp/cakephp": ">=3.6",
-        "cakephp/migrations": "^2.3"
+        "cakephp/cakephp": "3.6",
+        "cakephp/migrations": "^2.3",
+        "fzaninotto/faker": "^1.9@dev"
+    },
+    "require-dev": {
+        "cakephp/bake": "^1.5",
+        "phpunit/phpunit": "^5.7|^6.0"
     },
     "autoload": {
         "psr-4": {
             "TestFixtureFactories\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TestFixtureFactories\\Test\\": "tests",
+            "TestApp\\": "tests/TestApp/src",
+            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src"
+        }
+    },
+    "scripts": {
+        "run-tests": "./vendor/bin/phpunit"
     }
 }

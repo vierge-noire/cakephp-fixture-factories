@@ -1,0 +1,69 @@
+<?php
+/**
+ *
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author        Juan Pablo Ramirez
+ * @author        Nicolas Masson
+ * @link          https://github.com/pakacuda/cakephp-fixture-factories
+ * @since         1.0.0
+ * @license       https://opensource.org/licenses/mit-license.php MIT License
+ */
+namespace {{ namespace }};
+
+use TestFixtureFactories\Factory\BaseFactory as CakephpBaseFactory;
+
+/**
+ * {{ factory }}
+ */
+class {{ factory }} extends CakephpBaseFactory
+{
+    /**
+     * Defines the name of the Table Registry used to create this Factory
+     * @return string
+     */
+    protected function getRootTableRegistryName() : string
+    {
+        return '{{ rootTableRegistryName }}';
+    }
+
+    /**
+     * Defines the default values of you factory. Usefull for
+     * not nullable fields. You may use methods of the factory here
+     * @return self
+     */
+    protected function setDefaultTemplate()
+    {
+        return $this->patchData([
+            // set default values here
+        ]);
+    }
+
+{% for association, associationFactory in toOne %}
+    /**
+     * @param array $parameter
+     * @return self
+     */
+    public function with{{ association }}(array $parameter = null)
+    {
+        return $this->with('{{ association }}', {{ associationFactory }}::make($parameter));
+    }
+
+{% endfor %}
+{% for association, associationFactory in toMany %}
+    /**
+    * @param array $parameter
+    * @param int $n
+    * @return {{ factory }}
+    */
+    public function with{{ association }}(array $parameter = null, int $n = 1)
+    {
+        return $this->with('{{ association }}', {{ associationFactory }}::make($parameter, $n)->without('{{ factoryEntity }}'));
+    }
+
+{% endfor %}
+}
