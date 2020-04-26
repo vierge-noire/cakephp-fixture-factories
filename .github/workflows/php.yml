@@ -17,10 +17,10 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest --prefer-lowest --prefer-stable
 
       - name: Run test suite
-        run: vendor/bin/phpunit
+        run: composer run-tests
 
       - name: Install highest dependencies
-          run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
+        run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
 
       - name: Run test suite
         run: composer run-tests
