@@ -68,12 +68,6 @@ abstract class BaseFactory
         'checkExisting' => false
     ];
     /**
-     * hasMany Associations are saved after the main entity
-     *
-     * @var array
-     */
-    protected $hasManyData = [];
-    /**
      * The number of records the factory should create
      *
      * @var int
@@ -110,9 +104,9 @@ abstract class BaseFactory
     abstract protected function getRootTableRegistryName(): string;
 
     /**
-     * @return self
+     * @return void
      */
-    abstract protected function setDefaultTemplate();
+    abstract protected function setDefaultTemplate(): void;
 
     /**
      * @param array|callable|null $data
@@ -172,7 +166,7 @@ abstract class BaseFactory
     {
         if (is_null(self::$faker)) {
             $faker = Factory::create();
-            $faker->seed(1234);
+            $faker->seed();
             self::$faker = $faker;
         }
 
@@ -326,13 +320,6 @@ abstract class BaseFactory
         }
 
         $this->rootTable->saveOrFail($entity, $this->getSaveOptions());
-
-        if (count($this->hasManyData) > 0) {
-            foreach ($this->hasManyData as $association => $data) {
-                $entity->{$association} = $data;
-            }
-            $this->rootTable->saveOrFail($entity, $this->getSaveOptions());
-        }
         return $entity;
     }
 
@@ -392,11 +379,11 @@ abstract class BaseFactory
     {
         $association = $this->getTable()->getAssociation($associationName);
         if ($association instanceof HasOne || $association instanceof BelongsTo) {
-            return $this->withOne($association->getProperty(), $factory);
+            return $this->withOne(Inflector::underscore($association->getName()), $factory);
         }
 
         if ($association instanceof HasMany || $association instanceof BelongsToMany) {
-            return $this->withMany($association->getProperty(), $factory);
+            return $this->withMany(Inflector::underscore($association->getName()), $factory);
         }
 
         throw new InvalidArgumentException("Unknown association type $association on table {$this->getTable()}");

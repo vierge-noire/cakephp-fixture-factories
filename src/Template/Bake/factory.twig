@@ -35,12 +35,12 @@ class {{ factory }} extends CakephpBaseFactory
     /**
      * Defines the default values of you factory. Usefull for
      * not nullable fields. You may use methods of the factory here
-     * @return self
+     * @return void
      */
     protected function setDefaultTemplate()
     {
-     return $this->setDefaultData(function(Generator $faker) {
-        return [
+        $this->setDefaultData(function(Generator $faker) {
+            return [
                 // set the model's default values
                 // For example:
                 // 'name' => $faker->lastName
