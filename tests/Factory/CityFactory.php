@@ -12,15 +12,14 @@ class CityFactory extends BaseFactory
         return 'cities';
     }
 
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
-        return $this
-            ->setDefaultData(function(Generator $faker) {
-                return [
-                    'name' => $faker->city,
-                ];
-            })
-            ->withCountry();
+        $this->setDefaultData(function(Generator $faker) {
+            return [
+                'name' => $faker->city,
+            ];
+        })
+        ->withCountry();
     }
 
     public function withCountry($parameter = null)

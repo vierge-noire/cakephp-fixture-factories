@@ -12,13 +12,15 @@ class AddressFactory extends BaseFactory
         return 'addresses';
     }
 
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
-        return $this->setDefaultData(function(Generator $faker) {
-            return [
-                'street' => $faker->streetAddress,
-            ];
-        })->withCity();
+        $this
+            ->setDefaultData(function(Generator $faker) {
+                return [
+                    'street' => $faker->streetAddress,
+                ];
+            })
+            ->withCity();
     }
 
     public function withCity($parameter = null)

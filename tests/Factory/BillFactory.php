@@ -12,16 +12,15 @@ class BillFactory extends BaseFactory
         return 'TestPlugin.Bills';
     }
 
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
-        return $this
-            ->setDefaultData(function(Generator $faker) {
-                return [
-                    'amount' => $faker->numberBetween(0, 1000),
-                ];
-            })
-            ->withArticle()
-            ->withCustomer();
+        $this->setDefaultData(function(Generator $faker) {
+            return [
+                'amount' => $faker->numberBetween(0, 1000),
+            ];
+        })
+        ->withArticle()
+        ->withCustomer();
     }
 
     public function withArticle($parameter = null)

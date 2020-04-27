@@ -7,7 +7,7 @@ use TestFixtureFactories\Factory\BaseFactory;
 
 class ArticleWithFiveBillsFactory extends ArticleFactory
 {
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
         $this
             ->setDefaultData(function (Generator $faker) {
@@ -17,6 +17,6 @@ class ArticleWithFiveBillsFactory extends ArticleFactory
             })
             ->withBills(null, 5);
 
-        return parent::setDefaultTemplate();
+        parent::setDefaultTemplate();
     }
 }

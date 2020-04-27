@@ -12,13 +12,12 @@ class CountryFactory extends BaseFactory
         return 'countries';
     }
 
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
-        return $this
-            ->setDefaultData(function(Generator $faker) {
-                return [
-                    'name' => $faker->country,
-                ];
-            });
+        $this->setDefaultData(function(Generator $faker) {
+            return [
+                'name' => $faker->country,
+            ];
+        });
     }
 }

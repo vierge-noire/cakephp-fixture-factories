@@ -12,14 +12,13 @@ class CustomerFactory extends BaseFactory
         return 'TestPlugin.Customers';
     }
 
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
-        return $this
-            ->setDefaultData(function(Generator $faker) {
-                return [
-                    'name' => $faker->lastName,
-                ];
-            });
+        $this->setDefaultData(function(Generator $faker) {
+            return [
+                'name' => $faker->lastName,
+            ];
+        });
     }
 
     public function withBills($parameter = null, $n = 1)

@@ -12,9 +12,9 @@ class AuthorFactory extends BaseFactory
         return "authors";
     }
 
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
-        return $this
+        $this
             ->setDefaultData(function (Generator $faker) {
                 return [
                     'name' => $faker->name
