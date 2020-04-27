@@ -2,6 +2,7 @@
 
 namespace TestFixtureFactories\Test\Factory;
 
+use Faker\Generator;
 use TestFixtureFactories\Factory\BaseFactory;
 
 class AddressFactory extends BaseFactory
@@ -13,9 +14,11 @@ class AddressFactory extends BaseFactory
 
     protected function setDefaultTemplate()
     {
-        return $this->patchData([
-            'street' => $this->getFaker()->streetAddress,
-        ])->withCity();
+        return $this->setDefaultData(function(Generator $faker) {
+            return [
+                'street' => $faker->streetAddress,
+            ];
+        })->withCity();
     }
 
     public function withCity($parameter = null)

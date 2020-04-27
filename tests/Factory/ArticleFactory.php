@@ -2,24 +2,35 @@
 
 namespace TestFixtureFactories\Test\Factory;
 
+use Faker\Generator;
 use TestFixtureFactories\Factory\BaseFactory;
 
 class ArticleFactory extends BaseFactory
 {
+    /**
+     * Defines the Table Registry used to generate entities with
+     * @return string
+     */
     protected function getRootTableRegistryName(): string
     {
         return "Articles";
     }
 
     /**
+     * Defines the default values of you factory. Useful for
+     * not nullable fields.
+     * Use the patchData method to set the field values.
+     * You may use methods of the factory here
      * @return self
      */
     protected function setDefaultTemplate()
     {
         return $this
-            ->patchData([
-                'title' => $this->getFaker()->jobTitle
-            ])
+            ->setDefaultData(function(Generator $faker) {
+                return [
+                    'title' => $faker->lastName
+                ];
+            })
             ->withAuthors();
     }
 
@@ -61,5 +72,16 @@ class ArticleFactory extends BaseFactory
     public function withTitle(string $title)
     {
         return $this->patchData(compact('title'));
+    }
+
+    /**
+     * Set the Article's title as a random job title
+     * @return ArticleFactory
+     */
+    public function setJobTitle()
+    {
+        return $this->patchData([
+            'title' => $this->getFaker()->jobTitle,
+        ]);
     }
 }

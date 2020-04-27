@@ -3,6 +3,7 @@
 namespace TestFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
+use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
@@ -33,6 +34,8 @@ abstract class BaseFactory
     const WITH_ARRAY = 'WITH_ARRAY';
     const FROM_ARRAY = 'FROM_ARRAY';
     const FROM_CALLABLE = 'FROM_CALLABLE';
+    const FROM_PATCH = 'FROM_PATCH';
+    const FROM_DEFAULT = 'FROM_DEFAULT';
     /**
      * @var Generator
      */
@@ -71,15 +74,6 @@ abstract class BaseFactory
      */
     protected $hasManyData = [];
     /**
-     * The reviewableBehavior is removed in the __construct if present.
-     * Factories aim at seeding the DB. The Reviewable Behavior makes that seeding very complex.
-     * This could be a temporary solution.
-     * The behavior needs to be added after the entity has been generated.
-     *
-     * @var array
-     */
-    protected $reviewableBehaviorConfig;
-    /**
      * The number of records the factory should create
      *
      * @var int
@@ -106,13 +100,7 @@ abstract class BaseFactory
      */
     protected function __construct()
     {
-//        $this->data = $data;
-//        $this->marshallerOptions = array_merge($this->marshallerOptions, $options);
         $this->rootTable = FactoryTableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
-        if ($this->rootTable->hasBehavior('Reviewable')) {
-            $this->reviewableBehaviorConfig = $this->rootTable->getBehavior('Reviewable')->getConfig();
-            $this->rootTable->removeBehavior('Reviewable');
-        }
     }
 
     /**
@@ -157,7 +145,7 @@ abstract class BaseFactory
         $factory = new static();
         $factory->times = $times;
         $factory->setDefaultTemplate();
-        $factory->patchData($data);
+        $factory->templateData[self::FROM_ARRAY] = $data;
 
         return $factory;
     }
@@ -272,6 +260,18 @@ abstract class BaseFactory
                 $callable = $data;
                 $this->compiledTemplateData = array_merge($this->compiledTemplateData, $callable($this, $this->getFaker()));
             }
+
+            $isFromDefault = $propertyName === self::FROM_DEFAULT;
+            if ($isFromDefault) {
+                $callable = $data;
+                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $callable($this->getFaker()));
+            }
+
+            $isFromPatch = $propertyName === self::FROM_PATCH;
+            if ($isFromPatch) {
+                $array = $data;
+                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $array);
+            }
         }
 
         return $this->compiledTemplateData;
@@ -279,7 +279,7 @@ abstract class BaseFactory
 
     /**
      * @param string $propertyName
-     * @return bool
+     * @return bool|Association
      */
     private function getAssociationByPropertyName(string $propertyName)
     {
@@ -297,6 +297,7 @@ abstract class BaseFactory
 
     public function persist()
     {
+        $this->data = [];
         for ($i = 0; $i < $this->times; $i++) {
             $this->data[] = $this->compileTemplateData();
         }
@@ -332,10 +333,6 @@ abstract class BaseFactory
             }
             $this->rootTable->saveOrFail($entity, $this->getSaveOptions());
         }
-
-        if (!$this->rootTable->hasBehavior('Reviewable') && $this->reviewableBehaviorConfig) {
-            $this->rootTable->addBehavior('Datareview.Reviewable', $this->reviewableBehaviorConfig);
-        }
         return $entity;
     }
 
@@ -365,13 +362,29 @@ abstract class BaseFactory
     }
 
     /**
-     * Populate the entity factored
+     * Assigns the values of $data to the $keys of the entities generated
      * @param array $data
      * @return $this
      */
-    protected function patchData(array $data)
+    public function patchData(array $data)
     {
-        $this->templateData[self::FROM_ARRAY] = array_merge($this->templateData[self::FROM_ARRAY] ?? [], $data);
+        if (isset($this->templateData[self::FROM_PATCH])) {
+            $this->templateData[self::FROM_PATCH] = array_merge($this->templateData[self::FROM_PATCH], $data);
+        } else {
+            $this->templateData[self::FROM_PATCH] = $data;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Populate the entity factored
+     * @param callable $fn
+     * @return $this
+     */
+    protected function setDefaultData(callable $fn)
+    {
+        $this->templateData['FROM_DEFAULT'] = $fn;
         return $this;
     }
 

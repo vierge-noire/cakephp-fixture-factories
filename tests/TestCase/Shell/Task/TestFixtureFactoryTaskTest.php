@@ -159,4 +159,9 @@ class TestFixtureFactoryTaskTest extends TestCase
             $this->FactoryTask->getFactoryNamespace()
         );
     }
+
+    public function testBakeUnexistingTable()
+    {
+        $this->assertFalse($this->FactoryTask->setTable('oups'));
+    }
 }

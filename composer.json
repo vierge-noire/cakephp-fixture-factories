@@ -1,6 +1,6 @@
 {
     "name": "pakacuda/cakephp-fixture-factories",
-    "description": "An alternative to the CakePHP fixture approach",
+    "description": "An alternative to the CakePHP test fixtures approach",
     "authors": [
         {
             "name": "Nicolas Masson",
@@ -11,6 +11,7 @@
             "email": "pabloelcolombiano@gmail.com"
         }
     ],
+    "license": "MIT",
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.0.0",
@@ -36,5 +37,8 @@
     },
     "scripts": {
         "run-tests": "./vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true
     }
 }

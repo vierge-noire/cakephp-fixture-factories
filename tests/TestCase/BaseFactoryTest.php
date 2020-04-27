@@ -194,13 +194,13 @@ class BaseFactoryTest extends TestCase
 
     public function testMakeSingleWithArray()
     {
-        $entity = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
+        $article = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
                 'title' => $faker->sentence
             ];
         })->persist();
 
-        $this->assertSame(true, $entity instanceof Article);
+        $this->assertSame(true, $article instanceof Article);
     }
 
     public function testMakeSingleWithArrayWithSubFactory()

@@ -54,7 +54,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
     /**
      * @param string $tableName
-     * @return self
+     * @return $this|bool
      */
     public function setTable(string $tableName)
     {
@@ -62,6 +62,12 @@ class TestFixtureFactoryTask extends SimpleBakeTask
             $tableName = $this->plugin . ".$tableName";
         }
         $this->table = TableRegistry::getTableLocator()->get($tableName);
+        try {
+            $this->table->getSchema();
+        } catch (\Exception $e) {
+            $this->err($e->getMessage());
+            return false;
+        }
         return $this;
     }
 
@@ -137,8 +143,8 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      */
     public function main($model = null)
     {
-        if (isset($this->params['plugin'])) {
-            $parts = explode('/', $this->params['plugin']);
+        if ($this->param('plugin')) {
+            $parts = explode('/', $this->param('plugin'));
             $this->plugin = implode('/', array_map([$this, '_camelize'], $parts));
             if (strpos($this->plugin, '\\')) {
                 $this->abort('Invalid plugin namespace separator, please use / instead of \ for plugins.');
@@ -174,13 +180,11 @@ class TestFixtureFactoryTask extends SimpleBakeTask
             return $this->bakeAllModels();
         }
 
-        $this->setTable($modelName);
-
-        $this->handleFactoryWithSameName($modelName);
-
-        $this->setViewVars($modelName);
-
-        return parent::bake($modelName);
+        if ($this->setTable($modelName)) {
+            $this->handleFactoryWithSameName($modelName);
+            $this->setViewVars($modelName);
+            return parent::bake($modelName);
+        }
     }
 
     /**
@@ -319,9 +323,10 @@ class TestFixtureFactoryTask extends SimpleBakeTask
         $parser->setDescription(
             'Bake factory class.'
         )
-            ->addArgument('factory', [
-                'help' => 'Name of the factory to bake (singular, without the `Factory` suffix). ' .
-                    'You can use Plugin.name to bake plugin factories.',
+            ->addArgument('model', [
+                'help' => 'Name of the model the factory will create entities from (plural, without the `Table` suffix). '.
+                    'You can use the Foo.Bars notation to bake a factory for the model Bars located in the plugin Foo. \n
+                    Factories are located in the folder test\Factory of your app, resp. plugin.',
             ])
             ->addOption('plugin', [
                 'short' => 'p',
@@ -340,7 +345,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
             ->addOption('methods', [
                 'short' => 'm',
                 'boolean' => true,
-                'help' => 'Include methods based on the table relations',
+                'help' => 'Include methods based on the table relations.',
             ]);
 
         return $parser;

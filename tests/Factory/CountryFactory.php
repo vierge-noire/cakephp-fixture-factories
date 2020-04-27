@@ -2,6 +2,7 @@
 
 namespace TestFixtureFactories\Test\Factory;
 
+use Faker\Generator;
 use TestFixtureFactories\Factory\BaseFactory;
 
 class CountryFactory extends BaseFactory
@@ -14,8 +15,10 @@ class CountryFactory extends BaseFactory
     protected function setDefaultTemplate()
     {
         return $this
-            ->patchData([
-                'name' => $this->getFaker()->country
-            ]);
+            ->setDefaultData(function(Generator $faker) {
+                return [
+                    'name' => $faker->country,
+                ];
+            });
     }
 }

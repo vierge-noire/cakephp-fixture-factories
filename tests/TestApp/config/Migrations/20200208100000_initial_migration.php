@@ -12,6 +12,10 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => false,
             ])
+            ->addColumn('biography', 'text', [
+                'null' => true,
+                'default' => 'empty',
+            ])
             ->addColumn('address_id', 'integer', [
                 'limit' => 11,
                 'null' => false,

@@ -2,6 +2,7 @@
 
 namespace TestFixtureFactories\Test\Factory;
 
+use Faker\Generator;
 use TestFixtureFactories\Factory\BaseFactory;
 
 class CustomerFactory extends BaseFactory
@@ -14,9 +15,11 @@ class CustomerFactory extends BaseFactory
     protected function setDefaultTemplate()
     {
         return $this
-            ->patchData([
-                'name' => $this->getFaker()->lastName
-            ]);
+            ->setDefaultData(function(Generator $faker) {
+                return [
+                    'name' => $faker->lastName,
+                ];
+            });
     }
 
     public function withBills($parameter = null, $n = 1)

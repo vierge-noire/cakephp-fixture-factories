@@ -2,6 +2,7 @@
 
 namespace TestFixtureFactories\Test\Factory;
 
+use Faker\Generator;
 use TestFixtureFactories\Factory\BaseFactory;
 
 class BillFactory extends BaseFactory
@@ -14,9 +15,11 @@ class BillFactory extends BaseFactory
     protected function setDefaultTemplate()
     {
         return $this
-            ->patchData([
-                'amount' => $this->getFaker()->numberBetween(0, 1000)
-            ])
+            ->setDefaultData(function(Generator $faker) {
+                return [
+                    'amount' => $faker->numberBetween(0, 1000),
+                ];
+            })
             ->withArticle()
             ->withCustomer();
     }
