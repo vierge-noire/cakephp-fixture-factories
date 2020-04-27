@@ -30,6 +30,6 @@ class BillFactory extends BaseFactory
 
     public function withCustomer($parameter = null)
     {
-        return $this->with('customer', CustomerFactory::make($parameter));
+        return $this->with('Customer', CustomerFactory::make($parameter));
     }
 }

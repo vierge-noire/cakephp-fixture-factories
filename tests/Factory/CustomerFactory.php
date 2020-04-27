@@ -23,11 +23,11 @@ class CustomerFactory extends BaseFactory
 
     public function withBills($parameter = null, $n = 1)
     {
-        return $this->with('bills', BillFactory::make($parameter, $n)->without('customer'));
+        return $this->with('Bills', BillFactory::make($parameter, $n)->without('customer'));
     }
 
     public function withAddress($parameter = null)
     {
-        return $this->with('address', AddressFactory::make($parameter));
+        return $this->with('Address', AddressFactory::make($parameter));
     }
 }
