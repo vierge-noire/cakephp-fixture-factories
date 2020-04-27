@@ -37,9 +37,9 @@ The fixtures will be created in the test database as defined in your [configurat
 
 Afther the modifications above, the traditional [CakePHP test fixtures](https://book.cakephp.org/4/en/development/testing.html#fixtures) will be ignored.  
 
-## Creating factories
+## Bulding factories
 
-###The bake command
+### Bake command
 
 We recommand you to use the bake command in order prepare your factories. In order to do so, simply load the `TestFixtureFactories` plugin 
 by adding `$this->addPlugin('TestFixtureFactories');` in your `Application.php` bootstrap method, idealy right after loading the `Bake` plugin.
@@ -51,7 +51,7 @@ bin/cake test_fixture_factory -h
 will assist you. You have the possiblity to bake factories for all (`-a`) your models. You may also include building methods (`-m`)
 based on the associations defined in your models.
 
-###The factory
+### Factory
 A factory is a class that extends the `TestFixtureFactories\Factory`. It should implement the following two methods:
 * `getRootTableRegistryName()`  which indicates the model that the factory will use to buld its fixtures;
 * `setDefaultTemplate()`  which sets the default configuration of each entity created by the factory.
@@ -114,8 +114,9 @@ class ArticleFactory extends BaseFactory
 ```
 You may add any methods to help you build efficient and reusable test features.
 
-##Creating test features
-###Validation / Behaviors
+## Creating test features
+
+### Validation / Behaviors
 With the aim of persisting data in the database as simply as possible, all behaviors (except Timestamp) and all validations
 are deactivated when creating CakePHP entities and persisting them to the database. Validation may be reactivated / customized by overwriting
  `$marshallerOptions` and `$saveOptions` in the factory concerned.
@@ -152,10 +153,10 @@ use App\Test\Factory\ArticleFactory;
 use Faker\Generator;
 ...
 $articles = ArticleFactory::make(function(ArticleFactory $factory, Generator $faker) {
-           return [
-               'title' => $faker->text,
-           ];
-        }, 3)->persist();
+   return [
+       'title' => $faker->text,
+   ];
+}, 3)->persist();
 ```
 
 ### Chaining methods
@@ -179,7 +180,9 @@ $articleJobOffer = $articleFactory->setJobTitle()->persist();
  has been inserted in the factories. This will assist you creating fixtures for the associated models. For example, we can 
  create an article with 10 authors as follow:
  ```
+use App\Test\Factory\ArticleFactory;
 use App\Test\Factory\AuthorFactory;
+use Faker\Generator;
 ...
  $article = ArticleFactory::make()->with('authors', AuthorFactory::make(null, 10))->persist();
 ```
