@@ -134,7 +134,12 @@ abstract class BaseFactory
         throw new InvalidArgumentException("make only accepts null, an array or a callable as the first parameter");
     }
 
-    public static function makeFromArray(array $data, $times = 1)
+    /**
+     * @param array $data
+     * @param int $times
+     * @return static
+     */
+    public static function makeFromArray(array $data, $times = 1): BaseFactory
     {
         $factory = new static();
         $factory->times = $times;
@@ -144,7 +149,12 @@ abstract class BaseFactory
         return $factory;
     }
 
-    public static function makeFromCallable(callable $fn, $times = 1)
+    /**
+     * @param callable $fn
+     * @param int $times
+     * @return static
+     */
+    public static function makeFromCallable(callable $fn, $times = 1): BaseFactory
     {
         $factory = new static();
         $factory->times = $times;
@@ -176,7 +186,7 @@ abstract class BaseFactory
     /**
      * @return EntityInterface
      */
-    public function getEntity()
+    public function getEntity(): EntityInterface
     {
         if ($this->times > 1) {
             throw new RuntimeException("Cannot call getEntity on a factory with {$this->times} records");
@@ -186,24 +196,36 @@ abstract class BaseFactory
         return $this->rootTable->newEntity($data[0], $this->getMarshallerOptions());
     }
 
-    private function getMarshallerOptions()
+    /**
+     * @return array
+     */
+    private function getMarshallerOptions(): array
     {
         return array_merge($this->marshallerOptions, [
             'associated' => $this->getAssociated()
         ]);
     }
 
-    public function getAssociated()
+    /**
+     * @return array
+     */
+    public function getAssociated(): array
     {
         return $this->associated;
     }
 
+    /**
+     * @return array|EntityInterface[]
+     */
     public function toEntities()
     {
         return $this->rootTable->newEntities($this->toArray(), $this->getMarshallerOptions());
     }
 
-    public function toArray()
+    /**
+     * @return array
+     */
+    public function toArray(): array
     {
         $this->data = [];
         for ($i = 0; $i < $this->times; $i++) {
@@ -217,7 +239,7 @@ abstract class BaseFactory
      * Populate the factored entity
      * @return array
      */
-    private function compileTemplateData()
+    private function compileTemplateData(): array
     {
         $this->compiledTemplateData = [];
 
@@ -284,11 +306,19 @@ abstract class BaseFactory
         }
     }
 
+    /**
+     * The table on which the factories are build
+     * @return Table
+     */
     public function getTable(): Table
     {
         return $this->rootTable;
     }
 
+    /**
+     * @return array|EntityInterface|EntityInterface[]|\Cake\Datasource\ResultSetInterface|false|null
+     * @throws \Exception
+     */
     public function persist()
     {
         $this->data = [];
@@ -302,8 +332,9 @@ abstract class BaseFactory
         }
     }
 
+
     /**
-     * @return EntityInterface
+     * @return array|EntityInterface|null
      */
     private function persistOne()
     {
@@ -323,13 +354,20 @@ abstract class BaseFactory
         return $entity;
     }
 
-    private function getSaveOptions()
+    /**
+     * @return array
+     */
+    private function getSaveOptions(): array
     {
         return array_merge($this->saveOptions, [
             'associated' => $this->getAssociated()
         ]);
     }
 
+    /**
+     * @return EntityInterface[]|\Cake\Datasource\ResultSetInterface|false
+     * @throws \Exception
+     */
     private function persistMany()
     {
         $entities = $this->rootTable->newEntities($this->data, $this->getMarshallerOptions());
@@ -341,7 +379,7 @@ abstract class BaseFactory
      * @return $this
      * @deprecated There is no need to directly use mergeData. This will become a private method in a future version.
      */
-    public function mergeData(array $data)
+    public function mergeData(array $data): self
     {
         $this->data = array_merge($this->data, $data);
 
@@ -353,7 +391,7 @@ abstract class BaseFactory
      * @param array $data
      * @return $this
      */
-    public function patchData(array $data)
+    public function patchData(array $data): self
     {
         if (isset($this->templateData[self::FROM_PATCH])) {
             $this->templateData[self::FROM_PATCH] = array_merge($this->templateData[self::FROM_PATCH], $data);
@@ -369,13 +407,18 @@ abstract class BaseFactory
      * @param callable $fn
      * @return $this
      */
-    protected function setDefaultData(callable $fn)
+    protected function setDefaultData(callable $fn): self
     {
         $this->templateData['FROM_DEFAULT'] = $fn;
         return $this;
     }
 
-    public function with(string $associationName, BaseFactory $factory)
+    /**
+     * @param string $associationName
+     * @param BaseFactory $factory
+     * @return $this
+     */
+    public function with(string $associationName, BaseFactory $factory): self
     {
         $association = $this->getTable()->getAssociation($associationName);
         if ($association instanceof HasOne || $association instanceof BelongsTo) {
@@ -439,20 +482,28 @@ abstract class BaseFactory
         return $this;
     }
 
-    private function withArray(callable $fn)
+    /**
+     * @param callable $fn
+     */
+    private function withArray(callable $fn): void
     {
         $this->templateData[self::WITH_ARRAY] = $fn;
     }
 
-    public function mergeAssociated($data)
+    /**
+     * @param $data
+     * @return $this
+     */
+    public function mergeAssociated($data): self
     {
         $this->associated = array_merge($this->associated, $data);
 
         return $this;
     }
 
+
     /**
-     * @return EntityInterface
+     * @return array|EntityInterface[]
      */
     public function getEntities()
     {
