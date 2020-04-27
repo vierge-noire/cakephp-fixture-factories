@@ -23,15 +23,14 @@ class ArticleFactory extends BaseFactory
      * You may use methods of the factory here
      * @return self
      */
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
-        return $this
-            ->setDefaultData(function(Generator $faker) {
-                return [
-                    'title' => $faker->lastName
-                ];
-            })
-            ->withAuthors();
+        $this->setDefaultData(function(Generator $faker) {
+            return [
+                'title' => $faker->lastName
+            ];
+        })
+        ->withAuthors();
     }
 
     public function withAuthors($parameter = null, int $n = 1): self

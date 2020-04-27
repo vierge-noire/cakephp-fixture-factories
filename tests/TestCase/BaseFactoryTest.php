@@ -712,4 +712,11 @@ class BaseFactoryTest extends TestCase
         $article = ArticleFactory::make()->withBills()->without('bills')->getEntity();
         $this->assertNull($article->bills);
     }
+
+    public function testHandlingOfMultipleIdenticalWith()
+    {
+        AuthorFactory::make()->withAddress()->withAddress()->persist();
+
+        $this->assertEquals(1, TableRegistry::getTableLocator()->get('Addresses')->find()->count());
+    }
 }
