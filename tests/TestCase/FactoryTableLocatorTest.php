@@ -6,6 +6,7 @@ namespace TestFixtureFactories\Test\TestCase;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\I18n\FrozenTime;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
@@ -124,6 +125,6 @@ class FactoryTableLocatorTest extends TestCase
         $article = ArticleFactory::make(compact('title'))->persist();
 
         $article = TableRegistry::getTableLocator()->get('Articles')->get($article->id);
-        $this->assertInstanceOf(\DateTime::class, $article->created_at);
+        $this->assertInstanceOf(FrozenTime::class, $article->created_at);
     }
 }

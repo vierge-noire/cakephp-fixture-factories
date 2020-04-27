@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace TestApp\Model\Table;
 
@@ -10,7 +11,7 @@ class CountriesTable extends Table
 {
     const NAME_MAX_LENGTH = 100;
 
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         $this->addBehavior('Timestamp');
 
@@ -23,7 +24,7 @@ class CountriesTable extends Table
         parent::initialize($config);
     }
 
-    public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator): Validator
     {
         $validator->maxLength('name', self::NAME_MAX_LENGTH);
 

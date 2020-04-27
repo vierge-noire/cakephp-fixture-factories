@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace TestFixtureFactories\Shell\Task;
 
@@ -29,17 +29,17 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      */
     private $table;
 
-    public function name()
+    public function name(): string
     {
         return 'test_fixture_factory';
     }
 
-    public function fileName($modelName)
+    public function fileName(string $modelName): string
     {
         return $this->getFactoryNameFromModelName($modelName) . '.php';
     }
 
-    public function template()
+    public function template(): string
     {
         return 'TestFixtureFactories.factory';
     }
@@ -74,7 +74,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
     /**
      * {@inheritDoc}
      */
-    public function getPath()
+    public function getPath(): string
     {
         if (isset($this->plugin)) {
             $path = $this->_pluginPath($this->plugin) . $this->pathFragment;
@@ -141,7 +141,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      * @param string|null $model The name of the model to bake.
      * @return null|bool
      */
-    public function main($model = null)
+    public function main(?string $model = null): ?int
     {
         if ($this->param('plugin')) {
             $parts = explode('/', $this->param('plugin'));
@@ -174,7 +174,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
     /**
      * {@inheritDoc}
      */
-    public function bake($modelName)
+    public function bake(string $modelName): string
     {
         if ($modelName === 'all') {
             return $this->bakeAllModels();
@@ -190,10 +190,12 @@ class TestFixtureFactoryTask extends SimpleBakeTask
     /**
      * This is overwritten because it is incompatible
      * with the way the present factory bakes
-     * @return array|null
+     * @return array
      */
-    public function templateData()
-    {}
+    public function templateData(): array
+    {
+        return [];
+    }
 
     /**
      * Send view variables to the twig template
@@ -307,7 +309,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      *
      * @return \Cake\Console\ConsoleOptionParser
      */
-    public function getOptionParser()
+    public function getOptionParser(): ConsoleOptionParser
     {
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
         $parser = new ConsoleOptionParser($name);

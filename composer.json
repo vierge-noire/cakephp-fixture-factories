@@ -14,14 +14,14 @@
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.0.0",
-        "cakephp/cakephp": "^3.7",
-        "cakephp/migrations": "^2.3",
+        "php": ">=7.1",
+        "cakephp/cakephp": "^4.0",
+        "cakephp/migrations": "^3.0",
         "fzaninotto/faker": "^1.9@dev"
     },
     "require-dev": {
-        "cakephp/bake": "^1.5",
-        "phpunit/phpunit": "^6.1"
+        "cakephp/bake": "^2.0",
+        "phpunit/phpunit": "^8.0"
     },
     "autoload": {
         "psr-4": {
