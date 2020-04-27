@@ -13,7 +13,7 @@ It is mainly composed of the following classes
 ## Installation
 
 ```
-    composer require-dev pakacuda/cakephp-fixture-factories
+    composer require --dev pakacuda/cakephp-fixture-factories
 ```
 
 Make sure you inject the fixture manager inside your `phpunit.xml` config file, per default located in the root folder of your application:
@@ -23,7 +23,7 @@ Make sure you inject the fixture manager inside your `phpunit.xml` config file, 
      <listeners>
          <listener class="TestFixtureFactories\TestSuite\FixtureInjector">
              <arguments>
-                 <object class="estFixtureFactories\TestSuite\FixtureManager" />
+                 <object class="TestFixtureFactories\TestSuite\FixtureManager" />
              </arguments>
          </listener>
      </listeners>
