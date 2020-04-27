@@ -3,3 +3,4 @@ tmp/
 .idea
 composer.lock
 **/test_fixture_factories
+.phpunit.result.cache
