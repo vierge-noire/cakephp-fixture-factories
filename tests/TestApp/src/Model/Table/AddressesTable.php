@@ -11,10 +11,12 @@ class AddressesTable extends Table
         $this->addBehavior('Timestamp');
 
         $this->addAssociations([
-            'belongsTo' => [
+            'hasMany' => [
                 'Author' => [
                     'className' => 'Authors'
                 ],
+            ],
+            'belongsTo' => [
                 'City' => [
                     'className' => 'Cities'
                 ]
