@@ -9,7 +9,7 @@ class CityFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return 'cities';
+        return 'Cities';
     }
 
     protected function setDefaultTemplate(): void
