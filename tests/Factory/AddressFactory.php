@@ -9,7 +9,7 @@ class AddressFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return 'addresses';
+        return 'Addresses';
     }
 
     protected function setDefaultTemplate(): void

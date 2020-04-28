@@ -9,7 +9,7 @@ class AuthorFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return "authors";
+        return "Authors";
     }
 
     protected function setDefaultTemplate(): void

@@ -9,7 +9,7 @@ class CountryFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return 'countries';
+        return 'Countries';
     }
 
     protected function setDefaultTemplate(): void
