@@ -32,7 +32,9 @@
         "psr-4": {
             "TestFixtureFactories\\Test\\": "tests",
             "TestApp\\": "tests/TestApp/src",
-            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src"
+            "TestApp\\Test\\": "tests/TestApp/tests",
+            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src",
+            "TestPlugin\\Test\\": "tests/TestApp/plugins/TestPlugin/tests"
         }
     },
     "scripts": {

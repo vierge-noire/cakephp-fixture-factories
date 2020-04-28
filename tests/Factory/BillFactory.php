@@ -25,7 +25,7 @@ class BillFactory extends BaseFactory
 
     public function withArticle($parameter = null)
     {
-        return $this->with('article', ArticleFactory::make($parameter));
+        return $this->with('Article', ArticleFactory::make($parameter));
     }
 
     public function withCustomer($parameter = null)

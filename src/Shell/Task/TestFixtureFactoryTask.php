@@ -19,11 +19,11 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      *
      * @var string
      */
-    public $pathFragment = 'tests/Factory/';
+    public $pathFragment = 'tests' . DS . 'Factory' . DS;
     /**
      * @var string path to the Table dir
      */
-    public $pathToTableDir = 'src/Model/Table/';
+    public $pathToTableDir = 'Model' . DS . 'Table' . DS;
     /**
      * @var string
      */
@@ -45,7 +45,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
     public function template(): string
     {
-        return 'TestFixtureFactories.factory';
+        return 'test_fixture_factory';
     }
 
     /**
@@ -83,7 +83,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
         if (isset($this->plugin)) {
             $path = $this->_pluginPath($this->plugin) . $this->pathFragment;
         } else {
-            $path = ROOT . DS . $this->pathFragment;
+            $path = TESTS . 'Factory' . DS;
         }
 
         return str_replace('/', DS, $path);
@@ -95,10 +95,11 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      */
     public function getModelPath()
     {
+
         if (isset($this->plugin)) {
-            $path = $this->_pluginPath($this->plugin) . $this->pathToTableDir;
+            $path = $this->_pluginPath($this->plugin) . APP_DIR . DS . $this->pathToTableDir;
         } else {
-            $path = ROOT . DS . $this->pathToTableDir;
+            $path = APP . $this->pathToTableDir;
         }
 
         return str_replace('/', DS, $path);
@@ -192,21 +193,20 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
         if ($this->setTable($modelName)) {
             $this->handleFactoryWithSameName($modelName);
-            return parent::bake($modelName);
+             return parent::bake($modelName);
         } else {
             return "$modelName not found...";
         }
     }
 
     /**
-     * This is overwritten because it is incompatible
-     * with the way the present factory bakes
+     * Send variables to the view
      * @return array
      */
     public function templateData(): array
     {
         $data = [
-            'rootTableRegistryName' => $this->modelName,
+            'rootTableRegistryName' => $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName,
             'factoryEntity' => Inflector::singularize($this->modelName),
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace(),

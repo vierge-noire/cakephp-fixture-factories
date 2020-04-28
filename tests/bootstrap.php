@@ -26,9 +26,11 @@ if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
 define('ROOT', dirname(__DIR__));
-define('APP_DIR', 'TestApp');
+define('APP_DIR', 'src');
 define('APP_PATH', ROOT . DS . 'TestApp' . DS);
 define('VENDOR_PATH', ROOT . DS . 'vendor' . DS);
+define('TEMPLATE_PATH_CAKE_4', ROOT . DS . 'templates' . DS);
+define('TEMPLATE_PATH_CAKE_3', ROOT . DS . APP_DIR . DS . 'Template' . DS);
 
 define('TMP', ROOT . DS . 'tmp' . DS);
 define('LOGS', TMP . 'logs' . DS);
@@ -44,6 +46,7 @@ define('TEST_APP', CORE_TESTS . 'TestApp' . DS);
 
 // Point app constants to the test app.
 define('APP', TEST_APP . 'src' . DS);
+define('TESTS', TEST_APP . 'tests' . DS);
 define('WWW_ROOT', TEST_APP . 'webroot' . DS);
 define('CONFIG', TEST_APP . 'config' . DS);
 
@@ -75,7 +78,11 @@ Configure::write('App', [
     'cssBaseUrl' => 'css/',
     'paths' => [
         'plugins' => [TEST_APP . 'plugins' . DS],
-        'templates' => [TEST_APP . 'templates' . DS],
+        'templates' => [
+            TEST_APP . 'templates' . DS,
+            TEMPLATE_PATH_CAKE_4,
+            TEMPLATE_PATH_CAKE_3,
+        ],
         'locales' => [TEST_APP . 'resources' . DS . 'locales' . DS],
     ],
 ]);
