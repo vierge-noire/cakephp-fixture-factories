@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace TestFixtureFactories\TestSuite;
+namespace CakephpFixtureFactories\TestSuite;
 
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestSuite;
@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestSuite;
  * This class has to be used along the fixture factories
  *
  * Class FixtureInjector
- * @package TestFixtureFactories\TestSuite
+ * @package CakephpFixtureFactories\TestSuite
  */
 class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
 {

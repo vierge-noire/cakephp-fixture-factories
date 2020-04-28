@@ -1,7 +1,10 @@
 <?php
-namespace TestFixtureFactories\Test\TestCase\Shell\Task;
+namespace CakephpFixtureFactories\Test\TestCase\Shell\Task;
 
 use Cake\Core\Configure;
+use Cake\TestSuite\TestCase;
+use CakephpFixtureFactories\Factory\BaseFactory;
+use CakephpFixtureFactories\Shell\Task\TestFixtureFactoryTask;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;
@@ -12,9 +15,6 @@ use TestApp\Test\Factory\ArticleFactory;
 use TestApp\Test\Factory\AuthorFactory;
 use TestApp\Test\Factory\CityFactory;
 use TestApp\Test\Factory\CountryFactory;
-use TestFixtureFactories\Factory\BaseFactory;
-use TestFixtureFactories\Shell\Task\TestFixtureFactoryTask;
-use Cake\TestSuite\TestCase;
 use TestPlugin\Model\Entity\Bill;
 use TestPlugin\Model\Entity\Customer;
 use TestPlugin\Test\Factory\BillFactory;
@@ -35,7 +35,7 @@ class TestFixtureFactoryTaskTest extends TestCase
     /**
      * Test subject
      *
-     * @var \TestFixtureFactories\Shell\Task\TestFixtureFactoryTask
+     * @var \CakephpFixtureFactories\Shell\Task\TestFixtureFactoryTask
      */
     public $FactoryTask;
 
@@ -259,4 +259,12 @@ class TestFixtureFactoryTaskTest extends TestCase
         $this->assertInstanceOf(Bill::class, $bill);
         $this->assertInstanceOf(Customer::class, $customer);
     }
+
+//    public function testPatchData()
+//    {
+//        $articles = \TestFixtureFactories\Test\Factory\ArticleFactory::make(null, 4)->setJobTitle()->persist();
+//        dd(
+//            $articles
+//        );
+//    }
 }

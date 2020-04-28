@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "TestFixtureFactories\\": "src"
+            "CakephpFixtureFactories\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "TestFixtureFactories\\Test\\": "tests",
+            "CakephpFixtureFactories\\Test\\": "tests",
             "TestApp\\": "tests/TestApp/src",
             "TestApp\\Test\\": "tests/TestApp/tests",
             "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src",

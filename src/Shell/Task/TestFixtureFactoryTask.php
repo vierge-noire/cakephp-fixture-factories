@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace TestFixtureFactories\Shell\Task;
+namespace CakephpFixtureFactories\Shell\Task;
 
 use Bake\Shell\Task\SimpleBakeTask;
 use Cake\Console\ConsoleOptionParser;

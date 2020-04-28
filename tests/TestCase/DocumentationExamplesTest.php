@@ -1,18 +1,22 @@
 <?php
 
-namespace TestFixtureFactories\Test\EntitiesTestCase;
+namespace CakephpFixtureFactories\Test\EntitiesTestCase;
 
 
+use Cake\ORM\TableRegistry;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
-use TestFixtureFactories\Test\Factory\ArticleFactory;
-use TestFixtureFactories\Test\Factory\AuthorFactory;
+use TestApp\Model\Entity\Article;
 
 class DocumentationExamplesTest extends TestCase
 {
     public function testExampleStaticData()
     {
-        ArticleFactory::make()->getEntity();
+        $article = ArticleFactory::make()->getEntity();
+        $this->assertInstanceOf(Article::class, $article);
+
         $articles = ArticleFactory::make(null, 2)->getEntities();
         $previous = '';
         foreach ($articles as $article) {

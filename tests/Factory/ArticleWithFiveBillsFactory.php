@@ -1,9 +1,8 @@
 <?php
 
-namespace TestFixtureFactories\Test\Factory;
+namespace CakephpFixtureFactories\Test\Factory;
 
 use Faker\Generator;
-use TestFixtureFactories\Factory\BaseFactory;
 
 class ArticleWithFiveBillsFactory extends ArticleFactory
 {

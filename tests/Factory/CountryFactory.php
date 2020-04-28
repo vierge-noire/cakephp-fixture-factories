@@ -1,9 +1,9 @@
 <?php
 
-namespace TestFixtureFactories\Test\Factory;
+namespace CakephpFixtureFactories\Test\Factory;
 
+use CakephpFixtureFactories\Factory\BaseFactory;
 use Faker\Generator;
-use TestFixtureFactories\Factory\BaseFactory;
 
 class CountryFactory extends BaseFactory
 {

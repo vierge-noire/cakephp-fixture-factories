@@ -1,27 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace TestFixtureFactories\Test\EntitiesTestCase;
+namespace CakephpFixtureFactories\Test\EntitiesTestCase;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
+use CakephpFixtureFactories\Test\Factory\AddressFactory;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Factory\BillFactory;
+use CakephpFixtureFactories\Test\Factory\CityFactory;
+use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;
-use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Table\ArticlesTable;
-use TestFixtureFactories\Test\Factory\AddressFactory;
-use TestFixtureFactories\Test\Factory\AuthorFactory;
-use TestFixtureFactories\Test\Factory\ArticleFactory;
-use TestFixtureFactories\Test\Factory\BillFactory;
-use TestFixtureFactories\Test\Factory\CityFactory;
-use TestFixtureFactories\Test\Factory\CountryFactory;
-use TestFixtureFactories\Test\Factory\CustomerFactory;
 use TestPlugin\Model\Entity\Bill;
 use function count;
 use function is_array;

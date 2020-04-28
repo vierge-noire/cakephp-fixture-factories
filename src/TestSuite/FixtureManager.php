@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
-namespace TestFixtureFactories\TestSuite;
+namespace CakephpFixtureFactories\TestSuite;
 
 use Cake\Database\Driver\Mysql;
 use Cake\Database\Driver\Sqlite;
@@ -8,17 +9,13 @@ use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\FixtureManager as BaseFixtureManager;
 use Cake\Utility\Hash;
-use function array_filter;
-use function array_map;
 use function count;
-use function debug;
 use function implode;
-use function microtime;
 use function strpos;
 
 /**
  * Class FixtureManager
- * @package TestFixtureFactories\TestSuite
+ * @package CakephpFixtureFactories\TestSuite
  */
 class FixtureManager extends BaseFixtureManager
 {

@@ -1,22 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace TestFixtureFactories\Test\TestCase;
+namespace CakephpFixtureFactories\Test\TestCase;
 
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
-use Cake\Event\EventManager;
 use Cake\I18n\FrozenTime;
-use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use PHPUnit\Framework\TestCase;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\CountriesTable;
-use TestFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
-use TestFixtureFactories\Test\Factory\ArticleFactory;
-use TestFixtureFactories\Test\Factory\CountryFactory;
 
 class FactoryTableLocatorTest extends TestCase
 {

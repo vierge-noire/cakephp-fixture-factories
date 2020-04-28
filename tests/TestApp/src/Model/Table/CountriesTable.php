@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace TestApp\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
