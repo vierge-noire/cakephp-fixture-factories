@@ -25,6 +25,10 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      */
     public $pathToTableDir = 'src/Model/Table/';
     /**
+     * @var string
+     */
+    private $modelName;
+    /**
      * @var Table
      */
     private $table;
@@ -149,14 +153,17 @@ class TestFixtureFactoryTask extends SimpleBakeTask
             if (strpos($this->plugin, '\\')) {
                 $this->abort('Invalid plugin namespace separator, please use / instead of \ for plugins.');
 
-                return false;
+                return -1;
             }
         }
 
-        $model = $this->_getName($model);
+        if ($model) {
+            $this->_getName($model);
+        }
 
         if ($this->param('all')) {
-            return $this->bake('all');
+            $this->bake('all');
+            return 2;
         }
 
         if (empty($model)) {
@@ -165,10 +172,11 @@ class TestFixtureFactoryTask extends SimpleBakeTask
                 $this->out('- ' . $table);
             }
 
-            return true;
+            return 0;
         }
 
         $this->bake($model);
+        return 1;
     }
 
     /**
@@ -180,10 +188,13 @@ class TestFixtureFactoryTask extends SimpleBakeTask
             return $this->bakeAllModels();
         }
 
+        $this->modelName = $modelName;
+
         if ($this->setTable($modelName)) {
             $this->handleFactoryWithSameName($modelName);
-            $this->setViewVars($modelName);
             return parent::bake($modelName);
+        } else {
+            return "$modelName not found...";
         }
     }
 
@@ -194,27 +205,19 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      */
     public function templateData(): array
     {
-        return [];
-    }
-
-    /**
-     * Send view variables to the twig template
-     * @param string $modelName
-     */
-    public function setViewVars(string $modelName)
-    {
-        $this->BakeTemplate->set([
-            'rootTableRegistryName' => $modelName,
-            'factoryEntity' => Inflector::singularize($modelName),
-            'factory' => Inflector::singularize($modelName) . 'Factory',
+        $data = [
+            'rootTableRegistryName' => $this->modelName,
+            'factoryEntity' => Inflector::singularize($this->modelName),
+            'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace(),
-        ]);
-
+        ];
         if ($this->param('methods')) {
             $associations = $this->getAssociations();
-            $this->BakeTemplate->set('toOne', $associations['toOne']);
-            $this->BakeTemplate->set('toMany', $associations['toMany']);
+            $data['toOne'] = $associations['toOne'];
+            $data['toMany'] = $associations['toMany'];
         }
+
+        return $data;
     }
 
     /**

@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace TestFixtureFactories\TestSuite;
 
-use Cake\TestSuite\TestListenerTrait;
 use PHPUnit\Framework\Test;
-use PHPUnit\Framework\TestListener;
 use PHPUnit\Framework\TestSuite;
 
 /**
@@ -14,9 +12,8 @@ use PHPUnit\Framework\TestSuite;
  * Class FixtureInjector
  * @package TestFixtureFactories\TestSuite
  */
-class FixtureInjector implements TestListener
+class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
 {
-    use TestListenerTrait;
     /**
      * @var FixtureManager
      */
