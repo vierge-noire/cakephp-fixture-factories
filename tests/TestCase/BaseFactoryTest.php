@@ -378,7 +378,8 @@ class BaseFactoryTest extends TestCase
         $factory = AuthorFactory::make([
             'name' => 'test author',
             'business_address' => [
-                'street' => 'test address'
+                'street' => 'test address',
+                'city_id' => CityFactory::make()->persist()->id
             ]
         ])->mergeAssociated(['BusinessAddress']);
 
