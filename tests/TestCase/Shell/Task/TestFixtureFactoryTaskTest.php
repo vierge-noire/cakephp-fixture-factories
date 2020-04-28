@@ -115,8 +115,8 @@ class TestFixtureFactoryTaskTest extends TestCase
     {
         $associations = $this->FactoryTask->setTable('Addresses')->getAssociations();
         $expected = [
-            'toOne' => ['Author' => '\TestApp\Test\Factory\AuthorFactory', 'City' => '\TestApp\Test\Factory\CityFactory'],
-            'toMany' => [],
+            'toOne' => ['City' => '\TestApp\Test\Factory\CityFactory'],
+            'toMany' => ['Author' => '\TestApp\Test\Factory\AuthorFactory',],
         ];
         $this->assertEquals($expected, $associations);
     }
