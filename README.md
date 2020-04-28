@@ -21,7 +21,7 @@ Make sure you inject the fixture manager inside your `phpunit.xml` config file, 
 ```
 <!-- Setup a listener for fixtures -->
      <listeners>
-         <listener class="TestFixtureFactories\TestSuite\FixtureInjector">
+         <listener class="CakephpFixtureFactories\TestSuite\FixtureInjector">
              <arguments>
                  <object class="estFixtureFactories\TestSuite\FixtureManager" />
              </arguments>
@@ -52,7 +52,7 @@ will assist you. You have the possiblity to bake factories for all (`-a`) your m
 based on the associations defined in your models.
 
 ### Factory
-A factory is a class that extends the `TestFixtureFactories\Factory`. It should implement the following two methods:
+A factory is a class that extends the `CakephpFixtureFactories\Factory`. It should implement the following two methods:
 * `getRootTableRegistryName()`  which indicates the model that the factory will use to buld its fixtures;
 * `setDefaultTemplate()`  which sets the default configuration of each entity created by the factory.
 
@@ -66,7 +66,7 @@ This could be for example the ArticleFactory, with a random name set per default
 ```$xslt
 namespace App\Test\Factory;
 
-use TestFixtureFactories\Factory\BaseFactory;
+use CakephpFixtureFactories\Factory\BaseFactory;
 
 class ArticleFactory extends BaseFactory
 {

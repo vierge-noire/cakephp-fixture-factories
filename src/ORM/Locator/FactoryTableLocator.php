@@ -1,6 +1,6 @@
 <?php
 
-namespace TestFixtureFactories\ORM\Locator;
+namespace CakephpFixtureFactories\ORM\Locator;
 
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Locator\TableLocator;

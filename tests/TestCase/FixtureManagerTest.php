@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace TestFixtureFactories\Test\EntitiesTestCase;
+namespace CakephpFixtureFactories\Test\EntitiesTestCase;
 
 
 use Cake\ORM\TableRegistry;
 use PHPUnit\Framework\TestCase;
-use TestFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 
 class FixtureManagerTest extends TestCase
 {

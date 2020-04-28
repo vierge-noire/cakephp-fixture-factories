@@ -1,7 +1,7 @@
 <?php
+declare(strict_types=1);
 
-
-namespace TestFixtureFactories\Shell\Task;
+namespace CakephpFixtureFactories\Shell\Task;
 
 use Bake\Shell\Task\SimpleBakeTask;
 use Cake\Console\ConsoleOptionParser;
@@ -19,29 +19,33 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      *
      * @var string
      */
-    public $pathFragment = 'tests/Factory/';
+    public $pathFragment = 'tests' . DS . 'Factory' . DS;
     /**
      * @var string path to the Table dir
      */
-    public $pathToTableDir = 'src/Model/Table/';
+    public $pathToTableDir = 'Model' . DS . 'Table' . DS;
+    /**
+     * @var string
+     */
+    private $modelName;
     /**
      * @var Table
      */
     private $table;
 
-    public function name()
+    public function name(): string
     {
         return 'test_fixture_factory';
     }
 
-    public function fileName($modelName)
+    public function fileName($modelName): string
     {
         return $this->getFactoryNameFromModelName($modelName) . '.php';
     }
 
-    public function template()
+    public function template(): string
     {
-        return 'TestFixtureFactories.factory';
+        return 'test_fixture_factory';
     }
 
     /**
@@ -74,12 +78,12 @@ class TestFixtureFactoryTask extends SimpleBakeTask
     /**
      * {@inheritDoc}
      */
-    public function getPath()
+    public function getPath(): string
     {
         if (isset($this->plugin)) {
             $path = $this->_pluginPath($this->plugin) . $this->pathFragment;
         } else {
-            $path = ROOT . DS . $this->pathFragment;
+            $path = TESTS . 'Factory' . DS;
         }
 
         return str_replace('/', DS, $path);
@@ -91,10 +95,11 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      */
     public function getModelPath()
     {
+
         if (isset($this->plugin)) {
-            $path = $this->_pluginPath($this->plugin) . $this->pathToTableDir;
+            $path = $this->_pluginPath($this->plugin) . APP_DIR . DS . $this->pathToTableDir;
         } else {
-            $path = ROOT . DS . $this->pathToTableDir;
+            $path = APP . $this->pathToTableDir;
         }
 
         return str_replace('/', DS, $path);
@@ -149,14 +154,17 @@ class TestFixtureFactoryTask extends SimpleBakeTask
             if (strpos($this->plugin, '\\')) {
                 $this->abort('Invalid plugin namespace separator, please use / instead of \ for plugins.');
 
-                return false;
+                return -1;
             }
         }
 
-        $model = $this->_getName($model);
+        if ($model) {
+            $this->_getName($model);
+        }
 
         if ($this->param('all')) {
-            return $this->bake('all');
+            $this->bake('all');
+            return 2;
         }
 
         if (empty($model)) {
@@ -165,54 +173,51 @@ class TestFixtureFactoryTask extends SimpleBakeTask
                 $this->out('- ' . $table);
             }
 
-            return true;
+            return 0;
         }
 
         $this->bake($model);
+        return 1;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function bake($modelName)
+    public function bake($modelName): string
     {
         if ($modelName === 'all') {
             return $this->bakeAllModels();
         }
 
+        $this->modelName = $modelName;
+
         if ($this->setTable($modelName)) {
             $this->handleFactoryWithSameName($modelName);
-            $this->setViewVars($modelName);
-            return parent::bake($modelName);
+             return parent::bake($modelName);
+        } else {
+            return "$modelName not found...";
         }
     }
 
     /**
-     * This is overwritten because it is incompatible
-     * with the way the present factory bakes
-     * @return array|null
+     * Send variables to the view
+     * @return array
      */
-    public function templateData()
-    {}
-
-    /**
-     * Send view variables to the twig template
-     * @param string $modelName
-     */
-    public function setViewVars(string $modelName)
+    public function templateData(): array
     {
-        $this->BakeTemplate->set([
-            'rootTableRegistryName' => $modelName,
-            'factoryEntity' => Inflector::singularize($modelName),
-            'factory' => Inflector::singularize($modelName) . 'Factory',
+        $data = [
+            'rootTableRegistryName' => $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName,
+            'factoryEntity' => Inflector::singularize($this->modelName),
+            'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace(),
-        ]);
-
+        ];
         if ($this->param('methods')) {
             $associations = $this->getAssociations();
-            $this->BakeTemplate->set('toOne', $associations['toOne']);
-            $this->BakeTemplate->set('toMany', $associations['toMany']);
+            $data['toOne'] = $associations['toOne'];
+            $data['toMany'] = $associations['toMany'];
         }
+
+        return $data;
     }
 
     /**
@@ -307,7 +312,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      *
      * @return \Cake\Console\ConsoleOptionParser
      */
-    public function getOptionParser()
+    public function getOptionParser(): ConsoleOptionParser
     {
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
         $parser = new ConsoleOptionParser($name);

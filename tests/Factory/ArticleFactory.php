@@ -1,9 +1,9 @@
 <?php
 
-namespace TestFixtureFactories\Test\Factory;
+namespace CakephpFixtureFactories\Test\Factory;
 
 use Faker\Generator;
-use TestFixtureFactories\Factory\BaseFactory;
+use CakephpFixtureFactories\Factory\BaseFactory;
 
 class ArticleFactory extends BaseFactory
 {
@@ -23,7 +23,7 @@ class ArticleFactory extends BaseFactory
      * You may use methods of the factory here
      * @return self
      */
-    protected function setDefaultTemplate(): void
+    protected function setDefaultTemplate()
     {
         $this->setDefaultData(function(Generator $faker) {
             return [

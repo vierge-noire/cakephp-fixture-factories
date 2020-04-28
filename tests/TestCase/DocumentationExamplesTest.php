@@ -1,12 +1,12 @@
 <?php
 
-namespace TestFixtureFactories\Test\EntitiesTestCase;
+namespace CakephpFixtureFactories\Test\EntitiesTestCase;
 
 
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
-use TestFixtureFactories\Test\Factory\ArticleFactory;
-use TestFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 
 class DocumentationExamplesTest extends TestCase
 {

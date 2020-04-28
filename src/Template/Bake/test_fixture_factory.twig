@@ -16,7 +16,7 @@
 namespace {{ namespace }};
 
 use Faker\Generator;
-use TestFixtureFactories\Factory\BaseFactory as CakephpBaseFactory;
+use CakephpFixtureFactories\Factory\BaseFactory as CakephpBaseFactory;
 
 /**
  * {{ factory }}
@@ -37,7 +37,7 @@ class {{ factory }} extends CakephpBaseFactory
      * not nullable fields. You may use methods of the factory here
      * @return void
      */
-    protected function setDefaultTemplate(): void
+    protected function setDefaultTemplate()
     {
         $this->setDefaultData(function(Generator $faker) {
             return [

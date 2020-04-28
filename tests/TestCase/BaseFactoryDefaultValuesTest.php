@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace TestFixtureFactories\Test\EntitiesTestCase;
+namespace CakephpFixtureFactories\Test\EntitiesTestCase;
 
 
 use Cake\Utility\Hash;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
 use TestApp\Model\Entity\Author;
-use TestFixtureFactories\Test\Factory\AddressFactory;
-use TestFixtureFactories\Test\Factory\ArticleFactory;
-use TestFixtureFactories\Test\Factory\ArticleWithFiveBillsFactory;
-use TestFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Factory\AddressFactory;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\ArticleWithFiveBillsFactory;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 
 class BaseFactoryDefaultValuesTest extends TestCase
 {

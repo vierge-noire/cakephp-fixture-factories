@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace TestFixtureFactories\Test\TestCase;
+namespace CakephpFixtureFactories\Test\TestCase;
 
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
@@ -13,9 +13,9 @@ use PHPUnit\Framework\TestCase;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\CountriesTable;
-use TestFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
-use TestFixtureFactories\Test\Factory\ArticleFactory;
-use TestFixtureFactories\Test\Factory\CountryFactory;
+use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\CountryFactory;
 
 class FactoryTableLocatorTest extends TestCase
 {

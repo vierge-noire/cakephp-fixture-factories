@@ -1,12 +1,12 @@
 <?php
 
-namespace TestFixtureFactories\ORM\TableRegistry;
+namespace CakephpFixtureFactories\ORM\TableRegistry;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Table;
 use function strpos;
 use Cake\ORM\TableRegistry;
-use TestFixtureFactories\ORM\Locator\FactoryTableLocator;
+use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 
 /**
  * Alternative TableRegistry to be used by fixture factories
@@ -22,7 +22,7 @@ use TestFixtureFactories\ORM\Locator\FactoryTableLocator;
  * - Speeding up the fixture data injection to the database
  *
  * Class FactoryTableRegistry
- * @package TestFixtureFactories\ORM\TableRegistry
+ * @package CakephpFixtureFactories\ORM\TableRegistry
  */
 class FactoryTableRegistry extends TableRegistry
 {

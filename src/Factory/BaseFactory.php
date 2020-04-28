@@ -1,6 +1,6 @@
 <?php
 
-namespace TestFixtureFactories\Factory;
+namespace CakephpFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association;
@@ -13,7 +13,7 @@ use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
 use RuntimeException;
-use TestFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
+use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use function array_merge;
 use function count;
 use function is_array;
@@ -26,7 +26,7 @@ use Cake\ORM\Table;
  * @TODO    : add way to manage default values easily
  * @TODO    : throw exception when passing $times > 1 on hasOne association
  *
- * @package TestFixtureFactories\Factory
+ * @package CakephpFixtureFactories\Factory
  */
 abstract class BaseFactory
 {
@@ -81,10 +81,6 @@ abstract class BaseFactory
      * @var array
      */
     private $compiledTemplateData = [];
-    /**
-     * @var bool
-     */
-    private $isRootLevel = true;
 
     /**
      * BaseFactory constructor.
@@ -104,9 +100,11 @@ abstract class BaseFactory
     abstract protected function getRootTableRegistryName(): string;
 
     /**
+     * Will be abstract in next major release
      * @return void
      */
-    abstract protected function setDefaultTemplate(): void;
+    protected function setDefaultTemplate()
+    {}
 
     /**
      * @param array|callable|null $data
@@ -336,17 +334,6 @@ abstract class BaseFactory
         return $this->rootTable->saveMany($entities, $this->getSaveOptions());
     }
 
-    /**
-     * @param array $data
-     * @return $this
-     * @deprecated There is no need to directly use mergeData. This will become a private method in a future version.
-     */
-    public function mergeData(array $data)
-    {
-        $this->data = array_merge($this->data, $data);
-
-        return $this;
-    }
 
     /**
      * Assigns the values of $data to the $keys of the entities generated
@@ -378,53 +365,19 @@ abstract class BaseFactory
     public function with(string $associationName, BaseFactory $factory)
     {
         $association = $this->getTable()->getAssociation($associationName);
-        if ($association instanceof HasOne || $association instanceof BelongsTo) {
-            return $this->withOne(Inflector::underscore($association->getName()), $factory);
-        }
+        if ($association instanceof HasOne || $association instanceof BelongsTo || $association instanceof HasMany || $association instanceof BelongsToMany) {
 
-        if ($association instanceof HasMany || $association instanceof BelongsToMany) {
-            return $this->withMany(Inflector::underscore($association->getName()), $factory);
+            $associationName = Inflector::underscore($association->getName());
+            $this->templateData[$associationName] = $factory;
+            $this->associated[] = Inflector::camelize($associationName);
+
+            foreach ($factory->getAssociated() as $associated) {
+                $this->associated[] = Inflector::camelize($associationName) . "." . Inflector::camelize($associated);
+            }
+            return $this;
         }
 
         throw new InvalidArgumentException("Unknown association type $association on table {$this->getTable()}");
-    }
-
-    /**
-     * @param string      $association
-     * @param BaseFactory $factory
-     * @return $this
-     */
-    private function withOne(string $association, BaseFactory $factory): self
-    {
-        //$this->data[$association] = $factory->getEntity()->toArray();
-        $this->templateData[$association] = $factory;
-
-        $this->associated[] = Inflector::camelize($association);
-
-        foreach ($factory->getAssociated() as $associated) {
-            $this->associated[] = Inflector::camelize($association) . "." . Inflector::camelize($associated);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string      $association
-     * @param BaseFactory $factory
-     * @return $this
-     */
-    private function withMany(string $association, BaseFactory $factory): self
-    {
-        //$this->data[$association] = $factory->entitiesToArrays();
-        $this->templateData[$association] = $factory;
-
-        $this->associated[] = Inflector::camelize($association);
-
-        foreach ($factory->getAssociated() as $associated) {
-            $this->associated[] = Inflector::camelize($association) . "." . Inflector::camelize($associated);
-        }
-
-        return $this;
     }
 
     /**

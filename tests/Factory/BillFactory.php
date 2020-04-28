@@ -1,9 +1,9 @@
 <?php
 
-namespace TestFixtureFactories\Test\Factory;
+namespace CakephpFixtureFactories\Test\Factory;
 
 use Faker\Generator;
-use TestFixtureFactories\Factory\BaseFactory;
+use CakephpFixtureFactories\Factory\BaseFactory;
 
 class BillFactory extends BaseFactory
 {
@@ -12,7 +12,7 @@ class BillFactory extends BaseFactory
         return 'TestPlugin.Bills';
     }
 
-    protected function setDefaultTemplate(): void
+    protected function setDefaultTemplate()
     {
         $this->setDefaultData(function(Generator $faker) {
             return [
@@ -25,7 +25,7 @@ class BillFactory extends BaseFactory
 
     public function withArticle($parameter = null)
     {
-        return $this->with('article', ArticleFactory::make($parameter));
+        return $this->with('Article', ArticleFactory::make($parameter));
     }
 
     public function withCustomer($parameter = null)

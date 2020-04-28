@@ -1,6 +1,6 @@
 <?php
 
-namespace TestFixtureFactories\TestSuite;
+namespace CakephpFixtureFactories\TestSuite;
 
 use Cake\Database\Driver\Mysql;
 use Cake\Database\Driver\Sqlite;
@@ -18,7 +18,7 @@ use function strpos;
 
 /**
  * Class FixtureManager
- * @package TestFixtureFactories\TestSuite
+ * @package CakephpFixtureFactories\TestSuite
  */
 class FixtureManager extends BaseFixtureManager
 {
