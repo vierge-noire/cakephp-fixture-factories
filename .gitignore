@@ -6,5 +6,6 @@ composer.lock
 .phpunit.result.cache
 
 # These factories are baked by TestFixtureFactoryTaskTest
-/tests/TestApp/tests/Factory/
-/tests/TestApp/plugins/TestPlugin/tests/
+/tests/TestApp/tests/Factory/*
+/tests/TestApp/plugins/TestPlugin/tests/Factory/*
+!/**/.gitkeep
