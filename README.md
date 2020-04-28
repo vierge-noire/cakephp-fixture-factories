@@ -1,4 +1,4 @@
-# test-fixture-factories
+# CakePHP Fixture Factories
 
 This package provides an alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application. 
 The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in cakephp.
@@ -13,7 +13,7 @@ It is mainly composed of the following classes
 ## Installation
 
 ```
-    composer require --dev pakacuda/cakephp-fixture-factories
+composer require --dev pakacuda/cakephp-fixture-factories
 ```
 
 Make sure you inject the fixture manager inside your `phpunit.xml` config file, per default located in the root folder of your application:
