@@ -3,7 +3,6 @@
 namespace CakephpFixtureFactories\Test\EntitiesTestCase;
 
 
-use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use Faker\Generator;
@@ -17,7 +16,7 @@ class DocumentationExamplesTest extends TestCase
         $article = ArticleFactory::make()->getEntity();
         $this->assertInstanceOf(Article::class, $article);
 
-        $articles = ArticleFactory::make(null, 2)->getEntities();
+        $articles = ArticleFactory::make(2)->getEntities();
         $previous = '';
         foreach ($articles as $article) {
             $this->assertNotEquals($previous, $article->title);
@@ -76,7 +75,7 @@ class DocumentationExamplesTest extends TestCase
 
     public function testAssociationsMultiple()
     {
-        $article = ArticleFactory::make()->with('authors', AuthorFactory::make(null, 10))->persist();
+        $article = ArticleFactory::make()->with('authors', AuthorFactory::make(10))->persist();
         $this->assertEquals(10, count($article->authors));
         $previous = '';
         foreach ($article->authors as $author) {
@@ -84,7 +83,7 @@ class DocumentationExamplesTest extends TestCase
             $previous = $author->name;
         }
 
-        $article = ArticleFactory::make()->withAuthors(null, 10)->persist();
+        $article = ArticleFactory::make()->withAuthors(10)->persist();
         $this->assertEquals(10, count($article->authors));
         $previous = '';
         foreach ($article->authors as $author) {
