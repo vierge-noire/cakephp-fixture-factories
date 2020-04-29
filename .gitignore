@@ -1,3 +1,11 @@
 /vendor/
 tmp/
 .idea
+composer.lock
+**/test_fixture_factories
+.phpunit.result.cache
+
+# These factories are baked by TestFixtureFactoryTaskTest
+/tests/TestApp/tests/Factory/*
+/tests/TestApp/plugins/TestPlugin/tests/Factory/*
+!/**/.gitkeep

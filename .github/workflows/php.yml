@@ -1,0 +1,26 @@
+name: GitHub CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Validate composer.json
+        run: composer validate
+
+      - name: Install lowest dependencies
+        run: composer update --prefer-dist --no-progress --no-suggest --prefer-lowest --prefer-stable
+
+      - name: Run test suite
+        run: composer run-tests
+
+      - name: Install highest dependencies
+        run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
+
+      - name: Run test suite
+        run: composer run-tests

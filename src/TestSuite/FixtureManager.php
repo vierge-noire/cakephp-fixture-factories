@@ -1,26 +1,27 @@
 <?php
+declare(strict_types=1);
 
-namespace TestFixtureFactories\TestSuite;
+namespace CakephpFixtureFactories\TestSuite;
 
+use Cake\Database\Driver\Mysql;
+use Cake\Database\Driver\Sqlite;
+use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\FixtureManager as BaseFixtureManager;
-use function array_filter;
-use function array_map;
+use Cake\Utility\Hash;
 use function count;
-use function debug;
 use function implode;
-use function microtime;
 use function strpos;
 
 /**
  * Class FixtureManager
- * @package TestFixtureFactories\TestSuite
+ * @package CakephpFixtureFactories\TestSuite
  */
 class FixtureManager extends BaseFixtureManager
 {
     /**
      * @param string $name
-     * @return mixed
+     * @return ConnectionInterface
      */
     public function getConnection($name = 'test')
     {
@@ -44,29 +45,6 @@ class FixtureManager extends BaseFixtureManager
     }
 
     /**
-     * @param string $connectionName
-     */
-    private function truncateDirtyTablesUsingCount(string $connectionName)
-    {
-        // not fully implemented as truncateDirtyTables seem sufficient
-        $connection = $this->getConnection($connectionName);
-        $databaseName = $connection->config()['database'];
-        $tables = $connection->getSchemaCollection()->listTables();
-        $tables = array_filter($tables, function ($table) {
-            if (strpos($table, 'phinxlog') !== false) {
-                return false;
-            }
-            return true;
-        });
-        $truncateStatement = null;
-        foreach ($tables as $table) {
-            $truncateStatement .= "SELECT '$table' AS table_name, COUNT(*) AS count FROM $databaseName.$table HAVING count > 0 UNION ";
-        }
-        $res = $connection->execute($truncateStatement);
-        debug($res->fetchAll());
-    }
-
-    /**
      * Truncate tables that are reported dirty by the database behind the given connection name
      * This is much faster than truncating all the tables for large databases
      * Currently, only an implementation supporting Mysql and MariaDB is supported
@@ -74,6 +52,25 @@ class FixtureManager extends BaseFixtureManager
     private function truncateDirtyTables(string $connectionName)
     {
         $connection = $this->getConnection($connectionName);
+        $driver = $connection->config()['driver'];
+        switch ($driver) {
+            case Mysql::class:
+                $this->truncateDirtyTablesMySQL($connection);
+                break;
+            case Sqlite::class:
+                $this->truncateDirtyTablesSqlite($connection);
+                break;
+            default:
+                throw new \PHPUnit\Framework\Exception("The DB driver $driver is not being supported");
+                break;
+        }
+    }
+
+    /**
+     * @param ConnectionInterface $connection
+     */
+    private function truncateDirtyTablesMySQL(ConnectionInterface $connection)
+    {
         $databaseName = $connection->config()['database'];
         $res = $connection->execute("
             SELECT table_name, table_rows
@@ -93,28 +90,29 @@ class FixtureManager extends BaseFixtureManager
     }
 
     /**
-     * Truncate all tables for the given connection name
+     * @param ConnectionInterface $connection
      */
-    private function truncateAllTables(string $connectionName)
+    private function truncateDirtyTablesSqlite($connection)
     {
-        $tables = $this->getConnection($connectionName)->getSchemaCollection()->listTables();
+        $tables = $connection->execute("
+             SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('sqlite_sequence', 'phinxlog');
+        ")->fetchAll();
+        $tables = Hash::extract($tables, '{n}.0');
 
-        foreach ($tables as $i => $table) {
-            if (strpos($table, 'phinxlog') !== false) {
-                unset($tables[$i]);
+        $connection->transactional(function(ConnectionInterface $connection) use ($tables) {
+            $connection->execute('pragma foreign_keys = off;');
+            foreach ($tables as $table) {
+                $connection
+                    ->newQuery()
+                    ->delete($table)
+                    ->execute();
+                $connection
+                    ->newQuery()
+                    ->delete('sqlite_sequence')
+                    ->where(['name' => $table])
+                    ->execute();
             }
-        }
-
-        if (!empty($tables)) {
-            $start = microtime(true);
-            $this->getConnection($connectionName)->execute(
-                "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `",
-                    $tables) . "`; SET FOREIGN_KEY_CHECKS=1;"
-            );
-            debug("SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `",
-                    $tables) . "`; SET FOREIGN_KEY_CHECKS=1;");
-            $time_elapsed_secs = microtime(true) - $start;
-            debug("elapsed time : $time_elapsed_secs");
-        }
+            $connection->execute('pragma foreign_keys = on;');
+        });
     }
 }

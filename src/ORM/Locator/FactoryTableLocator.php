@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
 
-namespace TestFixtureFactories\ORM\Locator;
+namespace CakephpFixtureFactories\ORM\Locator;
 
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Locator\TableLocator;
+use Cake\ORM\Table;
 
 class FactoryTableLocator extends TableLocator
 {
-    protected function _create(array $options)
+    protected function _create(array $options): Table
     {
         $cloneTable = parent::_create($options);
         $ormEvents = [

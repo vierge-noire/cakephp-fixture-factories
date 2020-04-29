@@ -1,19 +1,18 @@
 <?php
+declare(strict_types=1);
 
-namespace TestFixtureFactories\TestSuite;
+namespace CakephpFixtureFactories\TestSuite;
 
-use PHPUnit\Framework\BaseTestListener;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestSuite;
-use TestListenerDefaultImplementation;
 
 /**
  * This class has to be used along the fixture factories
  *
  * Class FixtureInjector
- * @package TestFixtureFactories\TestSuite
+ * @package CakephpFixtureFactories\TestSuite
  */
-class FixtureInjector extends BaseTestListener
+class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
 {
     /**
      * @var FixtureManager
@@ -29,7 +28,7 @@ class FixtureInjector extends BaseTestListener
     /**
      * @param TestSuite $suite
      */
-    public function startTestSuite(TestSuite $suite)
+    public function startTestSuite(TestSuite $suite): void
     {
         $this->_fixtureManager->initDb();
     }
@@ -41,7 +40,7 @@ class FixtureInjector extends BaseTestListener
      * @param \PHPUnit\Framework\Test $test The test case
      * @return void
      */
-    public function startTest(Test $test)
+    public function startTest(Test $test): void
     {
         $this->_fixtureManager->truncateDirtyTablesForAllConnections();
     }
@@ -53,7 +52,7 @@ class FixtureInjector extends BaseTestListener
      * @param float                   $time current time
      * @return void
      */
-    public function endTest(Test $test, $time)
+    public function endTest(Test $test, float $time): void
     {
         // noop, see method description
     }
@@ -63,7 +62,7 @@ class FixtureInjector extends BaseTestListener
      *
      * @param TestSuite $suite
      */
-    public function endTestSuite(TestSuite $suite)
+    public function endTestSuite(TestSuite $suite): void
     {
         $this->_fixtureManager->truncateDirtyTablesForAllConnections();
     }
