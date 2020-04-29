@@ -1,4 +1,4 @@
-# test-fixture-factories
+# CakePHP Fixture Factories
 
 This package provides an alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application. 
 The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in cakephp.
@@ -13,7 +13,7 @@ It is mainly composed of the following classes
 ## Installation
 
 ```
-    composer require-dev pakacuda/cakephp-fixture-factories
+composer require --dev pakacuda/cakephp-fixture-factories
 ```
 
 Make sure you inject the fixture manager inside your `phpunit.xml` config file, per default located in the root folder of your application:
@@ -23,7 +23,7 @@ Make sure you inject the fixture manager inside your `phpunit.xml` config file, 
      <listeners>
          <listener class="CakephpFixtureFactories\TestSuite\FixtureInjector">
              <arguments>
-                 <object class="estFixtureFactories\TestSuite\FixtureManager" />
+                 <object class="CakephpFixtureFactories\TestSuite\FixtureManager" />
              </arguments>
          </listener>
      </listeners>
@@ -41,8 +41,8 @@ Afther the modifications above, the traditional [CakePHP test fixtures](https://
 
 ### Bake command
 
-We recommand you to use the bake command in order prepare your factories. In order to do so, simply load the `TestFixtureFactories` plugin 
-by adding `$this->addPlugin('TestFixtureFactories');` in your `Application.php` bootstrap method, idealy right after loading the `Bake` plugin.
+We recommand you to use the bake command in order prepare your factories. In order to do so, simply load the `CakephpFixtureFactories` plugin 
+by adding `$this->addPlugin('CakephpFixtureFactories');` in your `Application.php` bootstrap method, idealy right after loading the `Bake` plugin.
 
 The command
 ```
