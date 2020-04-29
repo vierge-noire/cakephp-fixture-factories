@@ -1,18 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace CakephpFixtureFactories\Shell\Task;
+namespace CakephpFixtureFactories\Command;
 
-use Bake\Shell\Task\SimpleBakeTask;
+use Bake\Command\BakeCommand;
+use Bake\Utility\TemplateRenderer;
+use Cake\Console\Arguments;
+use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
-use Cake\Core\Plugin as CorePlugin;
 use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 
-class TestFixtureFactoryTask extends SimpleBakeTask
+class FixtureFactoryCommand extends BakeCommand
 {
     /**
      * path to Factory directory
@@ -35,7 +37,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
     public function name(): string
     {
-        return 'test_fixture_factory';
+        return 'fixture_factory';
     }
 
     public function fileName(string $modelName): string
@@ -45,7 +47,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
     public function template(): string
     {
-        return 'test_fixture_factory';
+        return 'fixture_factory';
     }
 
     /**
@@ -60,7 +62,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      * @param string $tableName
      * @return $this|bool
      */
-    public function setTable(string $tableName)
+    public function setTable(string $tableName, ConsoleIo $io)
     {
         if ($this->plugin) {
             $tableName = $this->plugin . ".$tableName";
@@ -69,18 +71,20 @@ class TestFixtureFactoryTask extends SimpleBakeTask
         try {
             $this->table->getSchema();
         } catch (\Exception $e) {
-            $this->err($e->getMessage());
+            $io->warning("The table $tableName could not be found... in " . $this->getModelPath());
+            $io->abort($e->getMessage());
             return false;
         }
         return $this;
     }
 
     /**
-     * {@inheritDoc}
+     * @param Arguments $arguments
+     * @return string
      */
-    public function getPath(): string
+    public function getPath(Arguments $arguments): string
     {
-        if (isset($this->plugin)) {
+        if ($this->plugin) {
             $path = $this->_pluginPath($this->plugin) . $this->pathFragment;
         } else {
             $path = TESTS . 'Factory' . DS;
@@ -95,7 +99,6 @@ class TestFixtureFactoryTask extends SimpleBakeTask
      */
     public function getModelPath()
     {
-
         if (isset($this->plugin)) {
             $path = $this->_pluginPath($this->plugin) . APP_DIR . DS . $this->pathToTableDir;
         } else {
@@ -126,86 +129,84 @@ class TestFixtureFactoryTask extends SimpleBakeTask
     /**
      * @return string
      */
-    private function bakeAllModels()
+    private function bakeAllModels(Arguments $args, ConsoleIo $io)
     {
         $tables = $this->getTableList();
         if (empty($tables)) {
-            $this->err(sprintf('No tables were found at `%s`', $this->getModelPath()));
+            $io->err(sprintf('No tables were found at `%s`', $this->getModelPath()));
         } else {
             foreach ($tables as $table) {
-                $this->bake($table);
+                $this->bakeFixtureFactory($table, $args, $io);
             }
         }
         return '';
     }
 
     /**
-     * Execution method always used for tasks
-     * Handles dispatching to interactive, named, or all processes.
+     * Execute the command.
      *
-     * @param string|null $model The name of the model to bake.
-     * @return null|bool
+     * @param \Cake\Console\Arguments $args The command arguments.
+     * @param \Cake\Console\ConsoleIo $io The console io
+     * @return int|null The exit code or null for success
      */
-    public function main(?string $model = null): ?int
+    public function execute(Arguments $args, ConsoleIo $io): ?int
     {
-        if ($this->param('plugin')) {
-            $parts = explode('/', $this->param('plugin'));
+        $this->extractCommonProperties($args);
+        $model = $args->getArgument('model') ?? '';
+        $model = $this->_getName($model);
+
+        if ($this->plugin) {
+            $parts = explode('/', $this->plugin);
             $this->plugin = implode('/', array_map([$this, '_camelize'], $parts));
             if (strpos($this->plugin, '\\')) {
-                $this->abort('Invalid plugin namespace separator, please use / instead of \ for plugins.');
-
-                return -1;
+                $io->out('Invalid plugin namespace separator, please use / instead of \ for plugins.');
+                return self::CODE_SUCCESS;
             }
         }
 
-        if ($model) {
-            $this->_getName($model);
-        }
-
-        if ($this->param('all')) {
-            $this->bake('all');
-            return 2;
+        if ($args->getOption('all')) {
+            $this->bakeAllModels($args, $io);
+            return self::CODE_SUCCESS;
         }
 
         if (empty($model)) {
-            $this->out('Choose a table from the following, choose -a for all, or -h for help:');
+            $io->out('Choose a table from the following, choose -a for all, or -h for help:');
             foreach ($this->getTableList() as $table) {
-                $this->out('- ' . $table);
+                $io->out('- ' . $table);
             }
-
-            return 0;
+            return self::CODE_SUCCESS;
         }
 
-        $this->bake($model);
-        return 1;
+        $this->bakeFixtureFactory($model, $args, $io);
+        return self::CODE_SUCCESS;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function bake(string $modelName): string
+    public function bakeFixtureFactory(string $modelName, Arguments $args, ConsoleIo $io)
     {
-        if ($modelName === 'all') {
-            return $this->bakeAllModels();
-        }
-
         $this->modelName = $modelName;
 
-        $this->params['no-test'] = true;
-
-        if ($this->setTable($modelName)) {
-            $this->handleFactoryWithSameName($modelName);
-             return parent::bake($modelName);
-        } else {
-            return "$modelName not found...";
+        if (!$this->setTable($modelName, $io)) {
+            $io->abort("$modelName not found...");
+            return self::CODE_SUCCESS;
         }
+
+//        $this->handleFactoryWithSameName($modelName, $args, $io);
+
+        $renderer = new TemplateRenderer($this->theme);
+        $renderer->set($this->templateData($args));
+
+        $contents = $renderer->generate($this->template());
+
+        $path = $this->getPath($args);
+        $filename = $path . $this->fileName($modelName);
+        return $io->createFile($filename, $contents, $args->getOption('force') ?? false);
     }
 
     /**
      * Send variables to the view
      * @return array
      */
-    public function templateData(): array
+    public function templateData(Arguments $arg): array
     {
         $data = [
             'rootTableRegistryName' => $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName,
@@ -213,7 +214,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace(),
         ];
-        if ($this->param('methods')) {
+        if ($arg->getOption('methods')) {
             $associations = $this->getAssociations();
             $data['toOne'] = $associations['toOne'];
             $data['toMany'] = $associations['toMany'];
@@ -282,14 +283,15 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
     /**
      * @param string $name
+     * @param Arguments $args
+     * @param ConsoleIo $io
      */
-    public function handleFactoryWithSameName(string $name)
+    public function handleFactoryWithSameName(string $name, Arguments $args, ConsoleIo $io)
     {
-        $factoryWithSameName = glob($this->getPath() . $name . '.php');
+        $factoryWithSameName = glob($this->getPath($args) . $name . '.php');
         if (!empty($factoryWithSameName)) {
-            $force = $this->param('force');
-            if (!$force) {
-                $this->abort(
+            if (!$args->getOption('force')) {
+                $io->abort(
                     sprintf(
                         'A factory with the name `%s` already exists.',
                         $name
@@ -297,13 +299,13 @@ class TestFixtureFactoryTask extends SimpleBakeTask
                 );
             }
 
-            $this->info(sprintf('A factory with the name `%s` already exists, it will be deleted.', $name));
+            $io->info(sprintf('A factory with the name `%s` already exists, it will be deleted.', $name));
             foreach ($factoryWithSameName as $factory) {
-                $this->info(sprintf('Deleting factory file `%s`...', $factory));
+                $io->info(sprintf('Deleting factory file `%s`...', $factory));
                 if (unlink($factory)) {
-                    $this->success(sprintf('Deleted `%s`', $factory));
+                    $io->success(sprintf('Deleted `%s`', $factory));
                 } else {
-                    $this->err(sprintf('An error occurred while deleting `%s`', $factory));
+                    $io->err(sprintf('An error occurred while deleting `%s`', $factory));
                 }
             }
         }

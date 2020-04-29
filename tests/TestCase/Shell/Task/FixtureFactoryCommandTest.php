@@ -1,10 +1,13 @@
 <?php
 namespace CakephpFixtureFactories\Test\TestCase\Shell\Task;
 
+use Cake\Console\Arguments;
+use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
+use CakephpFixtureFactories\Command\FixtureFactoryCommand;
 use CakephpFixtureFactories\Factory\BaseFactory;
-use CakephpFixtureFactories\Shell\Task\TestFixtureFactoryTask;
+use CakephpFixtureFactories\Shell\Task\FixtureFactoryTask;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;
@@ -23,21 +26,25 @@ use TestPlugin\Test\Factory\CustomerFactory;
 /**
  * App\Shell\Task\FactoryTask Test Case
  */
-class TestFixtureFactoryTaskTest extends TestCase
+class TestFixtureFactoryCommandTest extends TestCase
 {
     /**
      * ConsoleIo mock
      *
-     * @var \Cake\Console\ConsoleIo
+     * @var ConsoleIo
      */
     public $io;
+    /**
+     * @var Arguments
+     */
+    public $args;
 
     /**
      * Test subject
      *
-     * @var \CakephpFixtureFactories\Shell\Task\TestFixtureFactoryTask
+     * @var FixtureFactoryCommand
      */
-    public $FactoryTask;
+    public $FactoryCommand;
 
     /**
      * @var string
@@ -65,10 +72,8 @@ class TestFixtureFactoryTaskTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->io = $this->getMockBuilder('Cake\Console\ConsoleIo')->getMock();
-        $this->FactoryTask = new TestFixtureFactoryTask($this->io);
-//        $this->FactoryTask->pathFragment = 'tests/TestApp/tests/Factory/';
-//        $this->FactoryTask->pathToTableDir = 'tests/TestApp/src/Model/Table';
+        $this->io = new ConsoleIo();
+        $this->FactoryCommand = new FixtureFactoryCommand();
         $this->dropTestFactories();
     }
 
@@ -87,7 +92,7 @@ class TestFixtureFactoryTaskTest extends TestCase
      */
     public function tearDown(): void
     {
-        unset($this->FactoryTask);
+        unset($this->FactoryCommand);
 
         parent::tearDown();
     }
@@ -97,29 +102,29 @@ class TestFixtureFactoryTaskTest extends TestCase
     public function testFileName()
     {
         $name = 'Model';
-        $this->assertSame('ModelFactory.php', $this->FactoryTask->fileName($name));
+        $this->assertSame('ModelFactory.php', $this->FactoryCommand->fileName($name));
     }
 
     public function testGetFactoryNameFromModelName()
     {
         $model = 'Apples';
-        $this->assertEquals('AppleFactory', $this->FactoryTask->getFactoryNameFromModelName($model));
+        $this->assertEquals('AppleFactory', $this->FactoryCommand->getFactoryNameFromModelName($model));
     }
 
     public function testGetTableListInApp()
     {
-        $this->assertEquals($this->appTables, $this->FactoryTask->getTableList());
+        $this->assertEquals($this->appTables, $this->FactoryCommand->getTableList());
     }
 
     public function testGetTableListInPlugin()
     {
-        $this->FactoryTask->plugin = $this->testPluginName;
-        $this->assertEquals($this->pluginTables, $this->FactoryTask->getTableList());
+        $this->FactoryCommand->plugin = $this->testPluginName;
+        $this->assertEquals($this->pluginTables, $this->FactoryCommand->getTableList());
     }
 
     public function testHandleAssociationsWithArticles()
     {
-        $associations = $this->FactoryTask->setTable('Articles')->getAssociations();
+        $associations = $this->FactoryCommand->setTable('Articles', $this->io)->getAssociations();
         $expected = [
             'toOne' => [],
             'toMany' => ['Bills' => '\TestPlugin\Test\Factory\BillFactory', 'Authors' => '\TestApp\Test\Factory\AuthorFactory']
@@ -128,7 +133,7 @@ class TestFixtureFactoryTaskTest extends TestCase
     }
     public function testHandleAssociationsWithAuthors()
     {
-        $associations = $this->FactoryTask->setTable('Authors')->getAssociations();
+        $associations = $this->FactoryCommand->setTable('Authors', $this->io)->getAssociations();
         $expected = [
             'toOne' => [
                 'Address' => '\TestApp\Test\Factory\AddressFactory',
@@ -141,7 +146,7 @@ class TestFixtureFactoryTaskTest extends TestCase
 
     public function testHandleAssociationsWithAddresses()
     {
-        $associations = $this->FactoryTask->setTable('Addresses')->getAssociations();
+        $associations = $this->FactoryCommand->setTable('Addresses',  $this->io)->getAssociations();
         $expected = [
             'toOne' => ['City' => '\TestApp\Test\Factory\CityFactory'],
             'toMany' => ['Author' => '\TestApp\Test\Factory\AuthorFactory',],
@@ -151,7 +156,7 @@ class TestFixtureFactoryTaskTest extends TestCase
 
     public function testHandleAssociationsWithBillsWithoutPlugin()
     {
-        $associations = $this->FactoryTask->setTable('Bills')->getAssociations();
+        $associations = $this->FactoryCommand->setTable('Bills',  $this->io)->getAssociations();
         $expected = [
             'toOne' => [],
             'toMany' => [],
@@ -161,8 +166,8 @@ class TestFixtureFactoryTaskTest extends TestCase
 
     public function testHandleAssociationsWithBills()
     {
-        $this->FactoryTask->plugin = $this->testPluginName;
-        $associations = $this->FactoryTask->setTable('Bills')->getAssociations();
+        $this->FactoryCommand->plugin = $this->testPluginName;
+        $associations = $this->FactoryCommand->setTable('Bills',  $this->io)->getAssociations();
 
         $expected = [
             'toOne' => ['Article' => '\TestApp\Test\Factory\ArticleFactory', 'Customer' => '\TestPlugin\Test\Factory\CustomerFactory'],
@@ -175,37 +180,45 @@ class TestFixtureFactoryTaskTest extends TestCase
     {
         $this->assertEquals(
             'TestApp\Test\Factory',
-            $this->FactoryTask->getFactoryNamespace()
+            $this->FactoryCommand->getFactoryNamespace()
         );
     }
 
     public function testGetFactoryNamespaceWithPlugin()
     {
-        $this->FactoryTask->plugin = $this->testPluginName;
+        $this->FactoryCommand->plugin = $this->testPluginName;
         $this->assertEquals(
             $this->testPluginName . '\Test\Factory',
-            $this->FactoryTask->getFactoryNamespace()
+            $this->FactoryCommand->getFactoryNamespace()
         );
     }
 
     public function testBakeUnexistingTable()
     {
-        $this->assertFalse($this->FactoryTask->setTable('oups'));
+        try {
+            $this->assertFalse($this->FactoryCommand->setTable('oups',  $this->io));
+        } catch (\Cake\Console\Exception\StopException $e) {
+            $this->assertTextEquals("Cannot describe oups. It has 0 columns.", $e->getMessage());
+        }
     }
 
     public function testRunBakeWithNoArguments()
     {
-        $this->assertEquals(0, $this->FactoryTask->main());
+        $args = new Arguments([], [], []);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
     }
 
     public function testRunBakeWithWrongModel()
     {
-        $this->assertEquals(1, $this->FactoryTask->main('SomeModel'));
+        $args = new Arguments(['model' => 'SomeModel'], [], []);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
     }
 
     public function testRunBakeWithModel()
     {
-        $this->assertEquals(1, $this->FactoryTask->main('Articles'));
+        $args = new Arguments(['Articles'], ['force' => true], ['model']);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+
         $title = 'Foo';
         $articleFactory = ArticleFactory::make(compact('title'));
         $this->assertInstanceOf(BaseFactory::class, $articleFactory);
@@ -215,7 +228,8 @@ class TestFixtureFactoryTaskTest extends TestCase
     }
     public function testRunBakeAllInTestApp()
     {
-        $this->assertEquals(1, $this->FactoryTask->main('all'));
+        $args = new Arguments([], ['force' => true, 'all' => true], ['model']);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $this->assertInstanceOf(BaseFactory::class, ArticleFactory::make());
         $this->assertInstanceOf(BaseFactory::class, AddressFactory::make());
@@ -241,9 +255,11 @@ class TestFixtureFactoryTaskTest extends TestCase
 
     public function testRunBakeAllInTestPlugin()
     {
-        $this->assertEquals(1, $this->FactoryTask->main('Articles'));
-        $this->FactoryTask->plugin = 'TestPlugin';
-        $this->assertEquals(1, $this->FactoryTask->main('all'));
+        $args = new Arguments(['Articles'], ['force' => true], ['model']);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+
+        $args = new Arguments([], ['force' => true, 'plugin' => 'TestPlugin', 'all' => true], ['model']);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $customer = CustomerFactory::make(['name' => 'Foo'])->persist();
         $customer->id = null;
@@ -259,12 +275,4 @@ class TestFixtureFactoryTaskTest extends TestCase
         $this->assertInstanceOf(Bill::class, $bill);
         $this->assertInstanceOf(Customer::class, $customer);
     }
-
-//    public function testPatchData()
-//    {
-//        $articles = \CakephpFixtureFactories\Test\Factory\ArticleFactory::make(null, 4)->setJobTitle()->persist();
-//        dd(
-//            $articles
-//        );
-//    }
 }
