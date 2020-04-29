@@ -107,12 +107,16 @@ abstract class BaseFactory
     {}
 
     /**
-     * @param array|callable|null $data
+     * @param array|callable|null|int $data
      * @param array               $options
      * @return static
      */
     public static function make($makeParameter = null, $times = 1)
     {
+        if (is_numeric($makeParameter)) {
+            return self::makeFromArray([], $makeParameter);
+        }
+
         if (is_null($makeParameter)) {
             return self::makeFromArray([], $times);
         }
