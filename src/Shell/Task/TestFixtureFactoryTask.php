@@ -191,6 +191,8 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
         $this->modelName = $modelName;
 
+        $this->params['no-test'] = true;
+
         if ($this->setTable($modelName)) {
             $this->handleFactoryWithSameName($modelName);
              return parent::bake($modelName);
@@ -317,16 +319,8 @@ class TestFixtureFactoryTask extends SimpleBakeTask
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
         $parser = new ConsoleOptionParser($name);
 
-        $bakeThemes = [];
-        foreach (CorePlugin::loaded() as $plugin) {
-            $path = CorePlugin::classPath($plugin);
-            if (is_dir($path . 'Template' . DS . 'Bake')) {
-                $bakeThemes[] = $plugin;
-            }
-        }
-
         $parser->setDescription(
-            'Bake factory class.'
+            'Fixture factory generator.'
         )
             ->addArgument('model', [
                 'help' => 'Name of the model the factory will create entities from (plural, without the `Table` suffix). '.
