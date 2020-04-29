@@ -9,7 +9,7 @@
  * @link          http://cakephp.org CakePHP(tm) Project
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace TestFixtureFactories;
+namespace CakephpFixtureFactories;
 
 use Cake\Core\BasePlugin;
 
@@ -23,7 +23,7 @@ class Plugin extends BasePlugin
      *
      * @var string
      */
-    protected $name = 'TestFixtureFactories';
+    protected $name = 'CakephpFixtureFactories';
 
     /**
      * Don't try to load routes.
