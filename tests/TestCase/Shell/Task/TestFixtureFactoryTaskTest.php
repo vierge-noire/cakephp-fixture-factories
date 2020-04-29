@@ -262,7 +262,7 @@ class TestFixtureFactoryTaskTest extends TestCase
 
 //    public function testPatchData()
 //    {
-//        $articles = \TestFixtureFactories\Test\Factory\ArticleFactory::make(null, 4)->setJobTitle()->persist();
+//        $articles = \CakephpFixtureFactories\Test\Factory\ArticleFactory::make(null, 4)->setJobTitle()->persist();
 //        dd(
 //            $articles
 //        );
