@@ -46,7 +46,7 @@ by adding `$this->addPlugin('CakephpFixtureFactories');` in your `Application.ph
 
 The command
 ```
-bin/cake test_fixture_factory -h
+bin/cake fixture_factory -h
 ```
 will assist you. You have the possiblity to bake factories for all (`-a`) your models. You may also include building methods (`-m`)
 based on the associations defined in your models.
