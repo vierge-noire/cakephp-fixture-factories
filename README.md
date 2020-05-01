@@ -12,8 +12,14 @@ It is mainly composed of the following classes
 
 ## Installation
 
+For CakePHP 4.x:
 ```
 composer require --dev pakacuda/cakephp-fixture-factories
+```
+
+For CakePHP 3.x:
+```
+composer require --dev pakacuda/cakephp-fixture-factories "^0.1.0"
 ```
 
 Make sure you inject the fixture manager inside your `phpunit.xml` config file, per default located in the root folder of your application:
