@@ -35,7 +35,9 @@ migrations to generate the test database, ideally within `./tests/bootstrap.php`
 
 The fixtures will be created in the test database as defined in your [configuration](https://book.cakephp.org/4/en/development/testing.html#test-database-setup).
 
-Afther the modifications above, the traditional [CakePHP test fixtures](https://book.cakephp.org/4/en/development/testing.html#fixtures) will be ignored.  
+Afther the modifications above, the traditional [CakePHP test fixtures](https://book.cakephp.org/4/en/development/testing.html#fixtures) will be ignored.
+
+[Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020
 
 ## Bulding factories
 
