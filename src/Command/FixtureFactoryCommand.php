@@ -190,9 +190,7 @@ class FixtureFactoryCommand extends BakeCommand
             return self::CODE_SUCCESS;
         }
 
-//        $this->handleFactoryWithSameName($modelName, $args, $io);
-
-        $renderer = new TemplateRenderer($this->theme);
+        $renderer = new TemplateRenderer('CakephpFixtureFactories');
         $renderer->set($this->templateData($args));
 
         $contents = $renderer->generate($this->template());
