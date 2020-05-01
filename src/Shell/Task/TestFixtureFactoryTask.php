@@ -35,7 +35,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
     public function name(): string
     {
-        return 'test_fixture_factory';
+        return 'fixture_factory';
     }
 
     public function fileName($modelName): string
