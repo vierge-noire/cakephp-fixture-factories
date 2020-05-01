@@ -45,7 +45,7 @@ class TestFixtureFactoryTask extends SimpleBakeTask
 
     public function template(): string
     {
-        return 'test_fixture_factory';
+        return 'fixture_factory';
     }
 
     /**
