@@ -131,24 +131,24 @@ $article = ArticleFactory::make()->getEntity();
 ``` 
 Two articles with different random titles:
 ```
-$articles = ArticleFactory::make(null, 2)->getEntities();
+$articles = ArticleFactory::make(2)->getEntities();
 ``` 
 One article with title set to 'Foo'
 ```
 $article = ArticleFactory::make(['title' => 'Foo'])->getEntity();
 ``` 
-Three articles with title set to 'Foo'
+Three articles with the title set to 'Foo'
 ```
 $articles = ArticleFactory::make(['title' => 'Foo'], 3)->getEntities();
 ``` 
 
 In order to persist the data generated, use the method `persist` instead of `getEntity` resp. `getEntities`:
 ```
-$articles = ArticleFactory::make(['title' => 'Foo'], 3)->persist();
+$articles = ArticleFactory::make(3)->persist();
 ```
 
 ### Dynamic features
-The drawback of the previous example, is that all the generated examples have the same title. The following
+The drawback of the previous example, is that, if you haven't defined the `title` field with `faker` in the `setDefaultTemplate` method,  all the generated examples have the same title. The following
 generates three articles with different random titles:
 ```
 use App\Test\Factory\ArticleFactory;
@@ -162,9 +162,8 @@ $articles = ArticleFactory::make(function(ArticleFactory $factory, Generator $fa
 ```
 
 ### Chaining methods
-The aim of the test fixture factories is to bring business coherence in your test features.
-This is achieved using the chainable methods of your factories. As long as those return `$this`, you may chain as much
-methods as you require.
+The aim of the test fixture factories is to bring business coherence in your test fixtures.
+This can be simply achieved using the chainable methods of your factories. As long as those return `$this`, you may chain as much methods as you require.
 In the following example, we make use of a method in the Article factory in order to easily create articles with a job title.
 It is a simple study case, but this could be any pattern of your business logic. 
 ```
@@ -201,4 +200,7 @@ $article = ArticleFactory::make()->withAuthors(function(AuthorFactory $factory, 
     ];
 }, 10)->persist();
 ```
- 
+
+## Authors
+Nicolas Masson
+Juan Pablo Ramìrez 
