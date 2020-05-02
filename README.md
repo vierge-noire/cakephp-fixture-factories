@@ -8,7 +8,7 @@ It is mainly composed of the following classes
 * BaseFactory
 * FixtureInjector, which implements phpunit's BaseTestListener interface
 * FixtureManager, which extends CakePHP's FixtureManager class
-* TestFixtureFactoryTask to assist you baking your model factories 
+* FixtureFactoryCommand to assist you baking your model factories 
 
 ## Installation
 
