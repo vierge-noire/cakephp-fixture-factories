@@ -94,7 +94,7 @@ class ArticleFactory extends BaseFactory
             ->patchData([
                 'title' => $this->getFaker()->text(30),
             ])
-            ->withAuthors(null, 2);
+            ->withAuthors(2);
     }
 
     public function withAuthors($parameter = null, int $n = 1): self
@@ -185,11 +185,11 @@ use App\Test\Factory\ArticleFactory;
 use App\Test\Factory\AuthorFactory;
 use Faker\Generator;
 ...
- $article = ArticleFactory::make()->with('authors', AuthorFactory::make(null, 10))->persist();
+ $article = ArticleFactory::make()->with('authors', AuthorFactory::make(10))->persist();
 ```
 or using the method defined in our Articlefactory:
 ```
-$article = ArticleFactory::make()->withAuthors(null, 10)->persist();
+$article = ArticleFactory::make()->withAuthors(10)->persist();
 ```
 
 If we wish to randomly populate the field `biography` of the 10 authors of our article, with 10 different biographies:
