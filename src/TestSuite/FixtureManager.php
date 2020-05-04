@@ -55,64 +55,14 @@ class FixtureManager extends BaseFixtureManager
         $driver = $connection->config()['driver'];
         switch ($driver) {
             case Mysql::class:
-                $this->truncateDirtyTablesMySQL($connection);
+                new MySQLTruncator($connection);
                 break;
             case Sqlite::class:
-                $this->truncateDirtyTablesSqlite($connection);
+                new SqliteTruncator($connection);
                 break;
             default:
                 throw new \PHPUnit\Framework\Exception("The DB driver $driver is not being supported");
                 break;
         }
-    }
-
-    /**
-     * @param ConnectionInterface $connection
-     */
-    private function truncateDirtyTablesMySQL(ConnectionInterface $connection)
-    {
-        $databaseName = $connection->config()['database'];
-        $res = $connection->execute("
-            SELECT table_name, table_rows
-            FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_SCHEMA = '$databaseName' and AUTO_INCREMENT > 1;
-        ");
-        $dirtyTables = [];
-        foreach($res->fetchAll() as $tableData) {
-            if ($tableData[0] !== 'phinxlog') {
-                $dirtyTables[] = $tableData[0];
-            }
-        }
-        if (count($dirtyTables)) {
-            $truncateStatement = "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `", $dirtyTables) . "`; SET FOREIGN_KEY_CHECKS=1;";
-            $connection->execute($truncateStatement);
-        }
-    }
-
-    /**
-     * @param ConnectionInterface $connection
-     */
-    private function truncateDirtyTablesSqlite($connection)
-    {
-        $tables = $connection->execute("
-             SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('sqlite_sequence', 'phinxlog');
-        ")->fetchAll();
-        $tables = Hash::extract($tables, '{n}.0');
-
-        $connection->transactional(function(ConnectionInterface $connection) use ($tables) {
-            $connection->execute('pragma foreign_keys = off;');
-            foreach ($tables as $table) {
-                $connection
-                    ->newQuery()
-                    ->delete($table)
-                    ->execute();
-                $connection
-                    ->newQuery()
-                    ->delete('sqlite_sequence')
-                    ->where(['name' => $table])
-                    ->execute();
-            }
-            $connection->execute('pragma foreign_keys = on;');
-        });
     }
 }
