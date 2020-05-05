@@ -96,11 +96,13 @@ class ArticleFactory extends BaseFactory
      */
     protected function setDefaultTemplate()
     {
-        return $this
-            ->patchData([
-                'title' => $this->getFaker()->text(30),
-            ])
-            ->withAuthors(2);
+          $this->setDefaultData(function(Generator $faker) {
+               return [
+                    'title'   => $faker->text(30),
+                    'content' => $faker->text(1000),
+               ];
+          })
+          ->withAuthors(2);
     }
 
     public function withAuthors($parameter = null, int $n = 1): self
