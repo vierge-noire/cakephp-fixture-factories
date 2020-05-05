@@ -70,7 +70,7 @@ The Faker\Generator class is used in order to randomly populate fields, and is a
 
 Let us consider for example a model Articles, related to multiple Authors, while each author has an address in the model Addresses.
 
-This could be for example the ArticleFactory, with a random name set per default and two authors per default.
+This could be for example the ArticleFactory, with a random title and content and two authors per default.
 ```$xslt
 namespace App\Test\Factory;
 
