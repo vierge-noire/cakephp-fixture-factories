@@ -116,16 +116,16 @@ class ArticleFactory extends BaseFactory
     }
 }
 ```
-You may add any methods to help you build efficient and reusable test features.
+You may add any methods to help you build efficient and reusable test fixtures.
 
-## Creating test features
+## Creating test fixtures
 
 ### Validation / Behaviors
 With the aim of persisting data in the database as simply as possible, all behaviors (except Timestamp) and all validations
 are deactivated when creating CakePHP entities and persisting them to the database. Validation may be reactivated / customized by overwriting
  `$marshallerOptions` and `$saveOptions` in the factory concerned.
 
-### Static features
+### Static fixtures
 
 One article with a random title, as defined in the factory above:
 ```
@@ -149,7 +149,7 @@ In order to persist the data generated, use the method `persist` instead of `get
 $articles = ArticleFactory::make(3)->persist();
 ```
 
-### Dynamic features
+### Dynamic fixtures
 The drawback of the previous example, is that, if you haven't defined the `title` field with `faker` in the `setDefaultTemplate` method,  all the generated examples have the same title. The following
 generates three articles with different random titles:
 ```
