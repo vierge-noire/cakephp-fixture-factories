@@ -116,13 +116,4 @@ class FactoryTableLocatorTest extends TestCase
         $this->assertNull($article->slug ?? null);
         $this->assertTrue(is_int($article->id));
     }
-
-    public function testTimeStampIsSet()
-    {
-        $title = "This Article";
-        $article = ArticleFactory::make(compact('title'))->persist();
-
-        $article = TableRegistry::getTableLocator()->get('Articles')->get($article->id);
-        $this->assertInstanceOf(FrozenTime::class, $article->created_at);
-    }
 }
