@@ -21,7 +21,7 @@ class CakeFixturesTest extends TestCase
         ArticlesFixture::class,
     ];
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

@@ -20,7 +20,7 @@ class ArticlesFixture extends TestFixture
         ]
     ];
 
-    public function init(): void
+    public function init()
     {
         $this->records = [
             [
