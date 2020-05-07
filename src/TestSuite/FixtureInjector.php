@@ -2,10 +2,9 @@
 
 namespace CakephpFixtureFactories\TestSuite;
 
-use PHPUnit\Framework\BaseTestListener;
+
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestSuite;
-use TestListenerDefaultImplementation;
 
 /**
  * This class has to be used along the fixture factories
@@ -13,7 +12,7 @@ use TestListenerDefaultImplementation;
  * Class FixtureInjector
  * @package CakephpFixtureFactories\TestSuite
  */
-class FixtureInjector extends BaseTestListener
+class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
 {
     /**
      * @var FixtureManager
