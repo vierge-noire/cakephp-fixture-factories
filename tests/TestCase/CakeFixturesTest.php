@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Test\TestCase;
 
-use App\Test\Fixture\ArticlesFixture;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
-use PHPUnit\Framework\TestCase;
+use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
 use TestApp\Model\Table\ArticlesTable;
 
 
