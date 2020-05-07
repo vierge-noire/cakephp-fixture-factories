@@ -123,6 +123,7 @@ class FactoryTableLocatorTest extends TestCase
         $article = ArticleFactory::make(compact('title'))->persist();
 
         $article = TableRegistry::getTableLocator()->get('Articles')->get($article->id);
-        $this->assertInstanceOf(FrozenTime::class, $article->created_at);
+        $this->assertInstanceOf(FrozenTime::class, $article->created);
+        $this->assertInstanceOf(FrozenTime::class, $article->modified);
     }
 }
