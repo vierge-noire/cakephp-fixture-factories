@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace CakephpFixtureFactories\Test\EntitiesTestCase;
+namespace CakephpFixtureFactories\Test\TestCase;
 
 
 use Cake\Utility\Hash;
@@ -64,7 +64,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
                 'title' => $faker->jobTitle,
-                'content' => $faker->realText()
+                'body' => $faker->realText()
             ];
         }, $n)->withTitle($title)->persist();
         foreach ($articles as $article) {
@@ -77,15 +77,15 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $n = 3;
         $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
-                'content' => $faker->realText()
+                'body' => $faker->realText()
             ];
         }, $n)->persist();
         $firstTitle = $articles[0]->title;
-        $firstContent = $articles[0]->content;
+        $firstBody = $articles[0]->body;
         unset($articles[0]);
         foreach ($articles as $article) {
             $this->assertNotEquals($firstTitle, $article->title);
-            $this->assertNotEquals($firstContent, $article->content);
+            $this->assertNotEquals($firstBody, $article->body);
         }
     }
 
