@@ -10,7 +10,7 @@ use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
 use TestApp\Model\Table\ArticlesTable;
 
 
-class CakeFixturesTest extends TestCase
+class CakeFixturesWithoutAutoFixturesTest extends TestCase
 {
     /**
      * @var ArticlesTable
@@ -21,6 +21,8 @@ class CakeFixturesTest extends TestCase
         ArticlesFixture::class,
     ];
 
+    public $autoFixtures = false;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -28,11 +30,18 @@ class CakeFixturesTest extends TestCase
         $this->Articles = TableRegistry::getTableLocator()->get('Articles');
     }
 
+    public function testGetArticleFromCakeFixturesWithoutLoading()
+    {
+        $articles = $this->Articles->find();
+        $this->assertEquals(0, $articles->count());
+    }
+
     /**
      * For the moment, CakeFixtures are simply ignored
      */
     public function testGetArticleFromCakeFixtures()
     {
+        $this->loadFixtures('Articles');
         $articles = $this->Articles->find();
         $this->assertEquals(1, $articles->count());
     }
@@ -42,6 +51,7 @@ class CakeFixturesTest extends TestCase
      */
     public function testMakeArticle()
     {
+        $this->loadFixtures('Articles');
         $n = 10;
         ArticleFactory::make($n)->persist();
         $articles = $this->Articles->find();

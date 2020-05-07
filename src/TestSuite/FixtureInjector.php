@@ -43,6 +43,9 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
     public function startTest(Test $test): void
     {
         $this->_fixtureManager->truncateDirtyTablesForAllConnections();
+        if (!empty($test->fixtures)) {
+            parent::startTest($test);
+        }
     }
 
     /**
