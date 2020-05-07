@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace CakephpFixtureFactories\Test\EntitiesTestCase;
+namespace CakephpFixtureFactories\Test\TestCase;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
