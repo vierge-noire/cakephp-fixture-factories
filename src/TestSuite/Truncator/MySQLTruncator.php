@@ -1,12 +1,12 @@
 <?php
 
 
-namespace CakephpFixtureFactories\TestSuite;
+namespace CakephpFixtureFactories\TestSuite\Truncator;
 
 
 use Cake\Datasource\ConnectionInterface;
 
-class MySQLTruncator extends TableTruncator
+class MySQLTruncator extends BaseTableTruncator
 {
     public function truncate(ConnectionInterface $connection)
     {

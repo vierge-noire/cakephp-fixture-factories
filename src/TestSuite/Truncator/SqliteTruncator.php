@@ -1,13 +1,13 @@
 <?php
 
 
-namespace CakephpFixtureFactories\TestSuite;
+namespace CakephpFixtureFactories\TestSuite\Truncator;
 
 
 use Cake\Datasource\ConnectionInterface;
 use Cake\Utility\Hash;
 
-class SqliteTruncator extends TableTruncator
+class SqliteTruncator extends BaseTableTruncator
 {
     public function truncate(ConnectionInterface $connection)
     {

@@ -4,12 +4,24 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\EntitiesTestCase;
 
 
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\TestSuite\FixtureManager;
+use CakephpFixtureFactories\TestSuite\Truncator\MySQLTruncator;
 use PHPUnit\Framework\TestCase;
 
 class FixtureManagerTest extends TestCase
 {
+    /**
+     * @var FixtureManager
+     */
+    public $FixtureManager;
+
+    public function setUp(): void
+    {
+        $this->FixtureManager = new FixtureManager();
+    }
     public function testTablePopulation()
     {
         $testName = 'Test Name';
@@ -40,5 +52,21 @@ class FixtureManagerTest extends TestCase
             'test',
             TableRegistry::getTableLocator()->get('Articles')->getConnection()->config()['name']
         );
+    }
+
+    public function testLoadBaseConfig()
+    {
+        $expected = MySQLTruncator::class;
+        $this->FixtureManager->loadConfig();
+        $conf = Configure::readOrFail('TableTruncators.' . \Cake\Database\Driver\Mysql::class);
+        $this->assertEquals($expected, $conf);
+    }
+
+    public function testLoadCustomConfig()
+    {
+        $expected = '\testTruncator';
+        $this->FixtureManager->loadConfig();
+        $conf = Configure::readOrFail('TableTruncators.\testDriver');
+        $this->assertEquals($expected, $conf);
     }
 }
