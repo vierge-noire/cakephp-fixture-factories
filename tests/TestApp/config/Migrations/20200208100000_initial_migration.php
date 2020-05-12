@@ -34,10 +34,14 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => false,
             ])
-            ->addColumn('content', 'string', [
+            ->addColumn('body', 'string', [
                 'default' => null,
                 'limit' => 128,
                 'null' => true,
+            ])
+            ->addColumn('published', 'integer', [
+                'default' => 0,
+                'null' => false,
             ])
             ->addTimestamps()
             ->create();
