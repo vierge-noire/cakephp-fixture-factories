@@ -9,14 +9,14 @@ use Cake\Utility\Hash;
 
 class SqliteTruncator extends BaseTableTruncator
 {
-    public function truncate(ConnectionInterface $connection)
+    public function truncate()
     {
-        $tables = $connection->execute("
+        $tables = $this->connection->execute("
              SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('sqlite_sequence', 'phinxlog');
         ")->fetchAll();
         $tables = Hash::extract($tables, '{n}.0');
 
-        $connection->transactional(function(ConnectionInterface $connection) use ($tables) {
+        $this->connection->transactional(function(ConnectionInterface $connection) use ($tables) {
             $connection->execute('pragma foreign_keys = off;');
             foreach ($tables as $table) {
                 $connection
@@ -28,6 +28,22 @@ class SqliteTruncator extends BaseTableTruncator
                     ->delete('sqlite_sequence')
                     ->where(['name' => $table])
                     ->execute();
+            }
+            $connection->execute('pragma foreign_keys = on;');
+        });
+    }
+
+    public function dropAll()
+    {
+        $tables = $this->connection->execute("
+             SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('sqlite_sequence');
+        ")->fetchAll();
+        $tables = Hash::extract($tables, '{n}.0');
+
+        $this->connection->transactional(function(ConnectionInterface $connection) use ($tables) {
+            $connection->execute('pragma foreign_keys = off;');
+            foreach ($tables as $table) {
+                $connection->execute("DROP TABLE IF EXISTS $table;");
             }
             $connection->execute('pragma foreign_keys = on;');
         });

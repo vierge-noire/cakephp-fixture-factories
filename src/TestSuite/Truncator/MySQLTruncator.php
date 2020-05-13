@@ -8,10 +8,10 @@ use Cake\Datasource\ConnectionInterface;
 
 class MySQLTruncator extends BaseTableTruncator
 {
-    public function truncate(ConnectionInterface $connection)
+    public function truncate()
     {
-        $databaseName = $connection->config()['database'];
-        $res = $connection->execute("
+        $databaseName = $this->connection->config()['database'];
+        $res = $this->connection->execute("
             SELECT table_name, table_rows
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_SCHEMA = '$databaseName' and AUTO_INCREMENT > 1;
@@ -24,7 +24,25 @@ class MySQLTruncator extends BaseTableTruncator
         }
         if (count($dirtyTables)) {
             $truncateStatement = "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `", $dirtyTables) . "`; SET FOREIGN_KEY_CHECKS=1;";
-            $connection->execute($truncateStatement);
+            $this->connection->execute($truncateStatement);
+        }
+    }
+
+    public function dropAll()
+    {
+        $databaseName = $this->connection->config()['database'];
+        $res = $this->connection->execute("
+            SELECT table_name, table_rows
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = '$databaseName';
+        ");
+        $tables = [];
+        foreach($res->fetchAll() as $tableData) {
+                $tables[] = $tableData[0];
+        }
+        if (count($tables)) {
+            $truncateStatement = "SET FOREIGN_KEY_CHECKS=0; DROP TABLE `" . implode("`; DROP TABLE `", $tables) . "`; SET FOREIGN_KEY_CHECKS=1;";
+            $this->connection->execute($truncateStatement);
         }
     }
 }

@@ -58,7 +58,7 @@ class FixtureManagerTest extends TestCase
     {
         $expected = MySQLTruncator::class;
         $this->FixtureManager->loadConfig();
-        $conf = Configure::readOrFail('TableTruncators.' . \Cake\Database\Driver\Mysql::class);
+        $conf = Configure::readOrFail('TestFixtureTruncators.' . \Cake\Database\Driver\Mysql::class);
         $this->assertEquals($expected, $conf);
     }
 
@@ -66,7 +66,7 @@ class FixtureManagerTest extends TestCase
     {
         $expected = '\testTruncator';
         $this->FixtureManager->loadConfig();
-        $conf = Configure::readOrFail('TableTruncators.\testDriver');
+        $conf = Configure::readOrFail('TestFixtureTruncators.\testDriver');
         $this->assertEquals($expected, $conf);
     }
 }

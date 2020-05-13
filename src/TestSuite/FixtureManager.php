@@ -8,6 +8,7 @@ use Cake\Core\Exception\Exception;
 use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\FixtureManager as BaseFixtureManager;
+use CakephpFixtureFactories\TestSuite\Truncator\BaseTableTruncator;
 use function strpos;
 
 /**
@@ -16,6 +17,16 @@ use function strpos;
  */
 class FixtureManager extends BaseFixtureManager
 {
+
+    /**
+     * FixtureManager constructor.
+     * The config file fixture_factories is being loaded
+     */
+    public function __construct()
+    {
+        $this->loadConfig();
+    }
+
     /**
      * @param string $name
      * @return ConnectionInterface
@@ -33,11 +44,11 @@ class FixtureManager extends BaseFixtureManager
     public function truncateDirtyTablesForAllConnections()
     {
         $connections = ConnectionManager::configured();
-        $this->loadConfig();
 
         foreach ($connections as $connectionName) {
             if (strpos($connectionName, 'test') === 0) {
-                $this->truncateDirtyTables($connectionName);
+                $truncator = $this->getTruncator($connectionName);
+                $truncator->truncate();
             }
         }
     }
@@ -45,16 +56,16 @@ class FixtureManager extends BaseFixtureManager
     /**
      * Load the mapping between the database drivers
      * and the table truncators.
-     * Add your own truncators for a driver ot covered by
+     * Add your own truncators for a driver not being covered by
      * the package in your fixture-factories.php config file
      */
     public function loadConfig()
     {
         Configure::write([
-            'TableTruncators' => $this->getDefaultTruncators()
+            'TestFixtureTruncators' => $this->getDefaultTruncators()
         ]);
         try {
-            Configure::load('fixture-factories');
+            Configure::load('fixture_factories');
         } catch (Exception $exception) {}
     }
 
@@ -71,20 +82,31 @@ class FixtureManager extends BaseFixtureManager
     }
 
     /**
-     * Truncate tables that are reported dirty by the database behind the given connection name
-     * This is much faster than truncating all the tables for large databases
-     * Currently, only an implementation supporting Mysql and MariaDB is supported
+     * Get the driver of the given connection and
+     * return the corresponding truncator
+     * @param string $connectionName
+     * @return BaseTableTruncator
      */
-    private function truncateDirtyTables(string $connectionName): void
+    private function getTruncator(string $connectionName): BaseTableTruncator
     {
         $connection = $this->getConnection($connectionName);
         $driver = $connection->config()['driver'];
         try {
-            $truncatorName = Configure::readOrFail('TableTruncators.' . $driver);
+            $truncatorName = Configure::readOrFail('TestFixtureTruncators.' . $driver);
         } catch (\RuntimeException $e) {
             throw new \PHPUnit\Framework\Exception("The DB driver $driver is not being supported");
         }
+        /** @var BaseTableTruncator $truncator */
+        return new $truncatorName($connection);
+    }
 
-        new $truncatorName($connection);
+    /**
+     * Get the appropriate truncator and drop all tables
+     * @param string $connectionName
+     */
+    public function dropTables(string $connectionName)
+    {
+        $truncator = $this->getTruncator($connectionName);
+        $truncator->dropAll();
     }
 }
