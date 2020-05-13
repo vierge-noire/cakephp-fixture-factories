@@ -12,7 +12,7 @@ class SqliteTruncator extends BaseTableTruncator
     public function truncate()
     {
         $tables = $this->connection->execute("
-             SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('sqlite_sequence', 'phinxlog');
+             SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence' AND name NOT LIKE '%phinxlog';
         ")->fetchAll();
         $tables = Hash::extract($tables, '{n}.0');
 

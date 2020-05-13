@@ -41,14 +41,13 @@ class FixtureManager extends BaseFixtureManager
         $this->_initDb();
     }
 
-    public function truncateDirtyTablesForAllConnections()
+    public function truncateDirtyTablesForAllTestConnections()
     {
         $connections = ConnectionManager::configured();
 
         foreach ($connections as $connectionName) {
             if (strpos($connectionName, 'test') === 0) {
-                $truncator = $this->getTruncator($connectionName);
-                $truncator->truncate();
+                $this->getTruncator($connectionName)->truncate();
             }
         }
     }
@@ -106,7 +105,6 @@ class FixtureManager extends BaseFixtureManager
      */
     public function dropTables(string $connectionName)
     {
-        $truncator = $this->getTruncator($connectionName);
-        $truncator->dropAll();
+        $this->getTruncator($connectionName)->dropAll();
     }
 }

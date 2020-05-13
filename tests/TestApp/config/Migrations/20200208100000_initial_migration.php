@@ -93,33 +93,6 @@ class InitialMigration extends AbstractMigration
             ])
             ->addTimestamps()
             ->create();
-
-        $this->table('customers')
-            ->addPrimaryKey(['id'])
-            ->addColumn('name', 'string', [
-                'limit' => 128,
-                'null' => false,
-            ])
-            ->addTimestamps()
-            ->create();
-
-        $this->table('bills')
-            ->addPrimaryKey(['id'])
-            ->addColumn('customer_id', 'integer', [
-                'limit' => 11,
-                'null' => false,
-            ])
-            ->addColumn('article_id', 'integer', [
-                'limit' => 11,
-                'null' => false,
-            ])
-            ->addColumn('amount', 'float', [
-                'precision' => 10,
-                'scale' => 2,
-                'null' => false,
-            ])
-            ->addTimestamps()
-            ->create();
     }
 
     public function down()
@@ -130,7 +103,5 @@ class InitialMigration extends AbstractMigration
         $this->table('addresses')->drop();
         $this->table('cities')->drop();
         $this->table('countries')->drop();
-        $this->table('bills')->drop();
-        $this->table('customers')->drop();
     }
 }

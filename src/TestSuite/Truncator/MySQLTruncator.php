@@ -18,7 +18,7 @@ class MySQLTruncator extends BaseTableTruncator
         ");
         $dirtyTables = [];
         foreach($res->fetchAll() as $tableData) {
-            if ($tableData[0] !== 'phinxlog') {
+            if (!preg_match('/phinxlog$/', $tableData[0])) {
                 $dirtyTables[] = $tableData[0];
             }
         }
