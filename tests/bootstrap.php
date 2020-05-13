@@ -82,7 +82,6 @@ Configure::write('App', [
             TEST_APP . 'templates' . DS,
             TEMPLATE_PATH_CAKE_4,
             TEMPLATE_PATH_CAKE_3,
-            \Cake\Core\Plugin::templatePath('Bake'),
         ],
         'locales' => [TEST_APP . 'resources' . DS . 'locales' . DS],
     ],
