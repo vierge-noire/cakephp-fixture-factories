@@ -21,6 +21,11 @@ class Migrator
         $this->_fixtureManager = new FixtureManager();
     }
 
+    /**
+     * General command to run before your tests run
+     * E.g. in tests/bootstrap.php
+     * @param array $config
+     */
     public static function migrate(array $config = [])
     {
         $migrator = new static();
@@ -62,7 +67,7 @@ class Migrator
      * @param Migrations $migrations
      * @return bool
      */
-    public function isMigrationMissing(Migrations $migrations)
+    public function isMigrationMissing(Migrations $migrations): bool
     {
         $status = $migrations->status();
         foreach ($status as $migration) {
@@ -93,7 +98,10 @@ class Migrator
         return $this;
     }
 
-    public function getConfig()
+    /**
+     * @return array
+     */
+    public function getConfig(): array
     {
         return $this->config;
     }
