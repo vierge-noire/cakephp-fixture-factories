@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace CakephpFixtureFactories\TestSuite;
 
@@ -49,8 +49,11 @@ class Migrator
     /**
      * @param mixed $config
      */
-    public function setConfig(array $config = []): void
+    public function setConfig(array $config = [])
     {
+        if (!isset($config[0])) {
+            $config = [$config];
+        }
         $config = array_merge(Configure::read('TestFixtureMigrations', []), $config);
         if (empty($config)) {
             $config = [['connection' => 'test', 'source' => 'Migrations']];
