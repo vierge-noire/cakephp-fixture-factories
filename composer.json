@@ -20,7 +20,7 @@
         "fzaninotto/faker": "^1.9@dev"
     },
     "require-dev": {
-        "cakephp/bake": ">=2.0 <2.1.1",
+        "cakephp/bake": ">=2.0",
         "phpunit/phpunit": "^8.0"
     },
     "autoload": {
