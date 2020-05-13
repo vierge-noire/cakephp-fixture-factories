@@ -175,7 +175,7 @@ abstract class BaseFactory
     {
         if (is_null(self::$faker)) {
             $faker = Factory::create();
-            $faker->seed();
+            $faker->seed(1234);
             self::$faker = $faker;
         }
 
