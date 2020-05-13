@@ -5,6 +5,7 @@ return [
         '\testDriver' => '\testTruncator'
     ],
     'TestFixtureMigrations' => [
+        ['connection' => 'test'],
         ['plugin' => 'TestPlugin']
     ],
 ];
