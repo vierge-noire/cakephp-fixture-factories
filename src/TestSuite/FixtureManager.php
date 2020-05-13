@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\TestSuite;
 
-use Cake\Database\Driver\Mysql;
-use Cake\Database\Driver\Sqlite;
+use Cake\Core\Configure;
+use Cake\Core\Exception\Exception;
 use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\FixtureManager as BaseFixtureManager;
-use Cake\Utility\Hash;
-use function count;
-use function implode;
+use CakephpFixtureFactories\TestSuite\Truncator\BaseTableTruncator;
 use function strpos;
 
 /**
@@ -19,6 +17,16 @@ use function strpos;
  */
 class FixtureManager extends BaseFixtureManager
 {
+
+    /**
+     * FixtureManager constructor.
+     * The config file fixture_factories is being loaded
+     */
+    public function __construct()
+    {
+        $this->loadConfig();
+    }
+
     /**
      * @param string $name
      * @return ConnectionInterface
@@ -33,86 +41,70 @@ class FixtureManager extends BaseFixtureManager
         $this->_initDb();
     }
 
-    public function truncateDirtyTablesForAllConnections()
+    public function truncateDirtyTablesForAllTestConnections()
     {
         $connections = ConnectionManager::configured();
 
         foreach ($connections as $connectionName) {
             if (strpos($connectionName, 'test') === 0) {
-                $this->truncateDirtyTables($connectionName);
+                $this->getTruncator($connectionName)->truncate();
             }
         }
     }
 
     /**
-     * Truncate tables that are reported dirty by the database behind the given connection name
-     * This is much faster than truncating all the tables for large databases
-     * Currently, only an implementation supporting Mysql and MariaDB is supported
+     * Load the mapping between the database drivers
+     * and the table truncators.
+     * Add your own truncators for a driver not being covered by
+     * the package in your fixture-factories.php config file
      */
-    private function truncateDirtyTables(string $connectionName)
+    public function loadConfig()
+    {
+        Configure::write([
+            'TestFixtureTruncators' => $this->getDefaultTruncators()
+        ]);
+        try {
+            Configure::load('fixture_factories');
+        } catch (Exception $exception) {}
+    }
+
+    /**
+     * Table truncators provided by the package
+     * @return array
+     */
+    private function getDefaultTruncators()
+    {
+        return [
+            \Cake\Database\Driver\Mysql::class => \CakephpFixtureFactories\TestSuite\Truncator\MySQLTruncator::class,
+            \Cake\Database\Driver\Sqlite::class => \CakephpFixtureFactories\TestSuite\Truncator\SqliteTruncator::class,
+        ];
+    }
+
+    /**
+     * Get the driver of the given connection and
+     * return the corresponding truncator
+     * @param string $connectionName
+     * @return BaseTableTruncator
+     */
+    private function getTruncator(string $connectionName): BaseTableTruncator
     {
         $connection = $this->getConnection($connectionName);
         $driver = $connection->config()['driver'];
-        switch ($driver) {
-            case Mysql::class:
-                $this->truncateDirtyTablesMySQL($connection);
-                break;
-            case Sqlite::class:
-                $this->truncateDirtyTablesSqlite($connection);
-                break;
-            default:
-                throw new \PHPUnit\Framework\Exception("The DB driver $driver is not being supported");
-                break;
+        try {
+            $truncatorName = Configure::readOrFail('TestFixtureTruncators.' . $driver);
+        } catch (\RuntimeException $e) {
+            throw new \PHPUnit\Framework\Exception("The DB driver $driver is not being supported");
         }
+        /** @var BaseTableTruncator $truncator */
+        return new $truncatorName($connection);
     }
 
     /**
-     * @param ConnectionInterface $connection
+     * Get the appropriate truncator and drop all tables
+     * @param string $connectionName
      */
-    private function truncateDirtyTablesMySQL(ConnectionInterface $connection)
+    public function dropTables(string $connectionName)
     {
-        $databaseName = $connection->config()['database'];
-        $res = $connection->execute("
-            SELECT table_name, table_rows
-            FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_SCHEMA = '$databaseName' and AUTO_INCREMENT > 1;
-        ");
-        $dirtyTables = [];
-        foreach($res->fetchAll() as $tableData) {
-            if ($tableData[0] !== 'phinxlog') {
-                $dirtyTables[] = $tableData[0];
-            }
-        }
-        if (count($dirtyTables)) {
-            $truncateStatement = "SET FOREIGN_KEY_CHECKS=0; TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `", $dirtyTables) . "`; SET FOREIGN_KEY_CHECKS=1;";
-            $connection->execute($truncateStatement);
-        }
-    }
-
-    /**
-     * @param ConnectionInterface $connection
-     */
-    private function truncateDirtyTablesSqlite($connection)
-    {
-        $tables = $connection->execute("
-             SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('sqlite_sequence', 'phinxlog');
-        ")->fetchAll();
-        $tables = Hash::extract($tables, '{n}.0');
-
-        $connection->transactional(function(ConnectionInterface $connection) use ($tables) {
-            $connection->execute('pragma foreign_keys = off;');
-            foreach ($tables as $table) {
-                $connection
-                    ->newQuery()
-                    ->delete($table)
-                    ->execute();
-                $connection
-                    ->newQuery()
-                    ->delete('sqlite_sequence')
-                    ->where(['name' => $table])
-                    ->execute();
-            }
-            $connection->execute('pragma foreign_keys = on;');
-        });
+        $this->getTruncator($connectionName)->dropAll();
     }
 }
