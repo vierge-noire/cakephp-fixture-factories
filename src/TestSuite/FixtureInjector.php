@@ -42,7 +42,7 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
      */
     public function startTest(Test $test)
     {
-        $this->_fixtureManager->truncateDirtyTablesForAllConnections();
+        $this->_fixtureManager->truncateDirtyTablesForAllTestConnections();
     }
 
     /**
@@ -64,6 +64,6 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
      */
     public function endTestSuite(TestSuite $suite)
     {
-        $this->_fixtureManager->truncateDirtyTablesForAllConnections();
+        $this->_fixtureManager->truncateDirtyTablesForAllTestConnections();
     }
 }
