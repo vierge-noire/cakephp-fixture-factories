@@ -43,7 +43,7 @@ class CakeFixturesTest extends TestCase
     public function testMakeArticle()
     {
         $n = 10;
-        ArticleFactory::make($n)->persist();
+        ArticleFactory::make($n)->without('Authors')->persist();
         $articles = $this->Articles->find();
         $this->assertEquals($n + 1, $articles->count());
     }
