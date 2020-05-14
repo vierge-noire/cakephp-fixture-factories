@@ -88,13 +88,13 @@ Alternatively, you can also pass the various migrations directly in the `Migrato
 If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables where needed, and re-run the migrations. Switching branches
 does not require any manipulation on your side.
 
-Now that you test DB schema is set, you are ready to use the factories.
+Now that your test DB schema is set, you are ready to use the factories.
 
 ## Bulding factories
 
 ### Bake command
 
-We recommand you to use the bake command in order prepare your factories. In order to do so, simply load the `CakephpFixtureFactories` plugin 
+We recommand you to use the bake command in order prepare your factories. To do so, simply load the `CakephpFixtureFactories` plugin 
 by adding `$this->addPlugin('CakephpFixtureFactories');` in your `Application.php` bootstrap method, idealy right after loading the `Bake` plugin.
 
 The command
@@ -106,11 +106,11 @@ will assist you. You have the possiblity to bake factories for all (`-a`) your m
 based on the associations defined in your models.
 
 ### Factory
-A factory is a class that extends the `CakephpFixtureFactories\Factory`. It should implement the following two methods:
+A factory is a class that extends the `CakephpFixtureFactories\Factory\BaseFactory`. It should implement the following two methods:
 * `getRootTableRegistryName()`  which indicates the model that the factory will use to buld its fixtures;
 * `setDefaultTemplate()`  which sets the default configuration of each entity created by the factory.
 
-The Faker\Generator class is used in order to randomly populate fields, and is anytime available using `$this->getFaker`.
+The `Faker\Generator` is used in order to randomly populate fields, and is anytime available using `$this->getFaker()`.
 
 [Here is further documentation on Fake](https://github.com/fzaninotto/Faker). 
 
@@ -121,6 +121,7 @@ This could be for example the ArticleFactory, with a random title and body and t
 namespace App\Test\Factory;
 
 use CakephpFixtureFactories\Factory\BaseFactory;
+use Faker\Generator;
 
 class ArticleFactory extends BaseFactory
 {
@@ -168,7 +169,7 @@ class ArticleFactory extends BaseFactory
     }
 }
 ```
-You may add any methods to help you build efficient and reusable test fixtures.
+You may add any methods related to your business model, such as `setJobTitle` to help you build efficient and reusable factories.
 
 ## Creating test fixtures
 
@@ -178,6 +179,8 @@ are deactivated when creating CakePHP entities and persisting them to the databa
  `$marshallerOptions` and `$saveOptions` in the factory concerned.
 
 ### Static fixtures
+
+Here are some examples of how to use the fixture factories.
 
 One article with a random title, as defined in the factory above:
 ```
