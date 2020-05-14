@@ -51,7 +51,7 @@ class FixtureFactoryTask extends SimpleBakeTask
 
     public function template(): string
     {
-        return 'fixture_factory';
+        return 'CakephpFixtureFactories.fixture_factory';
     }
 
     /**

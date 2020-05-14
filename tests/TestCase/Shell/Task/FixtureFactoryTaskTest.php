@@ -14,7 +14,6 @@ use TestApp\Test\Factory\AuthorFactory;
 use TestApp\Test\Factory\CityFactory;
 use TestApp\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Factory\BaseFactory;
-use CakephpFixtureFactories\Shell\Task\TestFixtureFactoryTask;
 use Cake\TestSuite\TestCase;
 use TestPlugin\Model\Entity\Bill;
 use TestPlugin\Model\Entity\Customer;
