@@ -16,7 +16,7 @@ The Fixture Factories
 * reduce the effort of writing tests
 * enhance the readability of your tests: you get what you see
 
-And you will never have to create or maintain any test fixtures again! 
+And you will never have to create, maintain or declare any test fixtures again! 
 
 ## Installation
 
