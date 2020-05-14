@@ -63,13 +63,13 @@ you may place the following in your `tests/bootstrap.php`:
 ```
 This command will ensure that your migrations are well run and keeps the test DB(s) up to date.
 
-Should you have migrations as different places / connections than the default ones, you can configure these by creating a `config/fixture_factories.php` similar to the following:
+Should you have migrations as different places / connections than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
 ```$xslt
 <?php
 
 return [   
     'TestFixtureMigrations' => [
-        ['connection' => 'test'],       // this is the default migration configuration that you now have to include
+        ['connection' => 'test'],       // this is the default migration configuration that you now have to include, if needed
         ['plugin' => 'FooPlugin'],      // these are the migrations of the TestPlugin
         ['source' => 'BarFolder']       // these are some migrations located in a BarFolder
     ],
@@ -79,14 +79,14 @@ return [
 Alternatively, you can also pass the various migrations directly in the `Migrator` instanciation:
 ```$xslt
 \CakephpFixtureFactories\TestSuite\Migrator::migrate([
-     ['connection' => 'test'],       // this is the default migration configuration that you now have to include
-     ['plugin' => 'FooPlugin'],      // these are the migrations of the TestPlugin
-     ['source' => 'BarFolder']       // these are some migrations located in a BarFolder
+     ['connection' => 'test'],       
+     ['plugin' => 'FooPlugin'],      
+     ['source' => 'BarFolder']
  ]);
 ```
 
-If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables if needed, and re-run the migrations. Switching branches
-does not need any manipulation on your side.
+If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables where needed, and re-run the migrations. Switching branches
+does not require any manipulation on your side.
 
 Now that you test DB schema is set, you are ready to use the factories.
 
