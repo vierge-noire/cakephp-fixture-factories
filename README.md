@@ -63,7 +63,7 @@ you may place the following in your `tests/bootstrap.php`:
 ```
 This command will ensure that your migrations are well run and keeps the test DB(s) up to date.
 
-Should you have migrations as different places / connections than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
+Should you have migrations at different places / connections than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
 ```$xslt
 <?php
 
@@ -85,7 +85,7 @@ Alternatively, you can also pass the various migrations directly in the `Migrato
  ]);
 ```
 
-If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables where needed, and re-run the migrations. Switching branches
+If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables where needed, and re-run the migrations. Switching branches therefore
 does not require any manipulation on your side.
 
 Now that your test DB schema is set, you are ready to use the factories.
