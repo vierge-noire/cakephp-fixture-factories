@@ -70,8 +70,8 @@ Should you have migrations as different places / connections than the default on
 return [   
     'TestFixtureMigrations' => [
         ['connection' => 'test'],       // this is the default migration configuration that you now have to include, if needed
-        ['plugin' => 'FooPlugin'],      // these are the migrations of the TestPlugin
-        ['source' => 'BarFolder']       // these are some migrations located in a BarFolder
+        ['plugin' => 'FooPlugin'],      // these are the migrations of the FooPlugin
+        ['source' => 'BarFolder']       // these are the migrations located in a BarFolder
     ],
 ];
 ```
