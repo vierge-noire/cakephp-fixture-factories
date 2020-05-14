@@ -5,10 +5,18 @@ The main idea is to provide fixture factories in replacement to the fixtures you
 Using factories for managing fixtures has many advantages in terms of maintenance, test performance and readability inside your tests.
 
 It is mainly composed of the following classes
-* BaseFactory
-* FixtureInjector, which implements phpunit's BaseTestListener interface
+* BaseFactory that your factories will extend
+* FixtureInjector, which extends CakePHP's FixtureInjector
 * FixtureManager, which extends CakePHP's FixtureManager class
-* FixtureFactoryCommand to assist you baking your model factories 
+* FixtureFactoryCommand to assist you baking your model factories
+* Migrator to run your app's migrations on your test DBs prior to the tests
+
+The Fixture Factories
+* increase the speed of your tests
+* reduce the effort of writing tests
+* enhance the readability of your tests: you get what you see
+
+And you will never have to create or maintain any test fixtures again! 
 
 ## Installation
 
@@ -30,14 +38,51 @@ Make sure you inject the fixture manager inside your `phpunit.xml` config file, 
 ``` 
 
 Between each test, the package will truncate all the test tables that have been used during the previous test.
-The package will not create any schema for the test database. It is therefore highly recommanded that you use
-migrations to generate the test database, ideally within `./tests/bootstrap.php`.
 
-The fixtures will be created in the test database as defined in your [configuration](https://book.cakephp.org/4/en/development/testing.html#test-database-setup).
+The fixtures will be created in the test database(s) defined in your [configuration](https://book.cakephp.org/4/en/development/testing.html#test-database-setup).
 
-Afther the modifications above, the traditional [CakePHP test fixtures](https://book.cakephp.org/4/en/development/testing.html#fixtures) will be ignored.
+The package is compatible with the traditional [CakePHP test fixtures](https://book.cakephp.org/4/en/development/testing.html#fixtures).
+You may continue using them along with the Fixture Factories.
 
 [Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020
+
+## Creating your test DB
+
+The traditional CakePHP fixtures both create the schema of your test DBs and populate them with fixtures. The present package only cares about populating the test DBs on the fly.  
+
+The package proposes a tool to run your [migrations](https://book.cakephp.org/migrations/3/en/index.html) once prior to the tests. In order to do so,
+you may place the following in your `tests/bootstrap.php`:
+```$xslt
+\CakephpFixtureFactories\TestSuite\Migrator::migrate();
+```
+This command will ensure that your migrations are well run and keeps the test DB(s) up to date.
+
+Should you have migrations as different places / connections than the default ones, you can configure these by creating a `config/fixture_factories.php` similar to the following:
+```$xslt
+<?php
+
+return [   
+    'TestFixtureMigrations' => [
+        ['connection' => 'test'],       // this is the default migration configuration that you now have to include
+        ['plugin' => 'FooPlugin'],      // these are the migrations of the TestPlugin
+        ['source' => 'BarFolder']       // these are some migrations located in a BarFolder
+    ],
+];
+```
+
+Alternatively, you can also pass the various migrations directly in the `Migrator` instanciation:
+```$xslt
+\CakephpFixtureFactories\TestSuite\Migrator::migrate([
+     ['connection' => 'test'],       // this is the default migration configuration that you now have to include
+     ['plugin' => 'FooPlugin'],      // these are the migrations of the TestPlugin
+     ['source' => 'BarFolder']       // these are some migrations located in a BarFolder
+ ]);
+```
+
+If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables if needed, and re-run the migrations. Switching branches
+does not need any manipulation on your side.
+
+Now that you test DB schema is set, you are ready to use the factories.
 
 ## Bulding factories
 
@@ -49,8 +94,9 @@ by adding `$this->addPlugin('CakephpFixtureFactories');` in your `Application.ph
 The command
 ```
 bin/cake fixture_factory -h
+bin/cake bake fixture_factory -h    // for Cake 3.x
 ```
-will assist you. You have the possiblity to bake factories for all (`-a`) your models. You may also include building methods (`-m`)
+will assist you. You have the possiblity to bake factories for all (`-a`) your models. You may also include help methods (`-m`)
 based on the associations defined in your models.
 
 ### Factory
@@ -204,5 +250,5 @@ $article = ArticleFactory::make()->withAuthors(function(AuthorFactory $factory, 
 ```
 
 ## Authors
-Nicolas Masson
-Juan Pablo Ramìrez 
+* Nicolas Masson
+* Juan Pablo Ramìrez 
