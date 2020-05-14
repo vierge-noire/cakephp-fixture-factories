@@ -12,7 +12,13 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 
-class TestFixtureFactoryTask extends SimpleBakeTask
+/**
+ * FixtureFactory code generator.
+ *
+ * @property \Bake\Shell\Task\BakeTemplateTask $BakeTemplate
+ * @property \Bake\Shell\Task\TestTask $Test
+ */
+class FixtureFactoryTask extends SimpleBakeTask
 {
     /**
      * path to Factory directory

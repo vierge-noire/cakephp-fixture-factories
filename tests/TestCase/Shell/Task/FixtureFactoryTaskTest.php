@@ -2,6 +2,7 @@
 namespace CakephpFixtureFactories\Test\TestCase\Shell\Task;
 
 use Cake\Core\Configure;
+use CakephpFixtureFactories\Shell\Task\FixtureFactoryTask;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;
@@ -23,7 +24,7 @@ use TestPlugin\Test\Factory\CustomerFactory;
 /**
  * App\Shell\Task\FactoryTask Test Case
  */
-class TestFixtureFactoryTaskTest extends TestCase
+class FixtureFactoryTaskTest extends TestCase
 {
     /**
      * ConsoleIo mock
@@ -35,7 +36,7 @@ class TestFixtureFactoryTaskTest extends TestCase
     /**
      * Test subject
      *
-     * @var \CakephpFixtureFactories\Shell\Task\TestFixtureFactoryTask
+     * @var \CakephpFixtureFactories\Shell\Task\FixtureFactoryTask
      */
     public $FactoryTask;
 
@@ -66,9 +67,7 @@ class TestFixtureFactoryTaskTest extends TestCase
     {
         parent::setUp();
         $this->io = $this->getMockBuilder('Cake\Console\ConsoleIo')->getMock();
-        $this->FactoryTask = new TestFixtureFactoryTask($this->io);
-//        $this->FactoryTask->pathFragment = 'tests/TestApp/tests/Factory/';
-//        $this->FactoryTask->pathToTableDir = 'tests/TestApp/src/Model/Table';
+        $this->FactoryTask = new FixtureFactoryTask($this->io);
         $this->dropTestFactories();
     }
 
