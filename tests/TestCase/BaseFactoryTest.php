@@ -720,4 +720,12 @@ class BaseFactoryTest extends TestCase
 
         $this->assertEquals(1, TableRegistry::getTableLocator()->get('Addresses')->find()->count());
     }
+
+    public function testGetMarshallerAssociationNameShouldThrowInvalidArgumentException()
+    {
+        $authorFactory = AuthorFactory::make();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $authorFactory->getMarshallerAssociationName('business_address');
+    }
 }
