@@ -20,7 +20,6 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
-use Migrations\Migrations;
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
@@ -102,7 +101,7 @@ Cache::setConfig([
 
 ConnectionManager::setConfig('default', [
     'className' => 'Cake\Database\Connection',
-    'driver' => \Cake\Database\Driver\Sqlite::class,
+    'driver' => DB_DRIVER,  // defined in phpunit config file
     'persistent' => false,
     'host' => 'localhost',
     //'port' => 'non_standard_port_number',
@@ -120,8 +119,7 @@ ConnectionManager::setConfig('default', [
 
 ConnectionManager::setConfig('test', [
     'className' => 'Cake\Database\Connection',
-    'driver' => \Cake\Database\Driver\Sqlite::class,
-//    'driver' => \Cake\Database\Driver\Mysql::class,
+    'driver' => DB_DRIVER,  // defined in phpunit config file
     'persistent ' => false,
     'host' => 'localhost',
     //'port' => 'non_standard_port_number',
@@ -181,4 +179,5 @@ Inflector::rules('irregular', array(
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
 \Cake\Core\Plugin::load('TestPlugin');
+\Cake\Core\Plugin::load('CakephpFixtureFactories');
 \CakephpFixtureFactories\TestSuite\Migrator::migrate();

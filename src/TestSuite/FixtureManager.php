@@ -7,7 +7,9 @@ use Cake\Core\Exception\Exception;
 use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\FixtureManager as BaseFixtureManager;
-use CakephpFixtureFactories\TestSuite\Truncator\BaseTableTruncator;
+use CakephpFixtureFactories\TestSuite\Sniffer\MysqlTableSniffer;
+use CakephpFixtureFactories\TestSuite\Sniffer\SqliteTableSniffer;
+use Migrations\Migrations;
 use function strpos;
 
 /**
@@ -40,13 +42,16 @@ class FixtureManager extends BaseFixtureManager
         $this->_initDb();
     }
 
+    /**
+     * Scan all Test connections and truncate the dirty tables
+     */
     public function truncateDirtyTablesForAllTestConnections()
     {
         $connections = ConnectionManager::configured();
 
         foreach ($connections as $connectionName) {
-            if (strpos($connectionName, 'test') === 0) {
-                $this->getTruncator($connectionName)->truncate();
+            if ($connectionName === 'test' || strpos($connectionName, 'test_') === 0) {
+                $this->runMigration($connectionName, 'truncate');
             }
         }
     }
@@ -60,7 +65,7 @@ class FixtureManager extends BaseFixtureManager
     public function loadConfig()
     {
         Configure::write([
-            'TestFixtureTruncators' => $this->getDefaultTruncators()
+            'TestFixtureTableSniffers' => $this->getDefaultTableSniffers()
         ]);
         try {
             Configure::load('fixture_factories');
@@ -71,31 +76,12 @@ class FixtureManager extends BaseFixtureManager
      * Table truncators provided by the package
      * @return array
      */
-    private function getDefaultTruncators()
+    private function getDefaultTableSniffers()
     {
         return [
-            \Cake\Database\Driver\Mysql::class => \CakephpFixtureFactories\TestSuite\Truncator\MySQLTruncator::class,
-            \Cake\Database\Driver\Sqlite::class => \CakephpFixtureFactories\TestSuite\Truncator\SqliteTruncator::class,
+            \Cake\Database\Driver\Mysql::class => MysqlTableSniffer::class,
+            \Cake\Database\Driver\Sqlite::class => SqliteTableSniffer::class,
         ];
-    }
-
-    /**
-     * Get the driver of the given connection and
-     * return the corresponding truncator
-     * @param string $connectionName
-     * @return BaseTableTruncator
-     */
-    private function getTruncator(string $connectionName): BaseTableTruncator
-    {
-        $connection = $this->getConnection($connectionName);
-        $driver = $connection->config()['driver'];
-        try {
-            $truncatorName = Configure::readOrFail('TestFixtureTruncators.' . $driver);
-        } catch (\RuntimeException $e) {
-            throw new \PHPUnit\Framework\Exception("The DB driver $driver is not being supported");
-        }
-        /** @var BaseTableTruncator $truncator */
-        return new $truncatorName($connection);
     }
 
     /**
@@ -104,6 +90,23 @@ class FixtureManager extends BaseFixtureManager
      */
     public function dropTables(string $connectionName)
     {
-        $this->getTruncator($connectionName)->dropAll();
+        $this->runMigration($connectionName, 'drop');
+    }
+
+    /**
+     * Run one of the Fixture cleaning migrations: truncate or drop
+     * @param string $connectionName
+     * @param string $type
+     */
+    public function runMigration(string $connectionName, string $type)
+    {
+        $migration = new Migrations([
+            'source' => 'Migrations' . DS . ucfirst($type),
+            'connection' => $connectionName,
+            'plugin' => 'CakephpFixtureFactories',
+        ]);
+
+        $migration->migrate();
+        $migration->rollback(); // Rollbacking here to keep cakephp_fixture_factories_phinxlog empty
     }
 }

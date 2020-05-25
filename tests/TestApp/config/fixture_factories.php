@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'TestFixtureTruncators' => [
-        '\testDriver' => '\testTruncator'
+    'TestFixtureTableSniffers' => [
+        '\testDriver' => '\testTableSniffer'
     ],
     'TestFixtureMigrations' => [
         ['connection' => 'test'],

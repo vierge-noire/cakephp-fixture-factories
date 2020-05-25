@@ -8,7 +8,7 @@ use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
-use CakephpFixtureFactories\TestSuite\Truncator\MySQLTruncator;
+use CakephpFixtureFactories\TestSuite\Sniffer\MysqlTableSniffer;
 use PHPUnit\Framework\TestCase;
 
 class FixtureManagerTest extends TestCase
@@ -22,6 +22,7 @@ class FixtureManagerTest extends TestCase
     {
         $this->FixtureManager = new FixtureManager();
     }
+
     public function testTablePopulation()
     {
         $testName = 'Test Name';
@@ -56,17 +57,17 @@ class FixtureManagerTest extends TestCase
 
     public function testLoadBaseConfig()
     {
-        $expected = MySQLTruncator::class;
+        $expected = MysqlTableSniffer::class;
         $this->FixtureManager->loadConfig();
-        $conf = Configure::readOrFail('TestFixtureTruncators.' . \Cake\Database\Driver\Mysql::class);
+        $conf = Configure::readOrFail('TestFixtureTableSniffers.' . \Cake\Database\Driver\Mysql::class);
         $this->assertEquals($expected, $conf);
     }
 
     public function testLoadCustomConfig()
     {
-        $expected = '\testTruncator';
+        $expected = '\testTableSniffer';
         $this->FixtureManager->loadConfig();
-        $conf = Configure::readOrFail('TestFixtureTruncators.\testDriver');
+        $conf = Configure::readOrFail('TestFixtureTableSniffers.\testDriver');
         $this->assertEquals($expected, $conf);
     }
 }

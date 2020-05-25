@@ -1,21 +1,21 @@
 <?php
 declare(strict_types=1);
 
-namespace CakephpFixtureFactories\TestSuite\Truncator;
+namespace CakephpFixtureFactories\TestSuite\Sniffer;
 
 
 use Cake\Datasource\ConnectionInterface;
 
-abstract class BaseTableTruncator
+abstract class BaseTableSniffer
 {
     /**
      * @var ConnectionInterface
      */
     protected $connection;
 
-    abstract public function truncate();
+    abstract public function getDirtyTables(): array;
 
-    abstract public function dropAll();
+    abstract public function getAllTables(): array;
 
     /**
      * BaseTableTruncator constructor.
