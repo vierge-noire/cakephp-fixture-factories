@@ -400,7 +400,7 @@ abstract class BaseFactory
 
         if ($association instanceof HasOne || $association instanceof BelongsTo || $association instanceof HasMany || $association instanceof BelongsToMany) {
 
-            $associationName = Inflector::underscore($association->getName());
+            $associationName = $this->getMarshallerAssociationName($associationName);
             $this->templateData[$associationName] = $factory;
 
             $this->associated[] = Inflector::camelize($associationName);
@@ -422,7 +422,7 @@ abstract class BaseFactory
      */
     public function without(string $association): self
     {
-        unset($this->templateData[strtolower($association)]);
+        unset($this->templateData[strtolower($this->getMarshallerAssociationName($association))]);
         return $this;
     }
 
@@ -455,5 +455,18 @@ abstract class BaseFactory
             throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
         }
         return $this->rootTable->newEntities($this->toArray(), $this->getMarshallerOptions());
+    }
+
+    /**
+     * Returns lowercase underscored version of an association name
+     * Throws an exception if the association name does not exist on the rootTable of the factory
+     * @param string $associationName
+     * @return string underscore_version of the input string
+     * @throws \InvalidArgumentException
+     */
+    public function getMarshallerAssociationName(string $associationName)
+    {
+        $association = $this->getTable()->getAssociation($associationName);
+        return Inflector::underscore($association->getName());
     }
 }
