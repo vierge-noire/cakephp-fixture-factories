@@ -728,4 +728,12 @@ class BaseFactoryTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $authorFactory->getMarshallerAssociationName('business_address');
     }
+
+    public function testGetMarshallerAssociationNameShouldReturnUnderscoredAssociationName()
+    {
+        $authorFactory = AuthorFactory::make();
+
+        $marshallerAssociationName = $authorFactory->getMarshallerAssociationName('BusinessAddress');
+        $this->expectSame('business_address', $marshallerAssociationName);
+    }
 }
