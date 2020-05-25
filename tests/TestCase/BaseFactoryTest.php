@@ -734,6 +734,6 @@ class BaseFactoryTest extends TestCase
         $authorFactory = AuthorFactory::make();
 
         $marshallerAssociationName = $authorFactory->getMarshallerAssociationName('BusinessAddress');
-        $this->expectSame('business_address', $marshallerAssociationName);
+        $this->assertSame('business_address', $marshallerAssociationName);
     }
 }
