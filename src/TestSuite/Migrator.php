@@ -48,15 +48,16 @@ class Migrator
     }
 
     /**
-     * If a migration is missing, all tables of the considered connection are droped
+     * If a migration is missing, all tables of the considered connection are dropped
      * @return $this
      */
     private function dropTablesForMissingMigrations()
     {
         foreach ($this->getConfig() as $config) {
+            $config['connection'] = $config['connection'] ?? 'test';
             $migrations = new Migrations($config);
             if ($this->isMigrationMissing($migrations)) {
-                $this->_fixtureManager->dropTables($config['connection'] ?? 'test');
+                $this->_fixtureManager->dropTables($config['connection']);
             }
         }
         return $this;
