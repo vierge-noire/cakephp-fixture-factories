@@ -64,7 +64,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
                 'title' => $faker->jobTitle,
-                'body' => $faker->realText()
+                'body' => $faker->realText(100)
             ];
         }, $n)->withTitle($title)->persist();
         foreach ($articles as $article) {
@@ -77,7 +77,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $n = 3;
         $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
-                'body' => $faker->realText()
+                'body' => $faker->realText(100)
             ];
         }, $n)->persist();
         $firstTitle = $articles[0]->title;

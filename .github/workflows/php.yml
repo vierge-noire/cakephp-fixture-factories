@@ -4,11 +4,13 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Create DB
+        run: sudo service mysql start && mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test_fixture_factories;'
 
       - name: Validate composer.json
         run: composer validate
@@ -16,11 +18,17 @@ jobs:
       - name: Install lowest dependencies
         run: composer update --prefer-dist --no-progress --no-suggest --prefer-lowest --prefer-stable
 
-      - name: Run test suite
-        run: composer run-tests
+      - name: Run test suite with Sqlite
+        run: composer run-tests-sqlite
+
+      - name: Run test suite with Mysql
+        run: composer run-tests-mysql
 
       - name: Install highest dependencies
         run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
 
-      - name: Run test suite
-        run: composer run-tests
+      - name: Run test suite with Sqlite
+        run: composer run-tests-sqlite
+
+      - name: Run test suite with Mysql
+        run: composer run-tests-mysql

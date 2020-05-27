@@ -20,7 +20,7 @@
         "fzaninotto/faker": "^1.9@dev"
     },
     "require-dev": {
-        "cakephp/bake": ">=2.0",
+        "cakephp/bake": "^2.0",
         "phpunit/phpunit": "^8.0"
     },
     "autoload": {
@@ -38,7 +38,8 @@
         }
     },
     "scripts": {
-        "run-tests": "./vendor/bin/phpunit"
+        "run-tests-sqlite": "./vendor/bin/phpunit",
+        "run-tests-mysql": "./vendor/bin/phpunit --configuration phpunit_mysql.xml.dist"
     },
     "config": {
         "sort-packages": true
