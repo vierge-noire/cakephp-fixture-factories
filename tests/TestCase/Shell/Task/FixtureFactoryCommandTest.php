@@ -3,6 +3,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Shell\Task;
 
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
+use Cake\Console\Exception\StopException;
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Command\FixtureFactoryCommand;
@@ -195,11 +196,8 @@ class TestFixtureFactoryCommandTest extends TestCase
 
     public function testBakeUnexistingTable()
     {
-        try {
-            $this->assertFalse($this->FactoryCommand->setTable('oups',  $this->io));
-        } catch (\Cake\Console\Exception\StopException $e) {
-            $this->assertTextEquals("Cannot describe oups. It has 0 columns.", $e->getMessage());
-        }
+        $this->expectException(StopException::class);
+        $this->assertFalse($this->FactoryCommand->setTable('oups',  $this->io));
     }
 
     public function testRunBakeWithNoArguments()

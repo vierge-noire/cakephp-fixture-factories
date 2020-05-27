@@ -10,14 +10,15 @@ class AddBiographyToAuthors extends AbstractMigration
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
      * @return void
      */
-    public function change()
+    public function up()
     {
-        $table = $this->table('authors');
-        $table->addColumn('biography', 'text', [
-            'default' => null,
-            'null' => true,
-        ]);
-        $table->update();
+        $this
+            ->table('authors')
+            ->addColumn('biography', 'text', [
+                'default' => null,
+                'null' => true,
+            ])
+            ->update();
     }
 
     public function down()
