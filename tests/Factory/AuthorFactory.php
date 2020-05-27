@@ -25,7 +25,7 @@ class AuthorFactory extends BaseFactory
 
     public function withArticles($parameter = null, int $n = 1)
     {
-        return $this->with('Articles', ArticleFactory::make($parameter, $n)->without('authors'));
+        return $this->with('Articles', ArticleFactory::make($parameter, $n)->without('Authors'));
     }
 
     public function withAddress($parameter = null)

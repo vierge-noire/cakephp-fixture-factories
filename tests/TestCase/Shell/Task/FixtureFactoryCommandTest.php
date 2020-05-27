@@ -98,8 +98,6 @@ class TestFixtureFactoryCommandTest extends TestCase
         parent::tearDown();
     }
 
-
-
     public function testFileName()
     {
         $name = 'Model';
@@ -128,7 +126,8 @@ class TestFixtureFactoryCommandTest extends TestCase
         $associations = $this->FactoryCommand->setTable('Articles', $this->io)->getAssociations();
         $expected = [
             'toOne' => [],
-            'toMany' => ['Bills' => '\TestPlugin\Test\Factory\BillFactory', 'Authors' => '\TestApp\Test\Factory\AuthorFactory']
+            'oneToMany' => ['Bills' => '\TestPlugin\Test\Factory\BillFactory'],
+            'manyToMany' => ['Authors' => '\TestApp\Test\Factory\AuthorFactory'],
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -140,7 +139,8 @@ class TestFixtureFactoryCommandTest extends TestCase
                 'Address' => '\TestApp\Test\Factory\AddressFactory',
                 'BusinessAddress' => '\TestApp\Test\Factory\AddressFactory',
             ],
-            'toMany' => ['Articles' => '\TestApp\Test\Factory\ArticleFactory']
+            'oneToMany' => [],
+            'manyToMany' => ['Articles' => '\TestApp\Test\Factory\ArticleFactory']
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -150,7 +150,8 @@ class TestFixtureFactoryCommandTest extends TestCase
         $associations = $this->FactoryCommand->setTable('Addresses',  $this->io)->getAssociations();
         $expected = [
             'toOne' => ['City' => '\TestApp\Test\Factory\CityFactory'],
-            'toMany' => ['Author' => '\TestApp\Test\Factory\AuthorFactory',],
+            'oneToMany' => ['Authors' => '\TestApp\Test\Factory\AuthorFactory',],
+            'manyToMany' => [],
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -160,7 +161,8 @@ class TestFixtureFactoryCommandTest extends TestCase
         $associations = $this->FactoryCommand->setTable('Bills',  $this->io)->getAssociations();
         $expected = [
             'toOne' => [],
-            'toMany' => [],
+            'oneToMany' => [],
+            'manyToMany' => [],
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -172,7 +174,8 @@ class TestFixtureFactoryCommandTest extends TestCase
 
         $expected = [
             'toOne' => ['Article' => '\TestApp\Test\Factory\ArticleFactory', 'Customer' => '\TestPlugin\Test\Factory\CustomerFactory'],
-            'toMany' => [],
+            'oneToMany' => [],
+            'manyToMany' => [],
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -212,6 +215,54 @@ class TestFixtureFactoryCommandTest extends TestCase
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
     }
 
+    public function testRunBakeAllWithMethods()
+    {
+        $args = new Arguments([], ['force' => true, 'methods' => true, 'all' => true], ['model']);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+
+        $title = 'Foo';
+        $articleFactory = ArticleFactory::make(compact('title'))->withAuthors([], 2);
+        $this->assertInstanceOf(ArticleFactory::class, $articleFactory);
+
+        $article = $articleFactory->persist();
+        $this->assertEquals($title, $article->title);
+        $authors = $article->authors;
+        $this->assertSame(2, count($authors));
+        foreach ($authors as $author) {
+            $this->assertInstanceOf(Author::class, $author);
+        }
+    }
+
+    public function testRunBakeAllInTestAppWithMethods()
+    {
+        $args = new Arguments([], ['force' => true, 'all' => true, 'methods' => true,], ['model']);
+        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+
+        $this->assertInstanceOf(BaseFactory::class, ArticleFactory::make());
+        $this->assertInstanceOf(BaseFactory::class, AddressFactory::make());
+        $this->assertInstanceOf(BaseFactory::class, AuthorFactory::make());
+        $this->assertInstanceOf(BaseFactory::class, CityFactory::make());
+        $this->assertInstanceOf(BaseFactory::class, CountryFactory::make());
+
+        $country = CountryFactory::make(['name' => 'Foo'])->persist();
+        $country->id = null;
+        $city = CityFactory::make(['name' => 'Foo'])->withCountry($country->toArray())->persist();
+        $city->id = null;
+        $address = AddressFactory::make(['street' => 'Foo'])->withCity($city->toArray())->persist();
+        $address->id = null;
+        $author = AuthorFactory::make(['name' => 'Foo'])->withAddress($address->toArray())->persist();
+        $article = ArticleFactory::make(['title' => 'Foo'])->withAuthors($author->toArray())->persist();
+        $address2 = AddressFactory::make(['street' => 'Foo2'])->withCity($city->toArray())->withAuthors(['name' => 'Foo2'])->persist();
+
+
+        $this->assertInstanceOf(Article::class, $article);
+        $this->assertInstanceOf(Author::class, $author);
+        $this->assertInstanceOf(Address::class, $address);
+        $this->assertInstanceOf(Address::class, $address2);
+        $this->assertInstanceOf(City::class, $city);
+        $this->assertInstanceOf(Country::class, $country);
+    }
+
     public function testRunBakeWithModel()
     {
         $args = new Arguments(['Articles'], ['force' => true], ['model']);
@@ -224,6 +275,7 @@ class TestFixtureFactoryCommandTest extends TestCase
         $article = $articleFactory->persist();
         $this->assertEquals($title, $article->title);
     }
+
     public function testRunBakeAllInTestApp()
     {
         $args = new Arguments([], ['force' => true, 'all' => true], ['model']);

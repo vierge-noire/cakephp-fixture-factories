@@ -208,14 +208,16 @@ class FixtureFactoryCommand extends BakeCommand
     {
         $data = [
             'rootTableRegistryName' => $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName,
-            'factoryEntity' => Inflector::singularize($this->modelName),
+            'modelNameSingular' => Inflector::singularize($this->modelName),
+            'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace(),
         ];
         if ($arg->getOption('methods')) {
             $associations = $this->getAssociations();
             $data['toOne'] = $associations['toOne'];
-            $data['toMany'] = $associations['toMany'];
+            $data['oneToMany'] = $associations['oneToMany'];
+            $data['manyToMany'] = $associations['manyToMany'];
         }
 
         return $data;
@@ -230,7 +232,8 @@ class FixtureFactoryCommand extends BakeCommand
     {
         $associations = [
             'toOne' => [],
-            'toMany' => [],
+            'oneToMany' => [],
+            'manyToMany' => [],
         ];
 
         foreach($this->getTable()->associations() as $association) {
@@ -241,8 +244,10 @@ class FixtureFactoryCommand extends BakeCommand
                     $associations['toOne'][$association->getName()] = $this->getFactoryWithSpaceName($name);
                     break;
                 case 'oneToMany':
+                    $associations['oneToMany'][$association->getName()] = $this->getFactoryWithSpaceName($name);
+                    break;
                 case 'manyToMany':
-                    $associations['toMany'][$association->getName()] = $this->getFactoryWithSpaceName($name);
+                    $associations['manyToMany'][$association->getName()] = $this->getFactoryWithSpaceName($name);
                     break;
             }
         }

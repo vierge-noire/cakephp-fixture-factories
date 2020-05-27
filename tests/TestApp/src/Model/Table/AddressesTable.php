@@ -13,9 +13,7 @@ class AddressesTable extends Table
 
         $this->addAssociations([
             'hasMany' => [
-                'Author' => [
-                    'className' => 'Authors'
-                ],
+                'Authors',
             ],
             'belongsTo' => [
                 'City' => [
