@@ -34,7 +34,7 @@ class FixtureManagerTest extends TestCase
             ->find();
 
         $this->assertEquals(1, $authors->count());
-        $this->assertEquals(1, $authors->firstOrFail()->id);
+        $this->assertEquals(1, $authors->firstOrFail()->id, 'The id should be equal to 1. There might be an error in the truncation of the authors table, or of the tables in general');
     }
 
     public function testTablesEmptyOnStart()
