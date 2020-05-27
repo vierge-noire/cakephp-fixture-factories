@@ -39,7 +39,8 @@
         }
     },
     "scripts": {
-        "run-tests": "./vendor/bin/phpunit"
+        "run-tests-sqlite": "./vendor/bin/phpunit",
+        "run-tests-mysql": "./vendor/bin/phpunit --configuration phpunit_mysql.xml.dist"
     },
     "config": {
         "sort-packages": true
