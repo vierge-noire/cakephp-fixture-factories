@@ -40,5 +40,5 @@ does not require any manipulation on your side.
 
 ### Next
 
-Now that your test DB schema is set, you are ready to use the factories. Let us start with [baking them](docs/bake.md).
+Now that your test DB schema is set, you are ready to use the factories. Let us start with [baking them](bake.md).
 
