@@ -48,7 +48,7 @@ class ArticleFactory extends BaseFactory
      */
     public function withBills($parameter = null, int $n = 1)
     {
-        return $this->with('Bills', BillFactory::make($parameter, $n)->without('article'));
+        return $this->with('Bills', BillFactory::make($parameter, $n)->without('Article'));
     }
 
     /**

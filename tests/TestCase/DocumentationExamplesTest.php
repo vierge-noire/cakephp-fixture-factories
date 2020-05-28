@@ -73,7 +73,7 @@ class DocumentationExamplesTest extends TestCase
 
     public function testAssociationsMultiple()
     {
-        $article = ArticleFactory::make()->with('authors', AuthorFactory::make(10))->persist();
+        $article = ArticleFactory::make()->with('Authors', AuthorFactory::make(10))->persist();
         $this->assertEquals(10, count($article->authors));
         $previous = '';
         foreach ($article->authors as $author) {

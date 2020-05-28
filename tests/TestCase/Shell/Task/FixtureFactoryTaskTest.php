@@ -120,7 +120,12 @@ class FixtureFactoryTaskTest extends TestCase
         $associations = $this->FactoryTask->setTable('Articles')->getAssociations();
         $expected = [
             'toOne' => [],
-            'toMany' => ['Bills' => '\TestPlugin\Test\Factory\BillFactory', 'Authors' => '\TestApp\Test\Factory\AuthorFactory']
+            'oneToMany' => [
+                'Bills' => '\TestPlugin\Test\Factory\BillFactory'
+            ],
+            'manyToMany' => [
+                'Authors' => '\TestApp\Test\Factory\AuthorFactory'
+            ]
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -130,9 +135,12 @@ class FixtureFactoryTaskTest extends TestCase
         $expected = [
             'toOne' => [
                 'Address' => '\TestApp\Test\Factory\AddressFactory',
-                'BusinessAddress' => '\TestApp\Test\Factory\AddressFactory',
+                'BusinessAddress' => '\TestApp\Test\Factory\AddressFactory'
             ],
-            'toMany' => ['Articles' => '\TestApp\Test\Factory\ArticleFactory']
+            'oneToMany' => [],
+            'manyToMany' => [
+                'Articles' => '\TestApp\Test\Factory\ArticleFactory'
+            ]
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -141,8 +149,13 @@ class FixtureFactoryTaskTest extends TestCase
     {
         $associations = $this->FactoryTask->setTable('Addresses')->getAssociations();
         $expected = [
-            'toOne' => ['City' => '\TestApp\Test\Factory\CityFactory'],
-            'toMany' => ['Author' => '\TestApp\Test\Factory\AuthorFactory',],
+            'toOne' => [
+                'City' => '\TestApp\Test\Factory\CityFactory'
+            ],
+            'oneToMany' => [
+                'Authors' => '\TestApp\Test\Factory\AuthorFactory'
+            ],
+            'manyToMany' => []
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -152,7 +165,8 @@ class FixtureFactoryTaskTest extends TestCase
         $associations = $this->FactoryTask->setTable('Bills')->getAssociations();
         $expected = [
             'toOne' => [],
-            'toMany' => [],
+            'oneToMany' => [],
+            'manyToMany' => []
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -163,8 +177,12 @@ class FixtureFactoryTaskTest extends TestCase
         $associations = $this->FactoryTask->setTable('Bills')->getAssociations();
 
         $expected = [
-            'toOne' => ['Article' => '\TestApp\Test\Factory\ArticleFactory', 'Customer' => '\TestPlugin\Test\Factory\CustomerFactory'],
-            'toMany' => [],
+            'toOne' => [
+                'Article' => '\TestApp\Test\Factory\ArticleFactory',
+                'Customer' => '\TestPlugin\Test\Factory\CustomerFactory'
+            ],
+            'oneToMany' => [],
+            'manyToMany' => []
         ];
         $this->assertEquals($expected, $associations);
     }

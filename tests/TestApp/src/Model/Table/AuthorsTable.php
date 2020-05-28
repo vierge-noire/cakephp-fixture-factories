@@ -19,7 +19,7 @@ class AuthorsTable extends Table
                     'className' => 'Addresses'
                 ],
             ],
-            'hasMany' => [
+            'belongsToMany' => [
                 'Articles'
             ],
         ]);

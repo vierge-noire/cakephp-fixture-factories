@@ -55,11 +55,14 @@ class {{ factory }} extends CakephpBaseFactory
      */
     public function with{{ association }}(array $parameter = null): {{ factory }}
     {
-        return $this->with('{{ association }}', {{ associationFactory }}::make($parameter));
+        return $this->with(
+            '{{ association }}',
+            {{ associationFactory }}::make($parameter)
+        );
     }
 
 {% endfor %}
-{% for association, associationFactory in toMany %}
+{% for association, associationFactory in oneToMany %}
     /**
     * @param array $parameter
     * @param int $n
@@ -67,9 +70,25 @@ class {{ factory }} extends CakephpBaseFactory
     */
     public function with{{ association }}(array $parameter = null, int $n = 1): {{ factory }}
     {
-        return $this
-            ->with('{{ association }}', {{ associationFactory }}::make($parameter, $n)
-            ->without('{{ factoryEntity }}'));
+        return $this->with(
+            '{{ association }}',
+            {{ associationFactory }}::make($parameter, $n)->without('{{ modelNameSingular }}')
+        );
+    }
+
+{% endfor %}
+{% for association, associationFactory in manyToMany %}
+    /**
+    * @param array $parameter
+    * @param int $n
+    * @return {{ factory }}
+    */
+    public function with{{ association }}(array $parameter = null, int $n = 1): {{ factory }}
+    {
+        return $this->with(
+            '{{ association }}',
+            {{ associationFactory }}::make($parameter, $n)->without('{{ modelName }}')
+        );
     }
 
 {% endfor %}

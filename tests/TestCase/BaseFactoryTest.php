@@ -97,7 +97,7 @@ class BaseFactoryTest extends TestCase
     public function testWithOnePersistOneLevel()
     {
         $author = AuthorFactory::make(['name' => 'test author'])
-            ->with('address', AddressFactory::make(['street' => 'test street']))
+            ->with('Address', AddressFactory::make(['street' => 'test street']))
             ->persist();
 
         $this->assertSame(true, $author instanceof Author);
@@ -498,10 +498,8 @@ class BaseFactoryTest extends TestCase
     public function testHasAssociation()
     {
         $authorsTable = AuthorFactory::make()->getTable();
-        $this->assertSame(true, $authorsTable->hasAssociation('address'));
         $this->assertSame(true, $authorsTable->hasAssociation('Address'));
         $this->assertSame(true, $authorsTable->hasAssociation('Articles'));
-        $this->assertSame(true, $authorsTable->hasAssociation('articles'));
     }
 
     public function testAssociationByPropertyName()
@@ -701,7 +699,7 @@ class BaseFactoryTest extends TestCase
         $article = ArticleFactory::make()->getEntity();
         $this->assertInstanceOf(Author::class, $article->authors[0]);
 
-        $article = ArticleFactory::make()->without('authors')->getEntity();
+        $article = ArticleFactory::make()->without('Authors')->getEntity();
         $this->assertNull($article->authors);
     }
 
@@ -710,7 +708,7 @@ class BaseFactoryTest extends TestCase
         $article = ArticleFactory::make()->withBills()->getEntity();
         $this->assertInstanceOf(Bill::class, $article->bills[0]);
 
-        $article = ArticleFactory::make()->withBills()->without('bills')->getEntity();
+        $article = ArticleFactory::make()->withBills()->without('Bills')->getEntity();
         $this->assertNull($article->bills);
     }
 
