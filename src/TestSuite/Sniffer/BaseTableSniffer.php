@@ -25,4 +25,20 @@ abstract class BaseTableSniffer
     {
         $this->connection = $connection;
     }
+
+    /**
+     * @return ConnectionInterface
+     */
+    public function getConnection(): ConnectionInterface
+    {
+        return $this->connection;
+    }
+
+    /**
+     * @param ConnectionInterface $connection
+     */
+    public function setConnection(ConnectionInterface $connection): void
+    {
+        $this->connection = $connection;
+    }
 }

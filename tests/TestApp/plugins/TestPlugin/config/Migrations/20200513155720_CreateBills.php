@@ -23,10 +23,11 @@ class CreateBills extends AbstractMigration
                 'null' => false,
             ])
             ->addColumn('amount', 'float', [
-                'precision' => 10,
                 'scale' => 2,
                 'null' => false,
             ])
+            ->addIndex('customer_id')
+            ->addIndex('article_id')
             ->addTimestamps()
             ->create();
     }

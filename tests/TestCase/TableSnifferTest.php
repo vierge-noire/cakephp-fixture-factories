@@ -6,7 +6,7 @@ namespace CakephpFixtureFactories\Test\TestCase;
 
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
-use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
 use CakephpFixtureFactories\TestSuite\Migrator;
 use CakephpFixtureFactories\TestSuite\Sniffer\BaseTableSniffer;
@@ -37,20 +37,29 @@ class TableSnifferTest extends TestCase
         $this->FixtureManager = new FixtureManager();
     }
 
+    public function tearDown(): void
+    {
+        unset($this->TableSniffer);
+        unset($this->FixtureManager);
+        
+        parent::tearDown();
+    }
+
+
     /**
      * Following the convention, the TableSniffers must be the name of
      * the driver (e.g. Mysql)  + "TableSniffer"
      */
     public function testTableSnifferFinder()
     {
-        $driver = explode('\\', DB_DRIVER);
+        $driver = explode('\\', getenv('DB_DRIVER'));
         $driver = array_pop($driver);
         $expectedClass = '\CakephpFixtureFactories\TestSuite\Sniffer\\' . $driver . 'TableSniffer';
         $this->assertInstanceOf($expectedClass, $this->TableSniffer);
     }
 
     /**
-     * All tables should have been truncated before every test
+     * All tables should be clean before every test
      */
     public function testGetDirtyTablesAfterDroppingTables()
     {
@@ -58,12 +67,22 @@ class TableSnifferTest extends TestCase
     }
 
     /**
-     * All tables should have been truncated before every test
+     * Find dirty tables
      */
     public function testGetDirtyTablesAfterCreatingCustomer()
     {
-        CustomerFactory::make()->persist();
-        $this->assertSame(['customers'], $this->TableSniffer->getDirtyTables());
+        $expected = [
+            'addresses',
+            'articles',
+            'articles_authors',
+            'authors',
+            'cities',
+            'countries'
+        ];
+        ArticleFactory::make()->persist();
+        $found = $this->TableSniffer->getDirtyTables();
+        sort($found);
+        $this->assertSame($expected, $found);
     }
 
     /**
