@@ -100,13 +100,27 @@ Cache::setConfig([
     ],
 ]);
 
-ConnectionManager::setConfig('default', [
+// Ensure default test connection is defined
+if (!getenv('DB_DRIVER')) {
+    putenv('DB_DRIVER=Cake\Database\Driver\Sqlite');
+}
+
+if (!getenv('DB_USER')) {
+    putenv('DB_USER=root');
+}
+
+// Ensure default test connection is defined
+if (!getenv('DB_PWD')) {
+    putenv('DB_PWD=root');
+}
+
+$dbConnection = [
     'className' => 'Cake\Database\Connection',
-    'driver' => DB_DRIVER,  // defined in phpunit config file
+    'driver' => getenv('DB_DRIVER'),
     'persistent' => false,
     'host' => '127.0.0.1',
-    'username' => 'root',
-    'password' => 'root',
+    'username' => getenv('DB_USER'),
+    'password' => getenv('DB_PWD'),
     'database' => 'test_fixture_factories',
     'encoding' => 'utf8',
     'timezone' => 'UTC',
@@ -115,24 +129,10 @@ ConnectionManager::setConfig('default', [
     'log' => false,
     //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
     'url' => env('DATABASE_TEST_URL', null),
-]);
+];
 
-ConnectionManager::setConfig('test', [
-    'className' => 'Cake\Database\Connection',
-    'driver' => DB_DRIVER,  // defined in phpunit config file
-    'persistent ' => false,
-    'host' => '127.0.0.1',
-    'username' => 'root',
-    'password' => 'root',
-    'database' => 'test_fixture_factories',
-    'encoding' => 'utf8',
-    'timezone' => 'UTC',
-    'cacheMetadata' => true,
-    'quoteIdentifiers' => true,
-    'log' => false,
-    //'init' => ['SET GLOBAL innodb_stats_on_metadata = 0'],
-    'url' => env('DATABASE_TEST_URL', null),
-]);
+ConnectionManager::setConfig('default', $dbConnection);
+ConnectionManager::setConfig('test', $dbConnection);
 
 Configure::write('Session', [
     'defaults' => 'php',

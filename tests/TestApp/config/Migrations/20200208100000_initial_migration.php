@@ -21,6 +21,8 @@ class InitialMigration extends AbstractMigration
                 'limit' => 11,
                 'null' => true,
             ])
+            ->addIndex('address_id')
+            ->addIndex('business_address_id')
             ->addTimestamps()
             ->create();
 
@@ -69,6 +71,7 @@ class InitialMigration extends AbstractMigration
                 'limit' => 11,
                 'null' => false,
             ])
+            ->addIndex('city_id')
             ->addTimestamps()
             ->create();
 
@@ -82,6 +85,7 @@ class InitialMigration extends AbstractMigration
                 'limit' => 11,
                 'null' => false,
             ])
+            ->addIndex('country_id')
             ->addTimestamps()
             ->create();
 

@@ -10,8 +10,8 @@ class MysqlTableSniffer extends BaseTableSniffer
 {
     public function getDirtyTables(): array
     {
-        $databaseName = $this->connection->config()['database'];
-        $tables = $this->connection->execute("
+        $databaseName = $this->getConnection()->config()['database'];
+        $tables = $this->getConnection()->execute("
             SELECT table_name, table_rows
             FROM INFORMATION_SCHEMA.TABLES
             WHERE
@@ -25,8 +25,8 @@ class MysqlTableSniffer extends BaseTableSniffer
 
     public function getAllTables(): array
     {
-        $databaseName = $this->connection->config()['database'];
-        $tables = $this->connection->execute("
+        $databaseName = $this->getConnection()->config()['database'];
+        $tables = $this->getConnection()->execute("
             SELECT table_name, table_rows
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_SCHEMA = '$databaseName';
