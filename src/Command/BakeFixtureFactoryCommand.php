@@ -14,7 +14,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 
-class FixtureFactoryCommand extends BakeCommand
+class BakeFixtureFactoryCommand extends BakeCommand
 {
     /**
      * path to Factory directory
@@ -48,6 +48,14 @@ class FixtureFactoryCommand extends BakeCommand
     public function template(): string
     {
         return 'fixture_factory';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function defaultName(): string
+    {
+        return 'bake fixture_factory';
     }
 
     /**
@@ -154,6 +162,7 @@ class FixtureFactoryCommand extends BakeCommand
         $this->extractCommonProperties($args);
         $model = $args->getArgument('model') ?? '';
         $model = $this->_getName($model);
+        $loud = !$args->getOption('quiet');
 
         if ($this->plugin) {
             $parts = explode('/', $this->plugin);
@@ -170,9 +179,13 @@ class FixtureFactoryCommand extends BakeCommand
         }
 
         if (empty($model)) {
-            $io->out('Choose a table from the following, choose -a for all, or -h for help:');
+            if ($loud) {
+                $io->out('Choose a table from the following, choose -a for all, or -h for help:');
+            }
             foreach ($this->getTableList() as $table) {
-                $io->out('- ' . $table);
+                if ($loud) {
+                    $io->out('- ' . $table);
+                }
             }
             return self::CODE_SUCCESS;
         }
@@ -345,6 +358,11 @@ class FixtureFactoryCommand extends BakeCommand
                 'short' => 'f',
                 'boolean' => true,
                 'help' => 'Force overwriting existing file if a factory already exists with the same name.',
+            ])
+            ->addOption('quiet', [
+                'short' => 'q',
+                'boolean' => true,
+                'help' => 'Enable quiet output.',
             ])
             ->addOption('methods', [
                 'short' => 'm',

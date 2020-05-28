@@ -1,12 +1,13 @@
 <?php
 namespace CakephpFixtureFactories\Test\TestCase\Shell\Task;
 
+use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\Exception\StopException;
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
-use CakephpFixtureFactories\Command\FixtureFactoryCommand;
+use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Shell\Task\FixtureFactoryTask;
 use TestApp\Model\Entity\Address;
@@ -27,7 +28,7 @@ use TestPlugin\Test\Factory\CustomerFactory;
 /**
  * App\Shell\Task\FactoryTask Test Case
  */
-class TestFixtureFactoryCommandTest extends TestCase
+class BakeFixtureFactoryCommandTest extends TestCase
 {
     /**
      * ConsoleIo mock
@@ -43,7 +44,7 @@ class TestFixtureFactoryCommandTest extends TestCase
     /**
      * Test subject
      *
-     * @var FixtureFactoryCommand
+     * @var BakeFixtureFactoryCommand
      */
     public $FactoryCommand;
 
@@ -74,7 +75,7 @@ class TestFixtureFactoryCommandTest extends TestCase
     {
         parent::setUp();
         $this->io = new ConsoleIo();
-        $this->FactoryCommand = new FixtureFactoryCommand();
+        $this->FactoryCommand = new BakeFixtureFactoryCommand();
         $this->dropTestFactories();
     }
 
@@ -200,24 +201,24 @@ class TestFixtureFactoryCommandTest extends TestCase
     public function testBakeUnexistingTable()
     {
         $this->expectException(StopException::class);
-        $this->assertFalse($this->FactoryCommand->setTable('oups',  $this->io));
+        $this->assertFalse($this->FactoryCommand->setTable('ignore_that',  $this->io));
     }
 
     public function testRunBakeWithNoArguments()
     {
-        $args = new Arguments([], [], []);
+        $args = new Arguments([], ['quiet' => true], []);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
     }
 
     public function testRunBakeWithWrongModel()
     {
-        $args = new Arguments(['model' => 'SomeModel'], [], []);
+        $args = new Arguments(['model' => 'SomeModel'], ['quiet' => true], []);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
     }
 
     public function testRunBakeAllWithMethods()
     {
-        $args = new Arguments([], ['force' => true, 'methods' => true, 'all' => true], ['model']);
+        $args = new Arguments([], ['force' => true, 'methods' => true, 'all' => true, 'quiet' => true,], ['model']);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $title = 'Foo';
@@ -235,7 +236,7 @@ class TestFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeAllInTestAppWithMethods()
     {
-        $args = new Arguments([], ['force' => true, 'all' => true, 'methods' => true,], ['model']);
+        $args = new Arguments([], ['force' => true, 'all' => true, 'methods' => true, 'quiet' => true,], ['model']);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $this->assertInstanceOf(BaseFactory::class, ArticleFactory::make());
@@ -265,7 +266,7 @@ class TestFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeWithModel()
     {
-        $args = new Arguments(['Articles'], ['force' => true], ['model']);
+        $args = new Arguments(['Articles'], ['force' => true, 'quiet' => true,], ['model']);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $title = 'Foo';
@@ -278,7 +279,7 @@ class TestFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeAllInTestApp()
     {
-        $args = new Arguments([], ['force' => true, 'all' => true], ['model']);
+        $args = new Arguments([], ['force' => true, 'all' => true, 'quiet' => true,], ['model']);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $this->assertInstanceOf(BaseFactory::class, ArticleFactory::make());
@@ -305,10 +306,10 @@ class TestFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeAllInTestPlugin()
     {
-        $args = new Arguments(['Articles'], ['force' => true], ['model']);
+        $args = new Arguments(['Articles'], ['force' => true, 'quiet' => true,], ['model']);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
-        $args = new Arguments([], ['force' => true, 'plugin' => 'TestPlugin', 'all' => true], ['model']);
+        $args = new Arguments([], ['force' => true, 'plugin' => 'TestPlugin', 'all' => true, 'quiet' => true,], ['model']);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $customer = CustomerFactory::make(['name' => 'Foo'])->persist();
