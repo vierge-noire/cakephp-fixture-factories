@@ -10,9 +10,9 @@ The `Faker\Generator` is used in order to randomly populate fields, and is anyti
 
 [Here is further documentation on Fake](https://github.com/fzaninotto/Faker). 
 
-Let us consider for example a model `Articles`, related to multiple `Authors`, while each author has an address in the model Addresses.
+Let us consider for example a model `Articles`, related to multiple `Authors`.
 
-This could be for example the `ArticleFactory`, with a random title and body and two authors per default.
+This could be for example the `ArticleFactory`. Per default the fields `title` and `body` are set with `Faker` and two associated `authors` are created.
 ```$xslt
 namespace App\Test\Factory;
 
