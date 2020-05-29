@@ -13,7 +13,7 @@ This command will ensure that your migrations are well run and keeps the test DB
 
 ### Multiple migrations settings
 
-Should you have migrations at different places or connections than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
+Should you have migrations at different places or connections other than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
 ```$xslt
 <?php
 
