@@ -25,21 +25,6 @@ In order to persist the data generated, use the method `persist` instead of `get
 ```
 $articles = ArticleFactory::make(3)->persist();
 ```
-
-### Dynamic fixtures
-The drawback of the previous example, is that, if you haven't defined the `title` field with `faker` in the `setDefaultTemplate` method,  all the generated examples have the same title. The following
-generates three articles with different random titles:
-```
-use App\Test\Factory\ArticleFactory;
-use Faker\Generator;
-...
-$articles = ArticleFactory::make(function(ArticleFactory $factory, Generator $faker) {
-   return [
-       'title' => $faker->text,
-   ];
-}, 3)->persist();
-```
-
 ### Chaining methods
 The aim of the test fixture factories is to bring business coherence in your test fixtures.
 This can be simply achieved using the chainable methods of your factories. As long as those return `$this`, you may chain as much methods as you require.
