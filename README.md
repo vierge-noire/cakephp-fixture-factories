@@ -42,7 +42,7 @@ Create all your fixtures in one command line.
 
 ## [Inside Fixture Factories](docs/factories.md)
 
-How the Fixture Factories look like.
+What the Fixture Factories look like.
 
 ## [Creating Test Fixtures](docs/examples.md)
 
