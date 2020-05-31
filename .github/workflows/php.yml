@@ -6,6 +6,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    with:
+      php-version: '7.0'
+
     strategy:
       fail-fast: false
 
