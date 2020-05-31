@@ -21,8 +21,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - with:
-        php-version: '7.0'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.0
 
       - name: Create DB
         run: sudo service mysql start && mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test_fixture_factories;'
