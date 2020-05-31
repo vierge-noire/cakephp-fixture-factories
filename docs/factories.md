@@ -41,8 +41,8 @@ class ArticleFactory extends BaseFactory
     {
           $this->setDefaultData(function(Generator $faker) {
                return [
-                    'title'   => $faker->text(30),
-                    'body' => $faker->text(1000),
+                    'title' => $faker->text(30),
+                    'body'  => $faker->text(1000),
                ];
           })
           ->withAuthors(2);
