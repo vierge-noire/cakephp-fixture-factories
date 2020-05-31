@@ -246,11 +246,11 @@ class BakeFixtureFactoryCommandTest extends TestCase
         $this->assertInstanceOf(BaseFactory::class, CountryFactory::make());
 
         $country = CountryFactory::make(['name' => 'Foo'])->persist();
-        $country->id = null;
+        unset($country['id']);
         $city = CityFactory::make(['name' => 'Foo'])->withCountry($country->toArray())->persist();
-        $city->id = null;
+        unset($city['id']);
         $address = AddressFactory::make(['street' => 'Foo'])->withCity($city->toArray())->persist();
-        $address->id = null;
+        unset($address['id']);
         $author = AuthorFactory::make(['name' => 'Foo'])->withAddress($address->toArray())->persist();
         $article = ArticleFactory::make(['title' => 'Foo'])->withAuthors($author->toArray())->persist();
         $address2 = AddressFactory::make(['street' => 'Foo2'])->withCity($city->toArray())->withAuthors(['name' => 'Foo2'])->persist();
@@ -289,11 +289,11 @@ class BakeFixtureFactoryCommandTest extends TestCase
         $this->assertInstanceOf(BaseFactory::class, CountryFactory::make());
 
         $country = CountryFactory::make(['name' => 'Foo'])->persist();
-        $country->id = null;
+        unset($country['id']);
         $city = CityFactory::make(['name' => 'Foo'])->with('Country', CountryFactory::make($country->toArray()))->persist();
-        $city->id = null;
+        unset($city['id']);
         $address = AddressFactory::make(['street' => 'Foo'])->with('City', CityFactory::make($city->toArray()))->persist();
-        $address->id = null;
+        unset($address['id']);
         $author = AuthorFactory::make(['name' => 'Foo'])->with('Address', AddressFactory::make($address->toArray()))->persist();
         $article = ArticleFactory::make(['title' => 'Foo'])->with('Authors', AuthorFactory::make($author->toArray()))->persist();
 
@@ -313,9 +313,9 @@ class BakeFixtureFactoryCommandTest extends TestCase
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
 
         $customer = CustomerFactory::make(['name' => 'Foo'])->persist();
-        $customer->id = null;
+        unset($customer['id']);
         $article = ArticleFactory::make(['title' => 'Foo'])->persist();
-        $article->id = null;
+        unset($article['id']);
 
         $bill = BillFactory::make(['amount' => 100])
             ->with('Customer', CustomerFactory::make($customer->toArray()))

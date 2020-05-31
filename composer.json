@@ -38,8 +38,9 @@
         }
     },
     "scripts": {
-        "run-tests-sqlite": "./vendor/bin/phpunit",
-        "run-tests-mysql": "./vendor/bin/phpunit --configuration phpunit_mysql.xml.dist"
+        "run-tests-sqlite": "bash run_tests.sh Sqlite",
+        "run-tests-mysql": "bash run_tests.sh Mysql",
+        "run-tests-postgres": "bash run_tests.sh Postgres"
     },
     "config": {
         "sort-packages": true

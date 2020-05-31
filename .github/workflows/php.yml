@@ -6,6 +6,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: test_fixture_factories
+          POSTGRES_PASSWORD: root
+          POSTGRES_USER: root
+
     steps:
       - uses: actions/checkout@v2
 
@@ -18,17 +31,23 @@ jobs:
       - name: Install lowest dependencies
         run: composer update --prefer-dist --no-progress --no-suggest --prefer-lowest --prefer-stable
 
-      - name: Run test suite with Sqlite
+      - name: Run tests on sqlite
         run: composer run-tests-sqlite
 
-      - name: Run test suite with Mysql
-        run: composer run-tests-mysql
+      - name: Run tests on mysql
+        run: composer run-tests-mysql root root
+
+      - name: Run tests on postgres
+        run: composer run-tests-postgres root root
 
       - name: Install highest dependencies
         run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
 
-      - name: Run test suite with Sqlite
+      - name: Run tests on sqlite
         run: composer run-tests-sqlite
 
-      - name: Run test suite with Mysql
-        run: composer run-tests-mysql
+      - name: Run tests on mysql
+        run: composer run-tests-mysql root root
+
+      - name: Run tests on postgres
+        run: composer run-tests-postgres root root

@@ -9,6 +9,7 @@ use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\FixtureManager as BaseFixtureManager;
 use CakephpFixtureFactories\TestSuite\Sniffer\MysqlTableSniffer;
+use CakephpFixtureFactories\TestSuite\Sniffer\PostgresTableSniffer;
 use CakephpFixtureFactories\TestSuite\Sniffer\SqliteTableSniffer;
 use Migrations\Migrations;
 use function strpos;
@@ -41,6 +42,7 @@ class FixtureManager extends BaseFixtureManager
     public function initDb()
     {
         $this->_initDb();
+
     }
 
     /**
@@ -82,6 +84,7 @@ class FixtureManager extends BaseFixtureManager
         return [
             \Cake\Database\Driver\Mysql::class => MysqlTableSniffer::class,
             \Cake\Database\Driver\Sqlite::class => SqliteTableSniffer::class,
+            \Cake\Database\Driver\Postgres::class => PostgresTableSniffer::class,
         ];
     }
 
