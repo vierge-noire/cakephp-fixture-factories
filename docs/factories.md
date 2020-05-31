@@ -1,6 +1,6 @@
 ## Fixture Factories
 
-### How they look like
+### What they look like
 
 A factory is a class that extends the `CakephpFixtureFactories\Factory\BaseFactory`. It should implement the following two methods:
 * `getRootTableRegistryName()`  which indicates the model that the factory will use to buld its fixtures;
