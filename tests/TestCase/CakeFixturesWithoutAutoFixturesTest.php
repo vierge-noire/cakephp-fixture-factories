@@ -23,7 +23,7 @@ class CakeFixturesWithoutAutoFixturesTest extends TestCase
 
     public $autoFixtures = false;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

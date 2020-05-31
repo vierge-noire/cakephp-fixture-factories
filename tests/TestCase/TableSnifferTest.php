@@ -37,7 +37,7 @@ class TableSnifferTest extends TestCase
         $this->FixtureManager = new FixtureManager();
     }
 
-    public function tearDown(): void
+    public function tearDown()
     {
         unset($this->TableSniffer);
         unset($this->FixtureManager);
