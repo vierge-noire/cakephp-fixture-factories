@@ -2,7 +2,7 @@
 
 Once you have installed the package via composer...
 
-### Listerners
+### Listeners
 
 Make sure you inject the fixture manager inside your `phpunit.xml` config file, per default located in the root folder of your application:
 
