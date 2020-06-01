@@ -36,13 +36,16 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
     /**
      * Cleanup before test starts
      * Truncates the tables that were used by the previous test before starting a new one
+     * The truncation may be by-passed by setting in the test
      *
      * @param \PHPUnit\Framework\Test $test The test case
      * @return void
      */
     public function startTest(Test $test)
     {
-        $this->_fixtureManager->truncateDirtyTablesForAllTestConnections();
+        if (!$this->skipTablesTruncation($test)) {
+            $this->_fixtureManager->truncateDirtyTablesForAllTestConnections();
+        }
         if (!empty($test->fixtures)) {
             parent::startTest($test);
         }
@@ -61,12 +64,25 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
     }
 
     /**
-     * Truncate all dirty tables at the end of the test suite to leave a clean database
+     * The tables are not truncated at the end of the suite.
+     * This way one can observe the content of the test DB
+     * after a suite has been run.
      *
      * @param TestSuite $suite
      */
     public function endTestSuite(TestSuite $suite)
     {
-        $this->_fixtureManager->truncateDirtyTablesForAllTestConnections();
+        // noop, see method description
+    }
+
+    /**
+     * If a test uses the SkipTablesTruncation trait, table truncation
+     * does not occur between tests
+     * @param Test $test
+     * @return bool
+     */
+    public function skipTablesTruncation(Test $test): bool
+    {
+        return $test->skipTablesTruncation ?? false;
     }
 }
