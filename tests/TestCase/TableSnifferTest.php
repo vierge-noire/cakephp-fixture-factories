@@ -5,11 +5,13 @@ namespace CakephpFixtureFactories\Test\TestCase;
 
 
 use Cake\Core\Configure;
+use Cake\Database\Exception;
 use Cake\Datasource\ConnectionManager;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
 use CakephpFixtureFactories\TestSuite\Migrator;
 use CakephpFixtureFactories\TestSuite\Sniffer\BaseTableSniffer;
+use CakephpFixtureFactories\TestSuite\Sniffer\SqliteTableSniffer;
 use CakephpFixtureFactories\TestSuite\Sniffer\TableSnifferFinder;
 use PHPUnit\Framework\TestCase;
 
@@ -29,11 +31,7 @@ class TableSnifferTest extends TestCase
 
     public function setUp(): void
     {
-        $connection = ConnectionManager::get('test');
-        $driver = $connection->config()['driver'];
-        $sniffer = Configure::readOrFail("TestFixtureTableSniffers.$driver");
-        $this->TableSniffer = new $sniffer($connection);
-
+        $this->TableSniffer = $this->getSniffer('test');
         $this->FixtureManager = new FixtureManager();
     }
 
@@ -41,10 +39,25 @@ class TableSnifferTest extends TestCase
     {
         unset($this->TableSniffer);
         unset($this->FixtureManager);
+        ConnectionManager::drop('test_dummy_connection');
         
         parent::tearDown();
     }
 
+    private function getSniffer(string $connectionName): BaseTableSniffer
+    {
+        $connection = ConnectionManager::get($connectionName);
+        $driver = $connection->config()['driver'];
+        $sniffer = Configure::readOrFail("TestFixtureTableSniffers.$driver");
+        return new $sniffer($connection);
+    }
+
+    private function createNonExistentConnection()
+    {
+        $config = ConnectionManager::getConfig('test');
+        $config['database'] = 'dummy_database';
+        ConnectionManager::setConfig('test_dummy_connection', $config);
+    }
 
     /**
      * Following the convention, the TableSniffers must be the name of
@@ -117,5 +130,30 @@ class TableSnifferTest extends TestCase
         ];
         $found = $this->TableSniffer->getAllTables();
         $this->assertSame(sort($expected), sort($found));
+    }
+
+    /**
+     * If a DB is not created, the sniffers should throw an exception
+     */
+    public function testGetDirtyTablesOnNonExistentDB()
+    {
+        $this->createNonExistentConnection();
+        $this->expectException(Exception::class);
+        $this->getSniffer('test_dummy_connection')->getDirtyTables();
+    }
+
+    /**
+     * If a DB is not created, the sniffers should throw an exception
+     */
+    public function testGetAllTablesOnNonExistentDB()
+    {
+        $this->createNonExistentConnection();
+        $sniffer = $this->getSniffer('test_dummy_connection');
+        if ($sniffer instanceof SqliteTableSniffer) {
+            $this->expectNotToPerformAssertions();
+        } else {
+            $this->expectException(Exception::class);
+        }
+        $this->getSniffer('test_dummy_connection')->getAllTables();
     }
 }
