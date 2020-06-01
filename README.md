@@ -32,6 +32,7 @@ For CakePHP 3.x, append:  ```"^0.1.0"```
 ## [Setup](docs/setup.md)
 
 Adjustments before using the fixture factories (1 minute).
+This is also illustrated, along with the usage of migrations, in [this video](https://www.youtube.com/watch?v=h8A3lHrwInI).
 
 ## [Use Migrations](docs/migrator.md)
 
