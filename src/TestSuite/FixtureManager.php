@@ -53,7 +53,10 @@ class FixtureManager extends BaseFixtureManager
         $connections = ConnectionManager::configured();
 
         foreach ($connections as $connectionName) {
-            if ($connectionName === 'test' || strpos($connectionName, 'test_') === 0) {
+            if ($connectionName === 'test_debug_kit') {
+                // CakePHP 4 solves a DebugKit issue by creating an Sqlite connection
+                // in tests/bootstrap.php. This connection should be ignored
+            } elseif ($connectionName === 'test' || strpos($connectionName, 'test_') === 0) {
                 $this->runMigration($connectionName, 'truncate');
             }
         }
