@@ -150,7 +150,7 @@ class TableSnifferTest extends TestCase
         $this->createNonExistentConnection();
         $sniffer = $this->getSniffer('test_dummy_connection');
         if ($sniffer instanceof SqliteTableSniffer) {
-            $this->expectNotToPerformAssertions();
+            $this->assertTrue(true);
         } else {
             $this->expectException(Exception::class);
         }
