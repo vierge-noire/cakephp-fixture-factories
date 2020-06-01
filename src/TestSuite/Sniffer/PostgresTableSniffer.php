@@ -4,28 +4,31 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\TestSuite\Sniffer;
 
 
-use Cake\Utility\Hash;
-
 class PostgresTableSniffer extends BaseTableSniffer
 {
+    /**
+     * @inheritDoc
+     * @return array
+     */
     public function getDirtyTables(): array
     {
-        $tables = $this->getConnection()->execute("
+        return $this->executeQuery("
             SELECT substr(sequencename, 1, length(sequencename) - 7)
             FROM pg_sequences
             WHERE last_value > 0;
-        ")
-            ->fetchAll();
-        return Hash::extract($tables, '{n}.0');
+        ");
     }
 
+    /**
+     * @inheritDoc
+     * @return array
+     */
     public function getAllTables(): array
     {
-        $tables = $this->getConnection()->execute("            
+        return $this->executeQuery("            
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'            
-        ")->fetchAll();
-        return Hash::extract($tables, '{n}.0');
+        ");
     }
 }
