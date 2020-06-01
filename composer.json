@@ -12,7 +12,6 @@
         }
     ],
     "license": "MIT",
-    "minimum-stability": "dev",
     "require": {
         "php": ">=7.2",
         "cakephp/cakephp": "^4.0",
