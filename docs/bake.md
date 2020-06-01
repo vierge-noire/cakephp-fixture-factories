@@ -22,5 +22,5 @@ based on the associations defined in your models.
 
 ### Next
 
-Let us now see how the factories [look like](factories.md)...
+Let us now see how the factories [look](factories.md)...
 
