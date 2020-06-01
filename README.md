@@ -17,6 +17,8 @@ You may continue using them along with the Fixture Factories. It is however reco
 the Fixture Factories approach. 
 
 [Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020.
+
+[Here is a video](https://www.youtube.com/watch?v=x2JV59SmDik) on the motivations behind the present package.
 There will be more coming soon.
 
 ## Installation
@@ -30,6 +32,7 @@ For CakePHP 3.x, append:  ```"^0.1.0"```
 ## [Setup](docs/setup.md)
 
 Adjustments before using the fixture factories (1 minute).
+This is also illustrated, along with the usage of migrations, in [this video](https://www.youtube.com/watch?v=h8A3lHrwInI).
 
 ## [Use Migrations](docs/migrator.md)
 
