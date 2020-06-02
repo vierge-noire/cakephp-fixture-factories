@@ -81,6 +81,7 @@ abstract class BaseTableSniffer
         } catch (\Exception $e) {
             $name = $this->getConnection()->configName();
             $db = $this->getConnection()->config()['database'];
+            var_dump($e->getMessage());
             throw new Exception("Error in the connection '$name'. Is the database '$db' created and accessible?");
         }
 

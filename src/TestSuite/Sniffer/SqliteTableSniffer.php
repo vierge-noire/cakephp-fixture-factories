@@ -14,15 +14,6 @@ class SqliteTableSniffer extends BaseTableSniffer
      */
     public function getDirtyTables(): array
     {
-//        $res = $this->executeQuery("
-//            PRAGMA foreign_keys;
-//        ");
-//        dd($res);
-
-        $this->executeQuery("
-            PRAGMA foreign_keys = ON;
-        ");
-
         return $this->executeQuery("
              SELECT name FROM sqlite_sequence WHERE name NOT LIKE '%phinxlog';
          ");

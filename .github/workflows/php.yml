@@ -59,3 +59,15 @@ jobs:
 
       - name: Run tests on postgres
         run: composer run-tests-postgres root root
+
+      - name: Install dev dependencies
+        run: composer update --prefer-dist --no-progress --no-suggest
+
+      - name: Run tests on sqlite
+        run: composer run-tests-sqlite
+
+      - name: Run tests on mysql
+        run: composer run-tests-mysql root root
+
+      - name: Run tests on postgres
+        run: composer run-tests-postgres root root
