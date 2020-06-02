@@ -8,10 +8,10 @@ use Cake\Core\Exception\Exception;
 use Cake\Datasource\ConnectionInterface;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\Fixture\FixtureManager as BaseFixtureManager;
+use CakephpFixtureFactories\TestSuite\Sniffer\BaseTableSniffer;
 use CakephpFixtureFactories\TestSuite\Sniffer\MysqlTableSniffer;
 use CakephpFixtureFactories\TestSuite\Sniffer\PostgresTableSniffer;
 use CakephpFixtureFactories\TestSuite\Sniffer\SqliteTableSniffer;
-use Migrations\Migrations;
 use function strpos;
 
 /**
@@ -45,6 +45,19 @@ class FixtureManager extends BaseFixtureManager
 
     }
 
+    public function getSniffer(string $connectionName): BaseTableSniffer
+    {
+        $connection = $this->getConnection($connectionName);
+        $driver = $connection->config()['driver'];
+        try {
+            $snifferName = Configure::readOrFail('TestFixtureTableSniffers.' . $driver);
+        } catch (\RuntimeException $e) {
+            throw new \PHPUnit\Framework\Exception("The DB driver $driver is not being supported");
+        }
+        /** @var BaseTableSniffer $snifferName */
+        return new $snifferName($connection);
+    }
+
     /**
      * Scan all Test connections and truncate the dirty tables
      */
@@ -57,7 +70,7 @@ class FixtureManager extends BaseFixtureManager
                 // CakePHP 4 solves a DebugKit issue by creating an Sqlite connection
                 // in tests/bootstrap.php. This connection should be ignored
             } elseif ($connectionName === 'test' || strpos($connectionName, 'test_') === 0) {
-                $this->runMigration($connectionName, 'truncate');
+                $this->getSniffer($connectionName)->truncateDirtyTables();
             }
         }
     }
@@ -97,23 +110,6 @@ class FixtureManager extends BaseFixtureManager
      */
     public function dropTables(string $connectionName)
     {
-        $this->runMigration($connectionName, 'drop');
-    }
-
-    /**
-     * Run one of the Fixture cleaning migrations: truncate or drop
-     * @param string $connectionName
-     * @param string $type
-     */
-    public function runMigration(string $connectionName, string $type)
-    {
-        $migration = new Migrations([
-            'source' => 'Migrations' . DS . ucfirst($type),
-            'connection' => $connectionName,
-            'plugin' => 'CakephpFixtureFactories',
-        ]);
-
-        $migration->migrate();
-        $migration->rollback(); // Rollbacking here to keep cakephp_fixture_factories_phinxlog empty
+        $this->getSniffer($connectionName)->dropAllTables();
     }
 }

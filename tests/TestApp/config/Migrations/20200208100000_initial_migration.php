@@ -21,6 +21,10 @@ class InitialMigration extends AbstractMigration
                 'limit' => 11,
                 'null' => true,
             ])
+            ->addColumn('biography', 'text', [
+                'default' => null,
+                'null' => true,
+            ])
             ->addIndex('address_id')
             ->addIndex('business_address_id')
             ->addTimestamps()
@@ -97,6 +101,14 @@ class InitialMigration extends AbstractMigration
             ])
             ->addTimestamps()
             ->create();
+
+        $this->table('authors')
+            ->addForeignKey('address_id', 'addresses', 'id', ['delete'=>'RESTRICT', 'update'=>'CASCADE'])
+            ->save();
+
+        $this->table('cities')
+            ->addForeignKey('country_id', 'countries', 'id', ['delete'=>'RESTRICT', 'update'=>'CASCADE'])
+            ->save();
     }
 
     public function down()
