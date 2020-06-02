@@ -8,6 +8,12 @@ jobs:
 
     strategy:
       fail-fast: false
+      matrix:
+        php-version: ['7.2', '7.4']
+        db-type: [sqlite, mysql, pgsql]
+        composer-type: [lowest, stable, dev]
+
+      name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & composer {{ matrix.composer-type }}
 
     services:
       postgres:
@@ -25,52 +31,27 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.2
-          extensions: mbstring, intl, apcu, pdo_sqlite, pdo_mysql, pdo_pgsql
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl, apcu, pdo_${{ matrix.db-type }}
           ini-values: apc.enable_cli = 1
           coverage: pcov
-
-      - name: Create DB
-        run: sudo service mysql start && mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test_fixture_factories;'
 
       - name: Validate composer.json
         run: composer validate
 
-      - name: Install lowest dependencies
-        run: composer update --prefer-dist --no-progress --no-suggest --prefer-lowest --prefer-stable
+      - name: Install dependencies
+        run: |
+          if [[ ${{ matrix.composer-type }} == 'lowest' ]]; then
+            composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest
+          elif [[ ${{ matrix.composer-type }} == 'stable' ]]; then
+            composer update --prefer-dist --no-progress --no-suggest --prefer-stable
+          else
+            composer update --prefer-dist --no-progress --no-suggest
+          fi
 
-      - name: Run tests on sqlite
-        run: composer run-tests-sqlite
-
-      - name: Run tests on mysql
-        run: composer run-tests-mysql root root
-
-      - name: Run tests on postgres
-        run: composer run-tests-postgres root root
-
-      - name: Install highest dependencies
-        run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
-
-      - name: Run tests on sqlite
-        run: composer run-tests-sqlite
-
-      - name: Run tests on mysql
-        run: composer run-tests-mysql root root
-
-      - name: Run tests on postgres
-        run: composer run-tests-postgres root root
-
-      - name: Install dev dependencies
-        run: composer update --prefer-dist --no-progress --no-suggest
-
-      - name: Run tests on sqlite
-        run: composer run-tests-sqlite
-        continue-on-error: true
-
-      - name: Run tests on mysql
-        run: composer run-tests-mysql root root
-        continue-on-error: true
-
-      - name: Run tests on postgres
-        run: composer run-tests-postgres root root
-        continue-on-error: true
+      - name: Run tests
+        run: |
+          if [ ${{ matrix.db-type }} == 'mysql' ]; then
+            sudo service mysql start && mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test_fixture_factories;';
+          fi
+          composer run-tests-${{ matrix.db-type }} root root
