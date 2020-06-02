@@ -29,8 +29,11 @@ jobs:
           extensions: mbstring, intl, apcu, pdo_sqlite, pdo_mysql, pdo_pgsql
           ini-values: apc.enable_cli = 1
 
-      - name: Create DB
+      - name: Create MySQL DB
         run: sudo service mysql start && mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test_fixture_factories;'
+
+      - name: Create Sqlite DB
+        run: sqlite3 test_fixture_factories "VACUUM;"
 
       - name: Validate composer.json
         run: composer validate
