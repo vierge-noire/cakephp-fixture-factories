@@ -13,7 +13,7 @@ jobs:
         db-type: [sqlite, mysql, pgsql]
         composer-type: [lowest, stable, dev]
 
-      name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & composer {{ matrix.composer-type }}
+    name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & composer {{ matrix.composer-type }}
 
     services:
       postgres:
