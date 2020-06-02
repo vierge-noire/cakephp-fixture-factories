@@ -103,12 +103,11 @@ class TableSnifferTest extends TestCase
     }
 
     /**
-     * This list will need to be maintained as new tables are created
+     * This list will need to be maintained as new tables are created or removed
      */
     public function testGetAllTables()
     {
         $expected = [
-            'cakephp_fixture_factories_phinxlog',
             'phinxlog',
             'test_plugin_phinxlog',
             'articles',
@@ -121,7 +120,9 @@ class TableSnifferTest extends TestCase
             'bills'
         ];
         $found = $this->TableSniffer->getAllTables();
-        $this->assertSame(sort($expected), sort($found));
+        sort($expected);
+        sort($found);
+        $this->assertSame($expected, $found);
     }
 
     /**
