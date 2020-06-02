@@ -65,9 +65,12 @@ jobs:
 
       - name: Run tests on sqlite
         run: composer run-tests-sqlite
+        continue-on-error: true
 
       - name: Run tests on mysql
         run: composer run-tests-mysql root root
+        continue-on-error: true
 
       - name: Run tests on postgres
         run: composer run-tests-postgres root root
+        continue-on-error: true
