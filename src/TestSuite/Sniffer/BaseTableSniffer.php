@@ -24,10 +24,24 @@ abstract class BaseTableSniffer
     abstract public function getDirtyTables(): array;
 
     /**
+     * Truncate all the tables provided
+     * @param array $tables
+     * @return bool
+     */
+    abstract public function truncateDirtyTables();
+
+    /**
      * List all tables
      * @return array
      */
     abstract public function getAllTables(): array;
+
+    /**
+     * Drop tables passed as a parameter
+     * @param array $tables
+     * @return array
+     */
+    abstract public function dropAllTables();
 
     /**
      * BaseTableTruncator constructor.

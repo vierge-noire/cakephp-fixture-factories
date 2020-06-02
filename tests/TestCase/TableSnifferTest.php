@@ -5,20 +5,20 @@ namespace CakephpFixtureFactories\Test\TestCase;
 
 
 use Cake\Core\Configure;
+use Cake\Database\Driver\Sqlite;
 use Cake\Database\Exception;
 use Cake\Datasource\ConnectionManager;
+use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
 use CakephpFixtureFactories\TestSuite\Migrator;
 use CakephpFixtureFactories\TestSuite\Sniffer\BaseTableSniffer;
 use CakephpFixtureFactories\TestSuite\Sniffer\SqliteTableSniffer;
-use CakephpFixtureFactories\TestSuite\Sniffer\TableSnifferFinder;
 use PHPUnit\Framework\TestCase;
 
 class TableSnifferTest extends TestCase
 {
-    use TableSnifferFinder;
-
     /**
      * @var BaseTableSniffer
      */
@@ -31,8 +31,8 @@ class TableSnifferTest extends TestCase
 
     public function setUp()
     {
-        $this->TableSniffer = $this->getSniffer('test');
         $this->FixtureManager = new FixtureManager();
+        $this->TableSniffer = $this->FixtureManager->getSniffer('test');
     }
 
     public function tearDown()
@@ -42,14 +42,6 @@ class TableSnifferTest extends TestCase
         ConnectionManager::drop('test_dummy_connection');
         
         parent::tearDown();
-    }
-
-    private function getSniffer(string $connectionName): BaseTableSniffer
-    {
-        $connection = ConnectionManager::get($connectionName);
-        $driver = $connection->config()['driver'];
-        $sniffer = Configure::readOrFail("TestFixtureTableSniffers.$driver");
-        return new $sniffer($connection);
     }
 
     private function createNonExistentConnection()
@@ -106,7 +98,7 @@ class TableSnifferTest extends TestCase
     public function testGetAllTablesAfterDroppingAll()
     {
         $this->FixtureManager->dropTables('test');
-        $this->assertSame(['cakephp_fixture_factories_phinxlog'], $this->TableSniffer->getAllTables());
+        $this->assertSame([], $this->TableSniffer->getAllTables());
         Migrator::migrate();
     }
 
@@ -139,7 +131,7 @@ class TableSnifferTest extends TestCase
     {
         $this->createNonExistentConnection();
         $this->expectException(Exception::class);
-        $this->getSniffer('test_dummy_connection')->getDirtyTables();
+        $this->FixtureManager->getSniffer('test_dummy_connection')->getDirtyTables();
     }
 
     /**
@@ -148,12 +140,31 @@ class TableSnifferTest extends TestCase
     public function testGetAllTablesOnNonExistentDB()
     {
         $this->createNonExistentConnection();
-        $sniffer = $this->getSniffer('test_dummy_connection');
+        $sniffer = $this->FixtureManager->getSniffer('test_dummy_connection');
         if ($sniffer instanceof SqliteTableSniffer) {
             $this->assertTrue(true);
         } else {
             $this->expectException(Exception::class);
         }
-        $this->getSniffer('test_dummy_connection')->getAllTables();
+        $this->FixtureManager->getSniffer('test_dummy_connection')->getAllTables();
+    }
+
+    public function testDeleteWithForeignKey()
+    {
+        $connection = ConnectionManager::get('test');
+        if ($connection->config()['driver'] === Sqlite::class) {
+            $connection->execute('PRAGMA foreign_keys = ON;' );
+        }
+        $city = CityFactory::make()->withCountry()->persist();
+        $country = $city->country;
+        $Countries = TableRegistry::getTableLocator()->get('countries');
+
+        $this->expectException(\PDOException::class);
+        $Countries->delete($country);
+
+        $this->assertSame(1, $Countries->find()->count());
+
+        $Countries->delete($country);
+        $this->assertSame(0, $Countries->find()->count());
     }
 }
