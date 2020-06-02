@@ -39,9 +39,9 @@
         }
     },
     "scripts": {
-        "run-tests-sqlite": "bash run_tests.sh Sqlite",
         "run-tests-mysql": "bash run_tests.sh Mysql",
-        "run-tests-postgres": "bash run_tests.sh Postgres"
+        "run-tests-postgres": "bash run_tests.sh Postgres",
+        "run-tests-sqlite": "bash run_tests.sh Sqlite"
     },
     "config": {
         "sort-packages": true
