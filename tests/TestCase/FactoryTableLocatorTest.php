@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase;
 
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\FactoryLocator;
 use Cake\Event\Event;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
@@ -25,6 +26,7 @@ class FactoryTableLocatorTest extends TestCase
 
         $this->assertSame(true, $factoryArticlesTable instanceof ArticlesTable);
         $this->assertSame(true, $articlesTable instanceof ArticlesTable);
+        $this->assertSame(FactoryLocator::get('Table'), TableRegistry::getTableLocator());
         $this->assertNotSame(FactoryTableRegistry::getTableLocator(), TableRegistry::getTableLocator());
         $this->assertSame($factoryArticlesTable->getEntityClass(), $articlesTable->getEntityClass());
 
