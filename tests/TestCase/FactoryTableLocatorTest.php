@@ -26,7 +26,6 @@ class FactoryTableLocatorTest extends TestCase
 
         $this->assertSame(true, $factoryArticlesTable instanceof ArticlesTable);
         $this->assertSame(true, $articlesTable instanceof ArticlesTable);
-        $this->assertSame(FactoryLocator::get('Table'), TableRegistry::getTableLocator());
         $this->assertNotSame(FactoryTableRegistry::getTableLocator(), TableRegistry::getTableLocator());
         $this->assertSame($factoryArticlesTable->getEntityClass(), $articlesTable->getEntityClass());
 
