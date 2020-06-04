@@ -64,7 +64,7 @@ use App\Test\Factory\ArticleFactory;
 use App\Test\Factory\AuthorFactory;
 use Faker\Generator;
 ...
- $article = ArticleFactory::make()->with('authors', AuthorFactory::make(10))->persist();
+ $article = ArticleFactory::make()->with('Authors', AuthorFactory::make(10))->persist();
 ```
 or using the method defined in our Articlefactory:
 ```
