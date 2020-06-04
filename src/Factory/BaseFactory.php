@@ -11,6 +11,7 @@ use Cake\ORM\Association\HasMany;
 use Cake\ORM\Association\HasOne;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
+use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use Faker\Factory;
 use Faker\Generator;
@@ -324,10 +325,16 @@ abstract class BaseFactory
         for ($i = 0; $i < $this->times; $i++) {
             $this->data[] = $this->compileTemplateData();
         }
-        if ($this->times === 1) {
-            return $this->persistOne();
-        } else {
-            return $this->persistMany();
+        try {
+            if ($this->times === 1) {
+                return $this->persistOne();
+            } else {
+                return $this->persistMany();
+            }
+        } catch (\Exception $exception) {
+            $factory = get_class($this);
+            $message = $exception->getMessage();
+            throw new PersistenceException("Error in Factory $factory.\n Message: $message \n");
         }
     }
 
