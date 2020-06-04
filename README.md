@@ -8,7 +8,7 @@ Using factories for managing fixtures has many advantages in terms of maintenanc
 The Fixture Factories
 * increase the speed of your tests,
 * reduce the effort of writing and maintaining tests,
-* enhance the readability of your tests: you get what you see, no hidden fixtures.
+* enhance the readability of your tests: you get what you see, no fixtures in the bakground.
 
 You will never have to create, maintain or declare any test fixtures again.
 
