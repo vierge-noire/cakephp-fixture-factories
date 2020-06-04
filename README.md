@@ -49,8 +49,11 @@ What the Fixture Factories look like.
 
 ## [Creating Test Fixtures](docs/examples.md)
 
-And how they work.
+And how they work. 
 
+## [The Test Lifecycle](docs/lifecycle.md)
+
+The only step performed in the test suite is to truncate *dirty* tables before each test.
 
 ## Authors
 * Nicolas Masson
