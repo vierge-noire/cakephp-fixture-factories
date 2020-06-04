@@ -17,7 +17,8 @@ You may continue using them along with the Fixture Factories. It is however reco
 the Fixture Factories approach. 
 
 [Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020.
-There will be more coming soon.
+
+[Here is a serie of video](https://www.youtube.com/playlist?list=PLYQ7YCTh-CYwL4pcDkzqHF8sv31cVd2or) on the present package.
 
 ## Installation
 For CakePHP 4.x:
@@ -30,6 +31,7 @@ For CakePHP 3.x, append:  ```"^0.1.0"```
 ## [Setup](docs/setup.md)
 
 Adjustments before using the fixture factories (1 minute).
+This is also illustrated, along with the usage of migrations, in [this video](https://www.youtube.com/watch?v=h8A3lHrwInI).
 
 ## [Use Migrations](docs/migrator.md)
 
@@ -42,12 +44,15 @@ Create all your fixtures in one command line.
 
 ## [Inside Fixture Factories](docs/factories.md)
 
-How the Fixture Factories look like.
+What the Fixture Factories look like.
 
 ## [Creating Test Fixtures](docs/examples.md)
 
-And how they work.
+And how they work. 
 
+## [Test Lifecycle](docs/lifecycle.md)
+
+The only step performed by the package's test suite is to truncate *dirty* tables before each test.
 
 ## Authors
 * Nicolas Masson
