@@ -51,9 +51,9 @@ What the Fixture Factories look like.
 
 And how they work. 
 
-## [The Test Lifecycle](docs/lifecycle.md)
+## [Test Lifecycle](docs/lifecycle.md)
 
-The only step performed in the test suite is to truncate *dirty* tables before each test.
+The only step performed by the package's test suite is to truncate *dirty* tables before each test.
 
 ## Authors
 * Nicolas Masson
