@@ -58,6 +58,10 @@ The only step performed by the package's test suite is to truncate *dirty* table
 
 The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
 
+Copyright 2020 Nicolas Masson and Juan Pablo Ramirez
+
+Licensed under The MIT License Redistributions of files must retain the above copyright notice.
+
 ## Authors
 * Nicolas Masson
-* Juan Pablo Ramìrez 
+* Juan Pablo Ramirez 
