@@ -18,9 +18,9 @@ The command
 bin/cake bake fixture_factory -h
 ```
 will assist you. You have the possiblity to bake factories for all (`-a`) your models. You may also include help methods (`-m`)
-based on the associations defined in your models.
+based on the associations defined in your models. Factories can be baked within plugin with the command `-p`.
 
 ### Next
 
-Let us now see how the factories [look like](factories.md)...
+Let us now see how the factories [look](factories.md)...
 

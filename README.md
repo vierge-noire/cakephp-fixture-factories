@@ -8,7 +8,7 @@ Using factories for managing fixtures has many advantages in terms of maintenanc
 The Fixture Factories
 * increase the speed of your tests,
 * reduce the effort of writing and maintaining tests,
-* enhance the readability of your tests: you get what you see, no hidden fixtures.
+* enhance the readability of your tests: you get what you see, no fixtures in the bakground.
 
 You will never have to create, maintain or declare any test fixtures again.
 
@@ -18,7 +18,7 @@ the Fixture Factories approach.
 
 [Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020.
 
-[Here is a serie of video](https://www.youtube.com/playlist?list=PLYQ7YCTh-CYwL4pcDkzqHF8sv31cVd2or) on the present package.
+[Here is a serie of videos](https://www.youtube.com/playlist?list=PLYQ7YCTh-CYwL4pcDkzqHF8sv31cVd2or) on the present package.
 
 ## Installation
 For CakePHP 4.x:
@@ -53,6 +53,10 @@ And how they work.
 ## [Test Lifecycle](docs/lifecycle.md)
 
 The only step performed by the package's test suite is to truncate *dirty* tables before each test.
+
+## License
+
+The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
 
 ## Authors
 * Nicolas Masson

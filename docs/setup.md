@@ -2,9 +2,9 @@
 
 Once you have installed the package via composer...
 
-### Listerners
+### Listeners
 
-Make sure you inject the fixture manager inside your `phpunit.xml` config file, per default located in the root folder of your application:
+Make sure you *replace* the native CakePHP listener by the following one inside your `phpunit.xml` (or `phpunit.xml.dist`) config file, per default located in the root folder of your application:
 
 ```
 <!-- Setup a listener for fixtures -->

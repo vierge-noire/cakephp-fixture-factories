@@ -4,7 +4,7 @@
 
 Here are some examples of how to use the fixture factories.
 
-One article with a random title, as defined in the factory above:
+One article with a random title, as defined in the factory [on the previous page](factories.md):
 ```
 $article = ArticleFactory::make()->getEntity();
 ``` 
