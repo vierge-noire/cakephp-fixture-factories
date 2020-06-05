@@ -56,7 +56,7 @@ The only step performed by the package's test suite is to truncate *dirty* table
 
 ## License
 
-CakePHP Fixture Factories is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
+The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
 
 ## Authors
 * Nicolas Masson

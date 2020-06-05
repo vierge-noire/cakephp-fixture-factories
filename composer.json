@@ -1,6 +1,8 @@
 {
     "name": "pakacuda/cakephp-fixture-factories",
-    "description": "An alternative to the CakePHP test fixtures approach",
+    "description": "An alternative to the CakePHP fixtures",
+    "type": "cakephp-plugin",
+    "keywords": ["cakephp", "test", "fixtures"],
     "authors": [
         {
             "name": "Nicolas Masson",
