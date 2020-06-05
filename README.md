@@ -54,6 +54,10 @@ And how they work.
 
 The only step performed by the package's test suite is to truncate *dirty* tables before each test.
 
+## License
+
+CakePHP Fixture Factories is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
+
 ## Authors
 * Nicolas Masson
 * Juan Pablo Ramìrez 
