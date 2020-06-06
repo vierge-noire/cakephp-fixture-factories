@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace CakephpFixtureFactories\Test\TestCase;
+namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 
 use Cake\Utility\Hash;
@@ -65,7 +65,8 @@ class BaseFactoryDefaultValuesTest extends TestCase
     }
 
     /**
-     *
+     * PatchData should overwrite the data passed
+     * in the instantiation
      */
     public function testPatchDataAndCallable()
     {
@@ -80,6 +81,20 @@ class BaseFactoryDefaultValuesTest extends TestCase
         foreach ($articles as $article) {
             $this->assertEquals($title, $article->title);
         }
+    }
+
+    public function testPatchDataAndDefaultValue()
+    {
+        $title = 'Some title';
+        $article = ArticleFactory::make()->patchData(compact('title'))->persist();
+        $this->assertSame($title, $article->title);
+    }
+
+    public function testPatchDataAndStaticValue()
+    {
+        $title = 'Some title';
+        $article = ArticleFactory::make(['title' => 'Some other title'])->patchData(compact('title'))->persist();
+        $this->assertSame($title, $article->title);
     }
 
     public function testTitleModifiedInMultipleCreationWithCallback()

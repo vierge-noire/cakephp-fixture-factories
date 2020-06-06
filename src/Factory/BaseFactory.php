@@ -40,12 +40,6 @@ use function is_callable;
  */
 abstract class BaseFactory
 {
-    //use LocatorAwareTrait;
-    const WITH_ARRAY = 'WITH_ARRAY';
-    const FROM_ARRAY = 'FROM_ARRAY';
-    const FROM_CALLABLE = 'FROM_CALLABLE';
-    const FROM_PATCH = 'FROM_PATCH';
-    const FROM_DEFAULT = 'FROM_DEFAULT';
     /**
      * @var Generator
      */
@@ -84,13 +78,14 @@ abstract class BaseFactory
      */
     private $times = 1;
     /**
-     * @var array
+     * The data compiler gathers the data from the
+     * default template, the injection and patched data
+     * and compiles it to produce the data feeding the
+     * entities of the Factory
+     *
+     * @var DataCompiler
      */
-    private $templateData = [];
-    /**
-     * @var array
-     */
-    private $compiledTemplateData = [];
+    private $dataCompiler;
 
     /**
      * BaseFactory constructor.
@@ -101,6 +96,7 @@ abstract class BaseFactory
     protected function __construct()
     {
         $this->rootTable = FactoryTableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
+        $this->dataCompiler = new DataCompiler($this);
     }
 
     /**
@@ -119,29 +115,28 @@ abstract class BaseFactory
      * @param array               $options
      * @return static
      */
-    public static function make($makeParameter = null, $times = 1)
+    public static function make($makeParameter = [], $times = 1): BaseFactory
     {
         if (is_numeric($makeParameter)) {
-            return self::makeFromArray([], $makeParameter);
+            $factory = self::makeFromArray();
+            $times = $makeParameter;
+        } elseif (is_null($makeParameter)) {
+            $factory = self::makeFromArray();
+        } elseif (is_array($makeParameter)) {
+            $factory = self::makeFromArray($makeParameter);
+        } elseif (is_callable($makeParameter)) {
+            $factory = self::makeFromCallable($makeParameter);
+        } elseif ($makeParameter === false) {
+            $factory = null;
+        } else {
+            throw new InvalidArgumentException("make only accepts null, an array or a callable as the first parameter");
         }
 
-        if (is_null($makeParameter)) {
-            return self::makeFromArray([], $times);
+        if ($factory) {
+            $factory->times = $times;
+            $factory->setDefaultTemplate();
         }
-
-        if (is_array($makeParameter)) {
-            return self::makeFromArray($makeParameter, $times);
-        }
-
-        if (is_callable($makeParameter)) {
-            return self::makeFromCallable($makeParameter, $times);
-        }
-
-        if ($makeParameter === false) {
-            return null;
-        }
-
-        throw new InvalidArgumentException("make only accepts null, an array or a callable as the first parameter");
+        return $factory;
     }
 
     /**
@@ -149,13 +144,10 @@ abstract class BaseFactory
      * @param int $times
      * @return static
      */
-    public static function makeFromArray(array $data, $times = 1): BaseFactory
+    private static function makeFromArray(array $data = []): BaseFactory
     {
         $factory = new static();
-        $factory->times = $times;
-        $factory->setDefaultTemplate();
-        $factory->templateData[self::FROM_ARRAY] = $data;
-
+        $factory->getDataCompiler()->collectFromArray($data);
         return $factory;
     }
 
@@ -164,25 +156,17 @@ abstract class BaseFactory
      * @param int $times
      * @return static
      */
-    public static function makeFromCallable(callable $fn, $times = 1): BaseFactory
+    private static function makeFromCallable(callable $fn): BaseFactory
     {
         $factory = new static();
-        $factory->times = $times;
-        $factory->setDefaultTemplate();
-
-        // if the callable returns an array, add it the the templateData array, so it will be compiled
-        $returnValue = $fn($factory, $factory->getFaker());
-        if (is_array($returnValue)) {
-            $factory->withArray($fn);
-        }
-
+        $factory->getDataCompiler()->collectArrayFromCallable($fn);
         return $factory;
     }
 
     /**
      * @return Generator
      */
-    protected function getFaker(): Generator
+    public function getFaker(): Generator
     {
         if (is_null(self::$faker)) {
             $faker = Factory::create();
@@ -239,81 +223,10 @@ abstract class BaseFactory
     {
         $this->data = [];
         for ($i = 0; $i < $this->times; $i++) {
-            $this->data[] = $this->compileTemplateData();
+            $this->data[] = $this->getDataCompiler()->getCompiledTemplateData();
         }
 
         return $this->data;
-    }
-
-    /**
-     * Populate the factored entity
-     * @return array
-     */
-    private function compileTemplateData(): array
-    {
-        $this->compiledTemplateData = [];
-
-        foreach ($this->templateData as $propertyName => $data) {
-            $association = $this->getAssociationByPropertyName($propertyName);
-            if ($association) {
-                $dataIsFactory = $data instanceof BaseFactory;
-                if ($dataIsFactory) {
-                    /** @var BaseFactory $factory */
-                    $factory = $data;
-                    if ($association instanceof HasOne || $association instanceof BelongsTo) {
-                        $this->compiledTemplateData[$propertyName] = $factory->toArray()[0];
-                    } else {
-                        $this->compiledTemplateData[$propertyName] = $factory->toArray();
-                    }
-                }
-            }
-
-            $isWithArray = $propertyName === self::WITH_ARRAY;
-            if ($isWithArray) {
-                $callable = $data;
-                $array = $callable($this, $this->getFaker());
-                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $array);
-            }
-
-            $isFromArray = $propertyName === self::FROM_ARRAY;
-            if ($isFromArray) {
-                $array = $data;
-                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $array);
-            }
-
-            $isFromCallable = $propertyName === self::FROM_CALLABLE;
-            if ($isFromCallable) {
-                $callable = $data;
-                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $callable($this, $this->getFaker()));
-            }
-
-            $isFromDefault = $propertyName === self::FROM_DEFAULT;
-            if ($isFromDefault) {
-                $callable = $data;
-                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $callable($this->getFaker()));
-            }
-
-            $isFromPatch = $propertyName === self::FROM_PATCH;
-            if ($isFromPatch) {
-                $array = $data;
-                $this->compiledTemplateData = array_merge($this->compiledTemplateData, $array);
-            }
-        }
-
-        return $this->compiledTemplateData;
-    }
-
-    /**
-     * @param string $propertyName
-     * @return bool|Association
-     */
-    private function getAssociationByPropertyName(string $propertyName)
-    {
-        try {
-            return $this->getTable()->getAssociation(Inflector::camelize($propertyName));
-        } catch (InvalidArgumentException $e) {
-            return false;
-        }
     }
 
     /**
@@ -333,7 +246,7 @@ abstract class BaseFactory
     {
         $this->data = [];
         for ($i = 0; $i < $this->times; $i++) {
-            $this->data[] = $this->compileTemplateData();
+            $this->data[] = $this->getDataCompiler()->getCompiledTemplateData();
         }
         try {
             if ($this->times === 1) {
@@ -386,13 +299,16 @@ abstract class BaseFactory
      */
     public function patchData(array $data): self
     {
-        if (isset($this->templateData[self::FROM_PATCH])) {
-            $this->templateData[self::FROM_PATCH] = array_merge($this->templateData[self::FROM_PATCH], $data);
-        } else {
-            $this->templateData[self::FROM_PATCH] = $data;
-        }
-
+        $this->getDataCompiler()->collectFromPatch($data);
         return $this;
+    }
+
+    /**
+     * @return DataCompiler
+     */
+    protected function getDataCompiler(): DataCompiler
+    {
+        return $this->dataCompiler;
     }
 
     /**
@@ -402,7 +318,7 @@ abstract class BaseFactory
      */
     protected function setDefaultData(callable $fn): self
     {
-        $this->templateData['FROM_DEFAULT'] = $fn;
+        $this->getDataCompiler()->collectFromDefaultTemplate($fn);
         return $this;
     }
 
@@ -417,13 +333,12 @@ abstract class BaseFactory
 
         if ($association instanceof HasOne || $association instanceof BelongsTo || $association instanceof HasMany || $association instanceof BelongsToMany) {
 
-            $associationName = $this->getMarshallerAssociationName($associationName);
-            $this->templateData[$associationName] = $factory;
+            $this->getDataCompiler()->collectAssociation($associationName, $factory);
 
-            $this->associated[] = Inflector::camelize($associationName);
+            $this->associated[] = $associationName;
 
             foreach ($factory->getAssociated() as $associated) {
-                $this->associated[] = Inflector::camelize($associationName) . "." . Inflector::camelize($associated);
+                $this->associated[] = $associationName . "." . Inflector::camelize($associated);
             }
             return $this;
         }
@@ -439,16 +354,8 @@ abstract class BaseFactory
      */
     public function without(string $association): self
     {
-        unset($this->templateData[strtolower($this->getMarshallerAssociationName($association))]);
+        $this->getDataCompiler()->dropAssociation($association);
         return $this;
-    }
-
-    /**
-     * @param callable $fn
-     */
-    private function withArray(callable $fn): void
-    {
-        $this->templateData[self::WITH_ARRAY] = $fn;
     }
 
     /**
@@ -462,7 +369,6 @@ abstract class BaseFactory
         return $this;
     }
 
-
     /**
      * @return array|EntityInterface[]
      */
@@ -472,18 +378,5 @@ abstract class BaseFactory
             throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
         }
         return $this->rootTable->newEntities($this->toArray(), $this->getMarshallerOptions());
-    }
-
-    /**
-     * Returns lowercase underscored version of an association name
-     * Throws an exception if the association name does not exist on the rootTable of the factory
-     * @param string $associationName
-     * @return string underscore_version of the input string
-     * @throws \InvalidArgumentException
-     */
-    public function getMarshallerAssociationName(string $associationName)
-    {
-        $association = $this->getTable()->getAssociation($associationName);
-        return Inflector::underscore($association->getName());
     }
 }
