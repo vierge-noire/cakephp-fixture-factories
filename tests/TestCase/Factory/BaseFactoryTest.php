@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace CakephpFixtureFactories\Test\TestCase;
+namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
@@ -727,21 +727,5 @@ class BaseFactoryTest extends TestCase
         AuthorFactory::make()->withAddress()->withAddress()->persist();
 
         $this->assertEquals(1, TableRegistry::getTableLocator()->get('Addresses')->find()->count());
-    }
-
-    public function testGetMarshallerAssociationNameShouldThrowInvalidArgumentException()
-    {
-        $authorFactory = AuthorFactory::make();
-
-        $this->expectException(\InvalidArgumentException::class);
-        $authorFactory->getMarshallerAssociationName('business_address');
-    }
-
-    public function testGetMarshallerAssociationNameShouldReturnUnderscoredAssociationName()
-    {
-        $authorFactory = AuthorFactory::make();
-
-        $marshallerAssociationName = $authorFactory->getMarshallerAssociationName('BusinessAddress');
-        $this->assertSame('business_address', $marshallerAssociationName);
     }
 }
