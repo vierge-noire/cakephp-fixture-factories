@@ -53,7 +53,7 @@ class DocumentationExamplesTest extends TestCase
     {
         $articles = ArticleFactory::make(function(ArticleFactory $factory, Generator $faker) {
             return [
-                'title' => $faker->text,
+                'title' => $faker->text(100),
             ];
         }, 3)->persist();
         $this->assertEquals(3, count($articles));
