@@ -32,11 +32,11 @@ class DataCompiler
      * @var BaseFactory
      */
     private $factory;
-    /**
-     * @var array
-     */
-    private $data;
 
+    /**
+     * DataCompiler constructor.
+     * @param BaseFactory $factory
+     */
     public function __construct(BaseFactory $factory)
     {
         $this->factory = $factory;
@@ -190,8 +190,9 @@ class DataCompiler
      */
     public function getMarshallerAssociationName(string $associationName): string
     {
-        $association = $this->getFactory()->getTable()->getAssociation($associationName);
-        return Inflector::underscore($association->getName());
+        // Check that the association exists
+        $this->getFactory()->getTable()->getAssociation($associationName);
+        return Inflector::underscore($associationName);
     }
 
     /**

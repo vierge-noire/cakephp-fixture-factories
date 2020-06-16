@@ -14,9 +14,7 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\DataCompiler;
-use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\TestSuite\SkipTablesTruncation;
 use PHPUnit\Framework\TestCase;
@@ -47,5 +45,11 @@ class DataCompilerTest extends TestCase
     {
         $marshallerAssociationName = $this->authorDataCompiler->getMarshallerAssociationName('BusinessAddress');
         $this->assertSame('business_address', $marshallerAssociationName);
+    }
+
+    public function testGetMarshallerAssociationNameWithDottedAssociation()
+    {
+        $marshallerAssociationName = $this->authorDataCompiler->getMarshallerAssociationName('BusinessAddress.City.Country');
+        $this->assertSame('business_address.city.country', $marshallerAssociationName);
     }
 }

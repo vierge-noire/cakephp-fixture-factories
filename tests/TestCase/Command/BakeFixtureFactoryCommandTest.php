@@ -11,17 +11,12 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace CakephpFixtureFactories\Test\TestCase\Shell\Task;
+namespace CakephpFixtureFactories\Test\TestCase\Command;
 
-use Cake\Command\Command;
-use Cake\Console\Arguments;
-use Cake\Console\ConsoleIo;
 use Cake\Console\Exception\StopException;
-use Cake\Core\Configure;
-use Cake\TestSuite\TestCase;
-use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Shell\Task\FixtureFactoryTask;
+use CakephpFixtureFactories\Test\TestCase\Helper\TestCaseWithFixtureBaking;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;
@@ -40,26 +35,8 @@ use TestPlugin\Test\Factory\CustomerFactory;
 /**
  * App\Shell\Task\FactoryTask Test Case
  */
-class BakeFixtureFactoryCommandTest extends TestCase
+class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 {
-    /**
-     * ConsoleIo mock
-     *
-     * @var ConsoleIo
-     */
-    public $io;
-    /**
-     * @var Arguments
-     */
-    public $args;
-
-    /**
-     * Test subject
-     *
-     * @var BakeFixtureFactoryCommand
-     */
-    public $FactoryCommand;
-
     /**
      * @var string
      */
@@ -78,49 +55,10 @@ class BakeFixtureFactoryCommandTest extends TestCase
         'Customers',
     ];
 
-    /**
-     * setUp method
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->io = new ConsoleIo();
-        $this->FactoryCommand = new BakeFixtureFactoryCommand();
-        $this->dropTestFactories();
-    }
-
-    private function dropTestFactories()
-    {
-        $factoryFolder = TESTS . 'Factory';
-        array_map('unlink', glob("$factoryFolder/*.*"));
-        $pluginFactoryFolder = Configure::read('App.paths.plugins')[0] . 'TestPlugin' . DS . 'tests' . DS . 'Factory';
-        array_map('unlink', glob("$pluginFactoryFolder/*.*"));
-    }
-
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        unset($this->FactoryCommand);
-
-        parent::tearDown();
-    }
-
     public function testFileName()
     {
         $name = 'Model';
         $this->assertSame('ModelFactory.php', $this->FactoryCommand->fileName($name));
-    }
-
-    public function testGetFactoryNameFromModelName()
-    {
-        $model = 'Apples';
-        $this->assertEquals('AppleFactory', $this->FactoryCommand->getFactoryNameFromModelName($model));
     }
 
     public function testGetTableListInApp()
@@ -139,8 +77,8 @@ class BakeFixtureFactoryCommandTest extends TestCase
         $associations = $this->FactoryCommand->setTable('Articles', $this->io)->getAssociations();
         $expected = [
             'toOne' => [],
-            'oneToMany' => ['Bills' => '\TestPlugin\Test\Factory\BillFactory'],
-            'manyToMany' => ['Authors' => '\TestApp\Test\Factory\AuthorFactory'],
+            'oneToMany' => ['Bills' => 'TestPlugin\Test\Factory\BillFactory'],
+            'manyToMany' => ['Authors' => 'TestApp\Test\Factory\AuthorFactory'],
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -149,11 +87,11 @@ class BakeFixtureFactoryCommandTest extends TestCase
         $associations = $this->FactoryCommand->setTable('Authors', $this->io)->getAssociations();
         $expected = [
             'toOne' => [
-                'Address' => '\TestApp\Test\Factory\AddressFactory',
-                'BusinessAddress' => '\TestApp\Test\Factory\AddressFactory',
+                'Address' => 'TestApp\Test\Factory\AddressFactory',
+                'BusinessAddress' => 'TestApp\Test\Factory\AddressFactory',
             ],
             'oneToMany' => [],
-            'manyToMany' => ['Articles' => '\TestApp\Test\Factory\ArticleFactory']
+            'manyToMany' => ['Articles' => 'TestApp\Test\Factory\ArticleFactory']
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -162,8 +100,8 @@ class BakeFixtureFactoryCommandTest extends TestCase
     {
         $associations = $this->FactoryCommand->setTable('Addresses',  $this->io)->getAssociations();
         $expected = [
-            'toOne' => ['City' => '\TestApp\Test\Factory\CityFactory'],
-            'oneToMany' => ['Authors' => '\TestApp\Test\Factory\AuthorFactory',],
+            'toOne' => ['City' => 'TestApp\Test\Factory\CityFactory'],
+            'oneToMany' => ['Authors' => 'TestApp\Test\Factory\AuthorFactory',],
             'manyToMany' => [],
         ];
         $this->assertEquals($expected, $associations);
@@ -186,28 +124,11 @@ class BakeFixtureFactoryCommandTest extends TestCase
         $associations = $this->FactoryCommand->setTable('Bills',  $this->io)->getAssociations();
 
         $expected = [
-            'toOne' => ['Article' => '\TestApp\Test\Factory\ArticleFactory', 'Customer' => '\TestPlugin\Test\Factory\CustomerFactory'],
+            'toOne' => ['Article' => 'TestApp\Test\Factory\ArticleFactory', 'Customer' => 'TestPlugin\Test\Factory\CustomerFactory'],
             'oneToMany' => [],
             'manyToMany' => [],
         ];
         $this->assertEquals($expected, $associations);
-    }
-
-    public function testGetFactoryNamespace()
-    {
-        $this->assertEquals(
-            'TestApp\Test\Factory',
-            $this->FactoryCommand->getFactoryNamespace()
-        );
-    }
-
-    public function testGetFactoryNamespaceWithPlugin()
-    {
-        $this->FactoryCommand->plugin = $this->testPluginName;
-        $this->assertEquals(
-            $this->testPluginName . '\Test\Factory',
-            $this->FactoryCommand->getFactoryNamespace()
-        );
     }
 
     public function testBakeUnexistingTable()
@@ -218,20 +139,17 @@ class BakeFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeWithNoArguments()
     {
-        $args = new Arguments([], ['quiet' => true], []);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake();
     }
 
     public function testRunBakeWithWrongModel()
     {
-        $args = new Arguments(['model' => 'SomeModel'], ['quiet' => true], []);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake(['model' => 'SomeModel']);
     }
 
     public function testRunBakeAllWithMethods()
     {
-        $args = new Arguments([], ['force' => true, 'methods' => true, 'all' => true, 'quiet' => true,], ['model']);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake([], ['methods' => true, 'all' => true]);
 
         $title = 'Foo';
         $articleFactory = ArticleFactory::make(compact('title'))->withAuthors([], 2);
@@ -248,8 +166,7 @@ class BakeFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeAllInTestAppWithMethods()
     {
-        $args = new Arguments([], ['force' => true, 'all' => true, 'methods' => true, 'quiet' => true,], ['model']);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake([], ['all' => true, 'methods' => true,]);
 
         $this->assertInstanceOf(BaseFactory::class, ArticleFactory::make());
         $this->assertInstanceOf(BaseFactory::class, AddressFactory::make());
@@ -278,8 +195,7 @@ class BakeFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeWithModel()
     {
-        $args = new Arguments(['Articles'], ['force' => true, 'quiet' => true,], ['model']);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake(['Articles']);
 
         $title = 'Foo';
         $articleFactory = ArticleFactory::make(compact('title'));
@@ -291,8 +207,7 @@ class BakeFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeAllInTestApp()
     {
-        $args = new Arguments([], ['force' => true, 'all' => true, 'quiet' => true,], ['model']);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake([], ['all' => true,]);
 
         $this->assertInstanceOf(BaseFactory::class, ArticleFactory::make());
         $this->assertInstanceOf(BaseFactory::class, AddressFactory::make());
@@ -318,11 +233,9 @@ class BakeFixtureFactoryCommandTest extends TestCase
 
     public function testRunBakeAllInTestPlugin()
     {
-        $args = new Arguments(['Articles'], ['force' => true, 'quiet' => true,], ['model']);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake(['Articles']);
 
-        $args = new Arguments([], ['force' => true, 'plugin' => 'TestPlugin', 'all' => true, 'quiet' => true,], ['model']);
-        $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
+        $this->bake([], ['plugin' => 'TestPlugin', 'all' => true,]);
 
         $customer = CustomerFactory::make(['name' => 'Foo'])->persist();
         unset($customer['id']);
