@@ -238,7 +238,6 @@ class BakeFixtureFactoryCommand extends BakeCommand
             $data['toOne'] = $associations['toOne'];
             $methods = array_keys($associations['toOne']);
 
-
             $data['oneToMany'] = $associations['oneToMany'];
             $methods = array_merge(array_keys($associations['oneToMany']), $methods);
 

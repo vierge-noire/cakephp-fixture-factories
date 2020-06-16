@@ -321,6 +321,22 @@ abstract class BaseFactory
     }
 
     /**
+     * @return int
+     */
+    public function getTimes(): int
+    {
+        return $this->times;
+    }
+
+    /**
+     * @param int $times
+     */
+    public function setTimes(int $times): void
+    {
+        $this->times = $times;
+    }
+
+    /**
      * Populate the entity factored
      * @param callable $fn
      * @return $this
@@ -351,7 +367,10 @@ abstract class BaseFactory
 
         $associationName = strtok($associationName, '.');
 
+        $this->getAssociationBuilder()->validateToOneAssociation($associationName, $factory);
+
         $this->getDataCompiler()->collectAssociation($associationName, $factory);
+
         $this->associated[] = $associationName;
 
         foreach ($factory->getAssociated() as $associated) {

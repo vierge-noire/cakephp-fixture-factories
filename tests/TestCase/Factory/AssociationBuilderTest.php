@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
+use Cake\ORM\Association;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
 use CakephpFixtureFactories\Factory\AssociationBuilder;
@@ -51,10 +52,12 @@ class AssociationBuilderTest extends TestCase
 
     public function testCheckAssociationWithCorrectAssociation()
     {
-        $this->assertTrue(
+        $this->assertInstanceOf(
+            Association::class,
             $this->associationBuilder->checkAssociation('Address')
         );
-        $this->assertTrue(
+        $this->assertInstanceOf(
+            Association::class,
             $this->associationBuilder->checkAssociation('Address.City.Country')
         );
     }
@@ -193,5 +196,44 @@ class AssociationBuilderTest extends TestCase
             ->authors;
         $this->assertSame($name1, $authors[0]->name);
         $this->assertSame($name2, $authors[1]->name);
+    }
+
+    public function testValidateToOneAssociationPass()
+    {
+        $association = $this->associationBuilder->validateToOneAssociation('Articles', ArticleFactory::make(2));
+        $this->assertInstanceOf(Association::class, $association);
+    }
+
+    public function testValidateToOneAssociationFail()
+    {
+        $this->expectException(AssociationBuilderException::class);
+        $this->associationBuilder->validateToOneAssociation('Address', AddressFactory::make(2));
+    }
+
+    public function testGetAssociatedFactoryWithMultipleDepthAndWithout()
+    {
+        $country = 'Foo';
+        $author = AuthorFactory::make()
+            ->with('BusinessAddress.City.Country', [
+                'name' => $country,
+            ])
+            ->without('BusinessAddress')
+            ->persist();
+
+        $this->assertNull($author->business_address);
+
+        // There should be only one address, city and country in the DB
+        $this->assertSame(
+            1,
+            TableRegistry::getTableLocator()->get('Addresses')->find()->count()
+        );
+        $this->assertSame(
+            1,
+            TableRegistry::getTableLocator()->get('Cities')->find()->count()
+        );
+        $this->assertSame(
+            1,
+            TableRegistry::getTableLocator()->get('Countries')->find()->count()
+        );
     }
 }
