@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
@@ -41,9 +42,9 @@ class AssociationBuilder
      * Makes sure that a given association is well defined in the
      * builder's factory's table
      * @param string $associationName
-     * @return bool
+     * @return Association
      */
-    public function checkAssociation(string $associationName): bool
+    public function checkAssociation(string $associationName): Association
     {
         try {
             $association = $this->getFactory()->getTable()->getAssociation($associationName);
@@ -51,10 +52,26 @@ class AssociationBuilder
             throw new AssociationBuilderException($e->getMessage());
         }
         if ($association instanceof HasOne || $association instanceof BelongsTo || $association instanceof HasMany || $association instanceof BelongsToMany) {
-            return true;
+            return $association;
         } else {
             throw new AssociationBuilderException("Unknown association type $association on table {$this->getFactory()->getTable()}");
         }
+    }
+
+    /**
+     * HasOne and BelongsTo association cannot be multiple
+     * @param string $associationName
+     * @param BaseFactory $associationFactory
+     * @return Association
+     */
+    public function validateToOneAssociation(string $associationName, BaseFactory $associationFactory): Association
+    {
+        $association = $this->checkAssociation($associationName);
+        if (($association instanceof HasOne || $association instanceof BelongsTo) && $associationFactory->getTimes() > 1) {
+            throw new AssociationBuilderException(
+                "Association $associationName on " . $this->getFactory()->getTable()->getEntityClass() . " cannot be multiple");
+        }
+        return $association;
     }
 
     /**
