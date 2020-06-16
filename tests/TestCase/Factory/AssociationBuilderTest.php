@@ -136,7 +136,6 @@ class AssociationBuilderTest extends TestCase
 
     public function testGetAssociatedFactoryWithMultipleDepthInPlugin()
     {
-        $this->associationBuilder = new AssociationBuilder(ArticleFactory::make());
         $name = 'Foo';
         $article = ArticleFactory::make()->with('Bills.Customer', compact('name'))->persist();
 
@@ -149,7 +148,6 @@ class AssociationBuilderTest extends TestCase
 
     public function testGetAssociatedFactoryInPluginWithNumber()
     {
-        $this->associationBuilder = new AssociationBuilder(ArticleFactory::make());
         $n = 10;
         $article = ArticleFactory::make()->with('Bills', $n)->persist();
 
@@ -161,7 +159,6 @@ class AssociationBuilderTest extends TestCase
 
     public function testGetAssociatedFactoryInPluginWithMultipleConstructs()
     {
-        $this->associationBuilder = new AssociationBuilder(ArticleFactory::make());
         $n = 10;
         $article = ArticleFactory::make()->with('Bills', BillFactory::make($n)->with('Customer'))->persist();
 
@@ -177,5 +174,22 @@ class AssociationBuilderTest extends TestCase
             $n,
             TableRegistry::getTableLocator()->get('TestPlugin.Customers')->find()->count()
         );
+    }
+
+    public function testGetAssociatedFactoryWithReversedAssociation()
+    {
+        $name1 = 'Foo';
+        $name2 = 'Bar';
+        AuthorFactory::make(['name' => $name1])
+            ->with('Articles.Authors', ['name' => $name2])
+            ->persist();
+
+        $authors = TableRegistry::getTableLocator()->get('Articles')
+            ->find()
+            ->contain('Authors')
+            ->first()
+            ->authors;
+        $this->assertSame($name2, $authors[0]->name);
+        $this->assertSame($name1, $authors[1]->name);
     }
 }
