@@ -98,12 +98,6 @@ class FixtureFactoryTaskTest extends TestCase
         $this->assertSame('ModelFactory.php', $this->FactoryTask->fileName($name));
     }
 
-    public function testGetFactoryNameFromModelName()
-    {
-        $model = 'Apples';
-        $this->assertEquals('AppleFactory', $this->FactoryTask->getFactoryNameFromModelName($model));
-    }
-
     public function testGetTableListInApp()
     {
         $this->assertEquals($this->appTables, $this->FactoryTask->getTableList());
@@ -121,10 +115,10 @@ class FixtureFactoryTaskTest extends TestCase
         $expected = [
             'toOne' => [],
             'oneToMany' => [
-                'Bills' => '\TestPlugin\Test\Factory\BillFactory'
+                'Bills' => 'TestPlugin\Test\Factory\BillFactory'
             ],
             'manyToMany' => [
-                'Authors' => '\TestApp\Test\Factory\AuthorFactory'
+                'Authors' => 'TestApp\Test\Factory\AuthorFactory'
             ]
         ];
         $this->assertEquals($expected, $associations);
@@ -134,12 +128,12 @@ class FixtureFactoryTaskTest extends TestCase
         $associations = $this->FactoryTask->setTable('Authors')->getAssociations();
         $expected = [
             'toOne' => [
-                'Address' => '\TestApp\Test\Factory\AddressFactory',
-                'BusinessAddress' => '\TestApp\Test\Factory\AddressFactory'
+                'Address' => 'TestApp\Test\Factory\AddressFactory',
+                'BusinessAddress' => 'TestApp\Test\Factory\AddressFactory'
             ],
             'oneToMany' => [],
             'manyToMany' => [
-                'Articles' => '\TestApp\Test\Factory\ArticleFactory'
+                'Articles' => 'TestApp\Test\Factory\ArticleFactory'
             ]
         ];
         $this->assertEquals($expected, $associations);
@@ -150,10 +144,10 @@ class FixtureFactoryTaskTest extends TestCase
         $associations = $this->FactoryTask->setTable('Addresses')->getAssociations();
         $expected = [
             'toOne' => [
-                'City' => '\TestApp\Test\Factory\CityFactory'
+                'City' => 'TestApp\Test\Factory\CityFactory'
             ],
             'oneToMany' => [
-                'Authors' => '\TestApp\Test\Factory\AuthorFactory'
+                'Authors' => 'TestApp\Test\Factory\AuthorFactory'
             ],
             'manyToMany' => []
         ];
@@ -178,30 +172,13 @@ class FixtureFactoryTaskTest extends TestCase
 
         $expected = [
             'toOne' => [
-                'Article' => '\TestApp\Test\Factory\ArticleFactory',
-                'Customer' => '\TestPlugin\Test\Factory\CustomerFactory'
+                'Article' => 'TestApp\Test\Factory\ArticleFactory',
+                'Customer' => 'TestPlugin\Test\Factory\CustomerFactory'
             ],
             'oneToMany' => [],
             'manyToMany' => []
         ];
         $this->assertEquals($expected, $associations);
-    }
-
-    public function testGetFactoryNamespace()
-    {
-        $this->assertEquals(
-            'TestApp\Test\Factory',
-            $this->FactoryTask->getFactoryNamespace()
-        );
-    }
-
-    public function testGetFactoryNamespaceWithPlugin()
-    {
-        $this->FactoryTask->plugin = $this->testPluginName;
-        $this->assertEquals(
-            $this->testPluginName . '\Test\Factory',
-            $this->FactoryTask->getFactoryNamespace()
-        );
     }
 
     public function testBakeUnexistingTable()

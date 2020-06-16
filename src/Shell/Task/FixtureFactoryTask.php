@@ -15,12 +15,11 @@ namespace CakephpFixtureFactories\Shell\Task;
 
 use Bake\Shell\Task\SimpleBakeTask;
 use Cake\Console\ConsoleOptionParser;
-use Cake\Core\Configure;
-use Cake\Core\Plugin as CorePlugin;
 use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
+use CakephpFixtureFactories\Util;
 
 /**
  * FixtureFactory code generator.
@@ -56,7 +55,7 @@ class FixtureFactoryTask extends SimpleBakeTask
 
     public function fileName($modelName): string
     {
-        return $this->getFactoryNameFromModelName($modelName) . '.php';
+        return Util::getFactoryNameFromModelName($modelName) . '.php';
     }
 
     public function template(): string
@@ -132,11 +131,6 @@ class FixtureFactoryTask extends SimpleBakeTask
         return array_map(function ($a) {
             return preg_replace('/Table.php$/', '', $a);
         }, $tables);
-    }
-
-    public function getFactoryNameFromModelName(string $name)
-    {
-        return Inflector::singularize(ucfirst($name)) . 'Factory';
     }
 
     /**
@@ -228,13 +222,24 @@ class FixtureFactoryTask extends SimpleBakeTask
             'modelNameSingular' => Inflector::singularize($this->modelName),
             'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
-            'namespace' => $this->getFactoryNamespace(),
+            'namespace' => Util::getFactoryNamespace($this->plugin),
         ];
+        $methods = [];
         if ($this->param('methods')) {
             $associations = $this->getAssociations();
+
             $data['toOne'] = $associations['toOne'];
+            $methods = array_keys($associations['toOne']);
+
+
             $data['oneToMany'] = $associations['oneToMany'];
+            $methods = array_merge(array_keys($associations['oneToMany']), $methods);
+
             $data['manyToMany'] = $associations['manyToMany'];
+            $methods = array_merge(array_keys($associations['manyToMany']), $methods);
+
+            array_walk($methods, function(&$value) { $value = "with$value"; } );
+            $data['methods'] = $methods;
         }
 
         return $data;
@@ -254,51 +259,22 @@ class FixtureFactoryTask extends SimpleBakeTask
         ];
 
         foreach($this->getTable()->associations() as $association) {
-            $name = $association->getClassName() ?? $association->getName();
+            $modelName = $association->getClassName() ?? $association->getName();
+            $factory = Util::getFactoryClassFromModelName($modelName);
             switch($association->type()) {
                 case 'oneToOne':
                 case 'manyToOne':
-                    $associations['toOne'][$association->getName()] = $this->getFactoryWithSpaceName($name);
+                    $associations['toOne'][$association->getName()] = $factory;
                     break;
                 case 'oneToMany':
-                    $associations['oneToMany'][$association->getName()] = $this->getFactoryWithSpaceName($name);
+                    $associations['oneToMany'][$association->getName()] = $factory;
                     break;
                 case 'manyToMany':
-                    $associations['manyToMany'][$association->getName()] = $this->getFactoryWithSpaceName($name);
+                    $associations['manyToMany'][$association->getName()] = $factory;
                     break;
             }
         }
         return $associations;
-    }
-
-    /**
-     * Namespace where the factory belongs
-     * @return string
-     */
-    public function getFactoryNamespace()
-    {
-        return (
-            $this->plugin ?
-            $this->plugin :
-            Configure::read('App.namespace', 'App')
-        ) . '\Test\Factory';
-    }
-
-    /**
-     * @param string $modelName
-     * @return string
-     */
-    public function getFactoryWithSpaceName(string $associationClass)
-    {
-        $cast = explode('.', $associationClass);
-        if (count($cast) === 2) {
-            $app =  $cast[0];
-            $factory = $cast[1];
-        } else {
-            $app =  Configure::read('App.namespace', 'App');
-            $factory = $cast[0];
-        }
-        return '\\' . $app . '\Test\Factory\\' . $this->getFactoryNameFromModelName($factory);
     }
 
     /**
