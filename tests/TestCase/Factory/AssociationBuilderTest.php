@@ -178,18 +178,20 @@ class AssociationBuilderTest extends TestCase
 
     public function testGetAssociatedFactoryWithReversedAssociation()
     {
-        $name1 = 'Foo';
-        $name2 = 'Bar';
+        $name1 = 'Bar';
+        $name2 = 'Foo';
         AuthorFactory::make(['name' => $name1])
             ->with('Articles.Authors', ['name' => $name2])
             ->persist();
 
         $authors = TableRegistry::getTableLocator()->get('Articles')
             ->find()
-            ->contain('Authors')
+            ->contain('Authors', function ($q) {
+                return $q->order('Authors.name');
+            })
             ->first()
             ->authors;
-        $this->assertSame($name2, $authors[0]->name);
-        $this->assertSame($name1, $authors[1]->name);
+        $this->assertSame($name1, $authors[0]->name);
+        $this->assertSame($name2, $authors[1]->name);
     }
 }

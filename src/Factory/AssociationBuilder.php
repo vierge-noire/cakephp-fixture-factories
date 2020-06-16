@@ -67,8 +67,7 @@ class AssociationBuilder
     {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
-
-        $table = $this->getFactory()->getTable()->getAssociation($firstAssociation)->getClassName();
+        $table = $this->getFactory()->getTable()->getAssociation($firstAssociation)->getClassName() ?? $this->getFactory()->getTable()->getAssociation($firstAssociation)->getName();
 
         if (!empty($associations)) {
             $factory = $this->getFactoryFromTableName($table);
