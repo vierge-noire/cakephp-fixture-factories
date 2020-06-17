@@ -29,8 +29,6 @@ use function is_callable;
 /**
  * Class BaseFactory
  *
- * @TODO    : throw exception when passing $times > 1 on hasOne association
- *
  * @package CakephpFixtureFactories\Factory
  */
 abstract class BaseFactory
@@ -331,9 +329,11 @@ abstract class BaseFactory
     /**
      * @param int $times
      */
-    public function setTimes(int $times): void
+    public function setTimes(int $times): self
     {
         $this->times = $times;
+
+        return $this;
     }
 
     /**
