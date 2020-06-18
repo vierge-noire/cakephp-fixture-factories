@@ -137,6 +137,25 @@ class AssociationBuilderTest extends TestCase
         $this->assertSame(2, $addresses->count());
     }
 
+    public function testGetAssociatedFactoryWithMultipleDepthAndMultipleTimes()
+    {
+        $n = 10;
+        $country = 'Foo';
+        $author = AuthorFactory::make($n)->with('BusinessAddress.City.Country', [
+            'name' => $country,
+        ])->persist();
+
+        for ($i = 0; $i < $n; $i++) {
+            $this->assertInstanceOf(Country::class, $author[$i]->business_address->city->country);
+            $this->assertSame($country, $author[$i]->business_address->city->country->name);
+        }
+
+
+        // There should now be $n * 2 addresses in the DB
+        $addresses = TableRegistry::getTableLocator()->get('Addresses')->find();
+        $this->assertSame(2 * $n, $addresses->count());
+    }
+
     public function testGetAssociatedFactoryWithMultipleDepthInPlugin()
     {
         $name = 'Foo';
