@@ -41,7 +41,7 @@ class ArticleFactory extends BaseFactory
                 'title' => $faker->text(120)
             ];
         })
-        ->withAuthors();
+        ->withAuthors(2);
     }
 
     public function withAuthors($parameter = null, int $n = 1): self
