@@ -103,7 +103,7 @@ The second parameter of the method with can be:
 * a factory
 
 Ultimately, the square bracket notation provides a mean to specify the number of associated
-data create:
+data created:
 ```
 $article = ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])->persist();
 ```
