@@ -114,7 +114,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
         }
     }
 
-    public function testDefautlValuesOfArticleDifferent()
+    public function testDefaultValuesOfArticleDifferent()
     {
         $n = 5;
         $articles = ArticleFactory::make($n)->toEntities();

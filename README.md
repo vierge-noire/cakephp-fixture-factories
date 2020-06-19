@@ -1,9 +1,7 @@
 # CakePHP Fixture Factories
 
 This package provides an alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application. 
-The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in cakephp.
-Using factories for managing fixtures has many advantages in terms of maintenance, test performance and readability inside your tests.
-
+The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in CakePHP.
 
 The Fixture Factories
 * increase the speed of your tests,
@@ -49,6 +47,10 @@ What the Fixture Factories look like.
 ## [Creating Test Fixtures](docs/examples.md)
 
 And how they work. 
+Here is a quick example, detailed in this section:
+```$xslt
+$article = ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])->persist();
+```
 
 ## [Test Lifecycle](docs/lifecycle.md)
 
