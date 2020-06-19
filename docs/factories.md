@@ -72,6 +72,13 @@ With the aim of persisting data in the database as straighforwardly as possible,
 are deactivated when creating CakePHP entities and persisting them to the database. Validation may be reactivated / customized by overwriting
  `$marshallerOptions` and `$saveOptions` in the factory concerned.
  
+ ### Namespace
+ 
+ Assuming your application namespace in `App`, factories should be placed in the `App\Test\Factory` namespace of your application.
+ Or for a plugin Foo, in `Foo\Test\Factory`.
+ 
+ You may change that by setting in your configuration the key `TestFixtureNamespace` to the desired namespace.
+ 
  ### Next
  
  Let us see [how to use them](examples.md)...

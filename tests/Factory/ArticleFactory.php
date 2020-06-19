@@ -38,7 +38,7 @@ class ArticleFactory extends BaseFactory
     {
         $this->setDefaultData(function(Generator $faker) {
             return [
-                'title' => $faker->lastName
+                'title' => $faker->text(120)
             ];
         })
         ->withAuthors(null, 2);

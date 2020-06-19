@@ -46,6 +46,8 @@ class AssociationBuilder
      */
     public function checkAssociation(string $associationName): Association
     {
+        $this->removeBrackets($associationName);
+
         try {
             $association = $this->getFactory()->getTable()->getAssociation($associationName);
         } catch (\Exception $e) {
@@ -84,6 +86,10 @@ class AssociationBuilder
     {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
+
+        $times = $this->getTimeBetweenBrackets($firstAssociation);
+        $this->removeBrackets($firstAssociation);
+
         $table = $this->getFactory()->getTable()->getAssociation($firstAssociation)->getClassName() ?? $this->getFactory()->getTable()->getAssociation($firstAssociation)->getName();
 
         if (!empty($associations)) {
@@ -91,6 +97,9 @@ class AssociationBuilder
             $factory->with(implode('.', $associations), $data);
         } else {
             $factory = $this->getFactoryFromTableName($table, $data);
+        }
+        if ($times) {
+            $factory->setTimes($times);
         }
         return $factory;
     }
@@ -108,6 +117,34 @@ class AssociationBuilder
             return $factoryName::make($data);
         } catch (\Error $e) {
             throw new AssociationBuilderException($e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the brackets and there content in a n 'Association1[i].Association2[j]' formatted string
+     * @param string $string
+     * @return string
+     */
+    public function removeBrackets(string &$string): string
+    {
+        return $string = preg_replace("/\[[^]]+\]/","", $string);
+    }
+
+    /**
+     * Return the integer i between brackets in an 'Association[i]' formatted string
+     * @param string $string
+     * @return int|null
+     */
+    public function getTimeBetweenBrackets(string $string)
+    {
+        preg_match_all("/\[([^\]]*)\]/", $string, $matches);
+        $res = $matches[1];
+        if (empty($res)) {
+            return null;
+        } elseif (count($res) === 1 && !empty($res[0])) {
+            return (int) $res[0];
+        } else {
+            throw new AssociationBuilderException("Error parsing $string.");
         }
     }
 

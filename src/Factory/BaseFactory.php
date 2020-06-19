@@ -359,13 +359,18 @@ abstract class BaseFactory
     {
         $this->getAssociationBuilder()->checkAssociation($associationName);
 
-        if ($data instanceof BaseFactory) {
+        if (strpos($associationName, '.') === false && $data instanceof BaseFactory) {
             $factory = $data;
         } else {
             $factory = $this->getAssociationBuilder()->getAssociatedFactory($associationName, $data);
         }
 
+        // Extract the first Association in the string
         $associationName = strtok($associationName, '.');
+
+
+        // Remove the brackets in the association
+        $associationName = $this->getAssociationBuilder()->removeBrackets($associationName);
 
         $this->getAssociationBuilder()->validateToOneAssociation($associationName, $factory);
 
