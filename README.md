@@ -39,16 +39,19 @@ of your test DB. This is optional, but __highly recommended__.
 
 ## [Baking Fixture Factories](docs/bake.md)
 
-Create all your fixtures in one command line.
+Load the plugin and create all your factories in one command line.
+```$xslt
+bin/cake bake fixture_factory -h
+```
 
 ## [Inside Fixture Factories](docs/factories.md)
 
-What the Fixture Factories look like.
+What the Fixture Factories look like, and how they can incoporate your business logic.
 
 ## [Creating Test Fixtures](docs/examples.md)
 
-And how they work. 
-Here is a quick example, detailed in this section:
+In this section, we'll see how to use them.
+Here is a quick example of persisting five articles having each three different authors, each with different addresses, in different cities, but all located in Kenya.
 ```$xslt
 $article = ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])->persist();
 ```
