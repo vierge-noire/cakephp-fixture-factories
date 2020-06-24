@@ -3,15 +3,16 @@
 This package provides an alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application. 
 The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in CakePHP.
 
-The Fixture Factories
-* increase the speed of your tests,
-* reduce the effort of writing and maintaining tests,
-* enhance the readability of your tests: you get what you see, no fixtures in the bakground.
+The CakePHP Fixture Factories plugin
+* increases the speed of your tests,
+* reduces the effort of writing and maintaining tests,
+* enhances the readability of your tests: you get what you seed in your test, tests do not share test fixtures,
+* offers to manage your test DB schema with the same migrations you use on your regular DB.
 
 You will never have to create, maintain or declare any test fixtures again.
 
 The package is compatible with the traditional [CakePHP test fixtures](https://book.cakephp.org/4/en/development/testing.html#fixtures).
-You may continue using them along with the Fixture Factories. It is however recommended, for performance reasons, to purely switch to
+You may continue using them along with the Fixture Factories, these will work just as before. It is however recommended to migrate to
 the Fixture Factories approach. 
 
 [Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020.
