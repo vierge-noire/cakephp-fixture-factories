@@ -2,18 +2,23 @@
 
 The traditional CakePHP fixtures both create the schema of your test DBs and populate them with fixtures. The present package only cares about populating the test DBs on the fly.
 
-### Default migrations  
+### Setting 
 
 The package proposes a tool to run your [migrations](https://book.cakephp.org/migrations/3/en/index.html) once prior to the tests. In order to do so,
 you may place the following in your `tests/bootstrap.php`:
 ```$xslt
 \CakephpFixtureFactories\TestSuite\Migrator::migrate();
 ```
-This command will ensure that your migrations are well run and keeps the test DB(s) up to date.
+This command will ensure that your migrations are well run and keeps the test DB(s) up to date. Since tables are truncated but never dropped by the present package's fixture manager, migrations will be run strictly when needed, namely only after a new migration was created by the developer.
+
+The `Migrator`approach presents the following advantages:
+* it improves the speed of the test suites by avoiding the creation and dropping of tables between each test case classes,
+* it eases the maintenance of your tests, since regular and test DBs are managed the same way,
+* it indirectly tests your migrations.
 
 ### Multiple migrations settings
 
-Should you have migrations at different places or connections other than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
+Should you have migrations at different places, or with connections other than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
 ```$xslt
 <?php
 
@@ -26,7 +31,7 @@ return [
 ];
 ```
 
-Alternatively, you can also pass the various migrations directly in the `Migrator` instanciation:
+Alternatively, you can also pass the various migrations directly in the `Migrator` instanciation in your `tests/bootstrap.php`:
 ```$xslt
 \CakephpFixtureFactories\TestSuite\Migrator::migrate([
      ['connection' => 'test'],       
@@ -36,7 +41,7 @@ Alternatively, you can also pass the various migrations directly in the `Migrato
 ```
 
 If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables where needed, and re-run the migrations. Switching branches therefore
-does not require any manipulation on your side.
+does not require any intervention on your side.
 
 ### Next
 
