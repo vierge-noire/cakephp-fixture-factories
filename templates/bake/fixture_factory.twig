@@ -57,7 +57,7 @@ class {{ factory }} extends CakephpBaseFactory
      *
      * @return {{ factory }}
      */
-    public function with{{ association }}(array $parameter = null): {{ factory }}
+    public function with{{ association }}(?array $parameter = null): {{ factory }}
     {
         return $this->with(
             '{{ association }}',
@@ -73,7 +73,7 @@ class {{ factory }} extends CakephpBaseFactory
      *
      * @return {{ factory }}
      */
-    public function with{{ association }}(array $parameter = null, int $n = 1): {{ factory }}
+    public function with{{ association }}(?array $parameter = null, int $n = 1): {{ factory }}
     {
         return $this->with(
             '{{ association }}',
@@ -88,7 +88,7 @@ class {{ factory }} extends CakephpBaseFactory
      * @param int $n
      * @return {{ factory }}
      */
-    public function with{{ association }}(array $parameter = null, int $n = 1): {{ factory }}
+    public function with{{ association }}(?array $parameter = null, int $n = 1): {{ factory }}
     {
         return $this->with(
             '{{ association }}',
