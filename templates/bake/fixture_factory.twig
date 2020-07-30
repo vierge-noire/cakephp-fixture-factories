@@ -68,11 +68,11 @@ class {{ factory }} extends CakephpBaseFactory
 {% for association, associationFactory in oneToMany %}
 
     /**
-    * @param array $parameter
-    * @param int $n
-    *
-    * @return {{ factory }}
-    */
+     * @param array $parameter
+     * @param int $n
+     *
+     * @return {{ factory }}
+     */
     public function with{{ association }}(array $parameter = null, int $n = 1): {{ factory }}
     {
         return $this->with(
@@ -84,10 +84,10 @@ class {{ factory }} extends CakephpBaseFactory
 {% for association, associationFactory in manyToMany %}
 
     /**
-    * @param array $parameter
-    * @param int $n
-    * @return {{ factory }}
-    */
+     * @param array $parameter
+     * @param int $n
+     * @return {{ factory }}
+     */
     public function with{{ association }}(array $parameter = null, int $n = 1): {{ factory }}
     {
         return $this->with(
