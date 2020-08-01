@@ -119,6 +119,10 @@ class DataCompiler
                     /** @var BaseFactory $dataFactory */
                     $dataFactory = $data;
                     if ($association instanceof HasOne || $association instanceof BelongsTo) {
+                       
+                        // toOne associated data must be singular when saved
+                        $propertyName = Inflector::singularize($propertyName);
+                        
                         $compiledTemplateData[$propertyName] = $dataFactory->toArray()[0];
                     } else {
                         $compiledTemplateData[$propertyName] = $dataFactory->toArray();
