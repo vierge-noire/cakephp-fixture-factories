@@ -76,9 +76,10 @@ class FixtureManager extends BaseFixtureManager
         $connections = ConnectionManager::configured();
 
         foreach ($connections as $connectionName) {
-            if ($connectionName === 'test_debug_kit') {
+            $ignoredConnections = Configure::read('TestFixtureIgnoredConnections');
+            if ($connectionName === 'test_debug_kit' || in_array($connectionName, $ignoredConnections)) {
                 // CakePHP 4 solves a DebugKit issue by creating an Sqlite connection
-                // in tests/bootstrap.php. This connection should be ignored
+                // in tests/bootstrap.php. This connection should be ignored.
             } elseif ($connectionName === 'test' || strpos($connectionName, 'test_') === 0) {
                 $this->getSniffer($connectionName)->truncateDirtyTables();
             }
