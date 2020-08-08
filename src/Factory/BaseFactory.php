@@ -41,7 +41,10 @@ abstract class BaseFactory
      * @var \Cake\ORM\Table
      */
     protected $rootTable;
-
+    /**
+     * @var array
+     */
+    protected $data = [];
     /**
      * @var array
      */
@@ -178,11 +181,10 @@ abstract class BaseFactory
      */
     public function getEntity(): EntityInterface
     {
-        $data = $this->toArray();
-
-        if (count($data) > 1) {
+        if ($this->times > 1) {
             throw new RuntimeException("Cannot call getEntity on a factory with {$this->times} records");
         }
+        $data = $this->toArray();
 
         return $this->rootTable->newEntity($data[0], $this->getMarshallerOptions());
     }
@@ -218,17 +220,12 @@ abstract class BaseFactory
      */
     public function toArray(): array
     {
-        $data = [];
+        $this->data = [];
         for ($i = 0; $i < $this->times; $i++) {
-            $compiledData = $this->getDataCompiler()->getCompiledTemplateData();
-            if (isset($compiledData[0])) {
-                $data = array_merge($data, $compiledData);
-            } else {
-                $data[] = $compiledData;
-            }
+            $this->data[] = $this->getDataCompiler()->getCompiledTemplateData();
         }
 
-        return $data;
+        return $this->data;
     }
 
     /**
@@ -246,13 +243,15 @@ abstract class BaseFactory
      */
     public function persist()
     {
-        $data = $this->toArray();
-
+        $this->data = [];
+        for ($i = 0; $i < $this->times; $i++) {
+            $this->data[] = $this->getDataCompiler()->getCompiledTemplateData();
+        }
         try {
-            if (count($data) === 1) {
-                return $this->persistOne($data[0]);
+            if ($this->times === 1) {
+                return $this->persistOne();
             } else {
-                return $this->persistMany($data);
+                return $this->persistMany();
             }
         } catch (\Exception $exception) {
             $factory = get_class($this);
@@ -263,12 +262,11 @@ abstract class BaseFactory
 
 
     /**
-     * @param $data
      * @return array|EntityInterface|null
      */
-    private function persistOne(array $data)
+    private function persistOne()
     {
-        $entity = $this->rootTable->newEntity($data, $this->getMarshallerOptions());
+        $entity = $this->rootTable->newEntity($this->data[0], $this->getMarshallerOptions());
         $this->rootTable->saveOrFail($entity, $this->getSaveOptions());
         return $entity;
     }
@@ -284,13 +282,12 @@ abstract class BaseFactory
     }
 
     /**
-     * @param $data
      * @return EntityInterface[]|\Cake\Datasource\ResultSetInterface|false
      * @throws \Exception
      */
-    private function persistMany(array $data)
+    private function persistMany()
     {
-        $entities = $this->rootTable->newEntities($data, $this->getMarshallerOptions());
+        $entities = $this->rootTable->newEntities($this->data, $this->getMarshallerOptions());
         return $this->rootTable->saveMany($entities, $this->getSaveOptions());
     }
 
@@ -415,10 +412,9 @@ abstract class BaseFactory
      */
     public function getEntities()
     {
-        $data = $this->toArray();
-        if (count($data) === 1) {
+        if ($this->times === 1) {
             throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
         }
-        return $this->rootTable->newEntities($data, $this->getMarshallerOptions());
+        return $this->rootTable->newEntities($this->toArray(), $this->getMarshallerOptions());
     }
 }

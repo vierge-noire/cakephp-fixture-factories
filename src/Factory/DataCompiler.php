@@ -104,26 +104,13 @@ class DataCompiler
      */
     public function getCompiledTemplateData(): array
     {
-        if (is_array($this->dataFromInstantiation) && isset($this->dataFromInstantiation[0])) {
-            $compiledTemplateData = [];
-            foreach ($this->dataFromInstantiation as $entity) {
-                $compiledTemplateData[] = $this->compileEntity($entity);
-            }
-        } else {
-            $compiledTemplateData = $this->compileEntity($this->dataFromInstantiation);
-        }
+        $compiledTemplateData = [];
 
-        return $compiledTemplateData;
-    }
-
-    public function compileEntity($injectedData)
-    {
-        $entity = [];
         // This order is very important!!!
         $this
-            ->mergeWithDefaultTemplate($entity)
-            ->mergeWithInjectedData($entity, $injectedData)
-            ->mergeWithPatchedData($entity);
+            ->mergeWithDefaultTemplate($compiledTemplateData)
+            ->mergeWithInjectedData($compiledTemplateData)
+            ->mergeWithPatchedData($compiledTemplateData);
 
         foreach ($this->dataFromAssociations as $propertyName => $data) {
             $association = $this->getAssociationByPropertyName($propertyName);
@@ -134,17 +121,17 @@ class DataCompiler
                     if ($association instanceof HasOne || $association instanceof BelongsTo) {
 
                       // toOne associated data must be singular when saved
-                      $propertyName = Inflector::singularize($propertyName);
-
-                      $entity[$propertyName] = $dataFactory->toArray()[0];
+                      $propertyName = Inflector::singularize($propertyName);  
+                      
+                      $compiledTemplateData[$propertyName] = $dataFactory->toArray()[0];
                     } else {
-                        $entity[$propertyName] = $dataFactory->toArray();
+                        $compiledTemplateData[$propertyName] = $dataFactory->toArray();
                     }
                 }
             }
         }
 
-        return $entity;
+        return $compiledTemplateData;
     }
 
     /**
@@ -170,19 +157,19 @@ class DataCompiler
      * Step 2:
      * Merge with the data injected during the instantiation of the Factory
      * @param array $compiledTemplateData
-     * @param array|callable $injectedData
      * @return $this
      */
-    private function mergeWithInjectedData(array &$compiledTemplateData, $injectedData): self
+    private function mergeWithInjectedData(array &$compiledTemplateData): self
     {
-        if (is_callable($injectedData)) {
-            $array = $injectedData(
+        $data = $this->dataFromInstantiation;
+        if (is_callable($data)) {
+            $array = $data(
                 $this->getFactory(),
                 $this->getFactory()->getFaker()
             );
             $compiledTemplateData = array_merge($compiledTemplateData, $array);
-        } elseif (is_array($injectedData)) {
-            $compiledTemplateData = array_merge($compiledTemplateData, $injectedData);
+        } elseif (is_array($data)) {
+            $compiledTemplateData = array_merge($compiledTemplateData, $data);
         }
         return $this;
     }
