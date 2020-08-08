@@ -8,4 +8,7 @@ return [
         ['connection' => 'test'],
         ['plugin' => 'TestPlugin']
     ],
+    'TestFixtureIgnoredConnections' => [
+        'test_dummy',
+    ],
 ];

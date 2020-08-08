@@ -132,6 +132,12 @@ $dbConnection = [
 ConnectionManager::setConfig('default', $dbConnection);
 ConnectionManager::setConfig('test', $dbConnection);
 
+// This connection is meant to be ignored
+$dummyConnection = $dbConnection;
+$dummyConnection['driver'] = 'Foo';
+ConnectionManager::setConfig('test_dummy', $dummyConnection);
+
+
 Configure::write('Session', [
     'defaults' => 'php',
 ]);
