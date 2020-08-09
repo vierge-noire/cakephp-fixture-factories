@@ -30,7 +30,7 @@ class FixtureInjectorTest extends TestCase
      */
     public $FixtureManager;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->FixtureManager = new FixtureInjector(
             $this->createMock(FixtureManager::class)
