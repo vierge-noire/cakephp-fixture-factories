@@ -17,11 +17,9 @@ namespace CakephpFixtureFactories\Test\TestCase\TestSuite;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
-use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
 use CakephpFixtureFactories\TestSuite\Sniffer\MysqlTableSniffer;
 use PHPUnit\Framework\TestCase;
-use TestApp\Model\Entity\Country;
 
 class FixtureManagerTest extends TestCase
 {

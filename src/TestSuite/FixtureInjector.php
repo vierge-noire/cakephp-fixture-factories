@@ -12,7 +12,8 @@
  */
 namespace CakephpFixtureFactories\TestSuite;
 
-
+use Cake\Core\Configure;
+use Migrations\Migrations;
 use PHPUnit\Framework\Test;
 use PHPUnit\Framework\TestSuite;
 
@@ -59,6 +60,7 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
         if (!empty($test->fixtures)) {
             parent::startTest($test);
         }
+        $this->rollbackAndMigrateIfRequired();
     }
 
     /**
@@ -94,5 +96,26 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
     public function skipTablesTruncation(Test $test): bool
     {
         return $test->skipTablesTruncation ?? false;
+    }
+
+    /**
+     * Rollback the migrations defined in the config, and run them again
+     * This can be useful if certain seed needs to be performed by migration
+     * and should be recreated before each test
+     */
+    public function rollbackAndMigrateIfRequired()
+    {
+        $configs = Configure::read('TestFixtureMarkedNonMigrated', []);
+
+        if (!empty($configs)) {
+            if (!isset($configs[0])) {
+                $configs = [$configs];
+            }
+            $migrations = new Migrations();
+            foreach ($configs as $config) {
+                $migrations->rollback($config);
+                $migrations->migrate($config);
+            }
+        }
     }
 }
