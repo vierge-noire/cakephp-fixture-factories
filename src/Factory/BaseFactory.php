@@ -15,6 +15,7 @@ namespace CakephpFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
@@ -38,10 +39,9 @@ abstract class BaseFactory
      */
     static private $faker = null;
     /**
-     * @var \Cake\ORM\Table
+     * @var bool
      */
-    protected $rootTable;
-
+    static protected $applyListenersAndBehaviors = false;
     /**
      * @var array
      */
@@ -61,6 +61,10 @@ abstract class BaseFactory
         'atomic' => false,
         'checkExisting' => false
     ];
+    /**
+     * @var bool
+     */
+    protected $listenersAndBehaviorsApplied = false;
     /**
      * The number of records the factory should create
      *
@@ -84,13 +88,9 @@ abstract class BaseFactory
 
     /**
      * BaseFactory constructor.
-     *
-     * @param array $data
-     * @param array $options
      */
     protected function __construct()
     {
-        $this->rootTable = FactoryTableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         $this->dataCompiler = new DataCompiler($this);
         $this->associationBuilder = new AssociationBuilder($this);
     }
@@ -109,7 +109,7 @@ abstract class BaseFactory
     /**
      * @param array|callable|null|int $data
      * @param array               $options
-     * @return static
+     * @return BaseFactory
      */
     public static function make($makeParameter = [], $times = 1): BaseFactory
     {
@@ -129,16 +129,29 @@ abstract class BaseFactory
         }
 
         if ($factory) {
-            $factory->times = $times;
+            $factory->applyModelListenersAndBehaviors(self::$applyListenersAndBehaviors);
+            $factory->setTimes($times);
             $factory->setDefaultTemplate();
         }
         return $factory;
     }
 
     /**
+     * @param array|callable|null|int $data
+     * @param array               $options
+     * @return BaseFactory
+     */
+    public static function makeWithModelListenersAndBehaviors($makeParameter = [], $times = 1): BaseFactory
+    {
+        self::$applyListenersAndBehaviors = true;
+        $factory = self::make($makeParameter, $times);
+        return $factory->applyModelListenersAndBehaviors();
+    }
+
+    /**
      * @param array $data
      * @param int $times
-     * @return static
+     * @return BaseFactory
      */
     private static function makeFromArray(array $data = []): BaseFactory
     {
@@ -150,7 +163,7 @@ abstract class BaseFactory
     /**
      * @param callable $fn
      * @param int $times
-     * @return static
+     * @return BaseFactory
      */
     private static function makeFromCallable(callable $fn): BaseFactory
     {
@@ -184,7 +197,7 @@ abstract class BaseFactory
             throw new RuntimeException("Cannot call getEntity on a factory with {$this->times} records");
         }
 
-        return $this->rootTable->newEntity($data[0], $this->getMarshallerOptions());
+        return $this->getTable()->newEntity($data[0], $this->getMarshallerOptions());
     }
 
     /**
@@ -210,7 +223,7 @@ abstract class BaseFactory
      */
     public function toEntities()
     {
-        return $this->rootTable->newEntities($this->toArray(), $this->getMarshallerOptions());
+        return $this->getTable()->newEntities($this->toArray(), $this->getMarshallerOptions());
     }
 
     /**
@@ -237,7 +250,11 @@ abstract class BaseFactory
      */
     public function getTable(): Table
     {
-        return $this->rootTable;
+        if ($this->listenersAndBehaviorsApplied) {
+            return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
+        } else {
+            return FactoryTableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
+        }
     }
 
     /**
@@ -268,8 +285,8 @@ abstract class BaseFactory
      */
     private function persistOne(array $data)
     {
-        $entity = $this->rootTable->newEntity($data, $this->getMarshallerOptions());
-        $this->rootTable->saveOrFail($entity, $this->getSaveOptions());
+        $entity = $this->getTable()->newEntity($data, $this->getMarshallerOptions());
+        $this->getTable()->saveOrFail($entity, $this->getSaveOptions());
         return $entity;
     }
 
@@ -290,8 +307,8 @@ abstract class BaseFactory
      */
     private function persistMany(array $data)
     {
-        $entities = $this->rootTable->newEntities($data, $this->getMarshallerOptions());
-        return $this->rootTable->saveMany($entities, $this->getSaveOptions());
+        $entities = $this->getTable()->newEntities($data, $this->getMarshallerOptions());
+        return $this->getTable()->saveMany($entities, $this->getSaveOptions());
     }
 
     /**
@@ -336,6 +353,18 @@ abstract class BaseFactory
     {
         $this->times = $times;
 
+        return $this;
+    }
+
+    /**
+     * Per default, listeners and behaviors on the table
+     * are skipped. This activates them all.
+     * @param $value
+     * @return $this
+     */
+    private function applyModelListenersAndBehaviors(bool $value = true): self
+    {
+        $this->listenersAndBehaviorsApplied = $value;
         return $this;
     }
 
@@ -419,6 +448,6 @@ abstract class BaseFactory
         if (count($data) === 1) {
             throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
         }
-        return $this->rootTable->newEntities($data, $this->getMarshallerOptions());
+        return $this->getTable()->newEntities($data, $this->getMarshallerOptions());
     }
 }
