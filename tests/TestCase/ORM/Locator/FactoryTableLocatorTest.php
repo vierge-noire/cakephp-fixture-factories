@@ -126,4 +126,34 @@ class FactoryTableLocatorTest extends TestCase
         $this->assertNull($article->slug ?? null);
         $this->assertTrue(is_int($article->id));
     }
+
+    public function testApplyBehaviors()
+    {
+        $articlesTable = TableRegistry::getTableLocator()->get('Articles');
+        $articlesTable->addBehavior('Sluggable');
+
+        $title = "This Article";
+        $article = ArticleFactory::makeWithModelListenersAndBehaviors(compact('title'))->persist();
+        $this->assertEquals('This-Article', $article->slug);
+        $this->assertTrue(is_int($article->id));
+    }
+
+    public function testApplyBeforeSave()
+    {
+        $name = 'Wonderland';
+        $forcedName = 'Notwonderland';
+        $countriesTable = TableRegistry::getTableLocator()->get('Countries');
+
+        $countriesTable->getEventManager()->on('Model.beforeSave', function (Event $event, EntityInterface $entity) use ($forcedName) {
+            $entity->name = $forcedName;
+        });
+
+        $country = $countriesTable->newEntity(compact('name'));
+        $countriesTable->save($country);
+
+        $this->assertEquals($forcedName, $country->name);
+
+        $country = CountryFactory::makeWithModelListenersAndBehaviors(compact('name'))->persist();
+        $this->assertEquals($forcedName, $country->name);
+    }
 }
