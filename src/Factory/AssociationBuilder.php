@@ -19,6 +19,7 @@ use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Association\HasOne;
+use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
 use CakephpFixtureFactories\Util;
 
@@ -44,7 +45,7 @@ class AssociationBuilder
      * @param string $associationName
      * @return Association
      */
-    public function checkAssociation(string $associationName): Association
+    public function getAssociation(string $associationName): Association
     {
         $this->removeBrackets($associationName);
 
@@ -53,27 +54,67 @@ class AssociationBuilder
         } catch (\Exception $e) {
             throw new AssociationBuilderException($e->getMessage());
         }
-        if ($association instanceof HasOne || $association instanceof BelongsTo || $association instanceof HasMany || $association instanceof BelongsToMany) {
+        if ($this->associationIsToOne($association) || $this->associationIsToMany($association)) {
             return $association;
         } else {
             throw new AssociationBuilderException("Unknown association type $association on table {$this->getFactory()->getTable()}");
         }
     }
 
+    public function buildAssociationArrayForMarshaller(string $associationName, BaseFactory  $factory)
+    {
+        $associations = $this->getFactory()->getAssociated();
+
+        $addIfNotInAssociations = function ($associationName, &$associations){
+            if (!in_array($associationName, $associations)) {
+                $associations[] = $associationName;
+            }
+        };
+
+        $addIfNotInAssociations($associationName, $associations);
+
+        foreach ($factory->getAssociated() as $associated) {
+            $addIfNotInAssociations($associationName . "." . Inflector::camelize($associated), $associations);
+        }
+
+        return $associations;
+    }
+
+    public function processToOneAssociation(string $associationName, BaseFactory $associationFactory)
+    {
+        $this->validateToOneAssociation($associationName, $associationFactory);
+        $this->removeAssociatedAssociationForToOneFactory($associationName, $associationFactory);
+    }
+
     /**
      * HasOne and BelongsTo association cannot be multiple
      * @param string $associationName
      * @param BaseFactory $associationFactory
-     * @return Association
+     * @return bool
      */
-    public function validateToOneAssociation(string $associationName, BaseFactory $associationFactory): Association
+    public function validateToOneAssociation(string $associationName, BaseFactory $associationFactory): bool
     {
-        $association = $this->checkAssociation($associationName);
-        if (($association instanceof HasOne || $association instanceof BelongsTo) && $associationFactory->getTimes() > 1) {
+        if ($this->associationIsToOne($this->getAssociation($associationName)) && $associationFactory->getTimes() > 1) {
             throw new AssociationBuilderException(
                 "Association $associationName on " . $this->getFactory()->getTable()->getEntityClass() . " cannot be multiple");
         }
-        return $association;
+        return true;
+    }
+
+    public function removeAssociatedAssociationForToOneFactory(string $associationName, BaseFactory $associatedFactory)
+    {
+        if ($this->associationIsToOne($this->getAssociation($associationName))) {
+            return;
+        }
+
+        $thisFactoryRegistryName = $this->getFactory()->getTable()->getRegistryAlias();
+        $associatedFactoryTable = $associatedFactory->getTable();
+
+        $associatedAssociationName = Inflector::singularize($thisFactoryRegistryName);
+
+        if ($associatedFactoryTable->hasAssociation($associatedAssociationName)) {
+            $associatedFactory->without($associatedAssociationName);
+        }
     }
 
     /**
@@ -154,5 +195,23 @@ class AssociationBuilder
     public function getFactory(): BaseFactory
     {
         return $this->factory;
+    }
+
+    /**
+     * @param Association $association
+     * @return bool
+     */
+    public function associationIsToOne(Association $association): bool
+    {
+        return ($association instanceof HasOne || $association instanceof BelongsTo);
+    }
+
+    /**
+     * @param Association $association
+     * @return bool
+     */
+    public function associationIsToMany(Association $association): bool
+    {
+        return ($association instanceof HasMany || $association instanceof BelongsToMany);
     }
 }

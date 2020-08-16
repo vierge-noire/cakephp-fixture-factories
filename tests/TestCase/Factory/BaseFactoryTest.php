@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
+use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -614,23 +615,11 @@ class BaseFactoryTest extends TestCase
     }
 
     /**
+     * The fixture factories stop infinite propagation
      * Bills have an article set by default in their factory
-     * Therefore the article will not be the same as the
-     * articles the Bills belong to. See
+     * However, this redundant association is stopped
+     * @throws \Exception
      */
-    public function testPatchingWithAssociationWithDefaultAssociationUnstopped()
-    {
-        $title = 'Some title';
-        $amount = 10;
-        $n = 2;
-        $article = ArticleFactory::make(compact('title'))
-            ->withBillsWithArticle(compact('amount'), $n)
-            ->getEntity();
-        $this->assertEquals($title, $article->title);
-        $this->assertEquals($n, count($article->bills));
-        $this->assertInstanceOf(Article::class, $article->bills[0]->article);
-    }
-
     public function testPersistingWithAssociationWithDefaultAssociationUnstopped()
     {
         $title = 'Some title';
@@ -644,11 +633,11 @@ class BaseFactoryTest extends TestCase
         $this->equalTo($n, count($article->bills));
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
-            $this->assertNotEquals($bill->article_id, $article->id);
-            $this->assertEquals($bill->article_id, $bill->article->id);
+            $this->assertSame($bill->article_id, $article->id);
+            $this->assertNotEquals($bill->article_id, $bill->article->id);
             $this->assertEquals($amount, $bill->amount);
             $this->assertInstanceOf(Bill::class, $bill);
-            $this->assertInstanceOf(Article::class, $bill->article);
+            $this->assertNull($bill->article);
         }
     }
 

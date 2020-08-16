@@ -108,10 +108,10 @@ abstract class BaseFactory
 
     /**
      * @param array|callable|null|int $data
-     * @param array               $options
-     * @return BaseFactory
+     * @param int                     $times
+     * @return self
      */
-    public static function make($makeParameter = [], $times = 1): BaseFactory
+    public static function make($makeParameter = [], int $times = 1): self
     {
         if (is_numeric($makeParameter)) {
             $factory = self::makeFromArray();
@@ -138,10 +138,10 @@ abstract class BaseFactory
 
     /**
      * @param array|callable|null|int $data
-     * @param array               $options
-     * @return BaseFactory
+     * @param int                     $times
+     * @return self
      */
-    public static function makeWithModelListenersAndBehaviors($makeParameter = [], $times = 1): BaseFactory
+    public static function makeWithModelListenersAndBehaviors($makeParameter = [], $times = 1): self
     {
         self::$applyListenersAndBehaviors = true;
         $factory = self::make($makeParameter, $times);
@@ -203,7 +203,7 @@ abstract class BaseFactory
     /**
      * @return array
      */
-    private function getMarshallerOptions(): array
+    protected function getMarshallerOptions(): array
     {
         return array_merge($this->marshallerOptions, [
             'associated' => $this->getAssociated()
@@ -216,6 +216,14 @@ abstract class BaseFactory
     public function getAssociated(): array
     {
         return $this->associated;
+    }
+
+    /**
+     * @return array
+     */
+    protected function addAssociated(string $associationName, BaseFactory $factory)
+    {
+        $this->associated = $this->getAssociationBuilder()->buildAssociationArrayForMarshaller($associationName, $factory);
     }
 
     /**
@@ -283,7 +291,7 @@ abstract class BaseFactory
      * @param $data
      * @return array|EntityInterface|null
      */
-    private function persistOne(array $data)
+    protected function persistOne(array $data)
     {
         $entity = $this->getTable()->newEntity($data, $this->getMarshallerOptions());
         $this->getTable()->saveOrFail($entity, $this->getSaveOptions());
@@ -305,7 +313,7 @@ abstract class BaseFactory
      * @return EntityInterface[]|\Cake\Datasource\ResultSetInterface|false
      * @throws \Exception
      */
-    private function persistMany(array $data)
+    protected function persistMany(array $data)
     {
         $entities = $this->getTable()->newEntities($data, $this->getMarshallerOptions());
         return $this->getTable()->saveMany($entities, $this->getSaveOptions());
@@ -362,7 +370,7 @@ abstract class BaseFactory
      * @param $value
      * @return $this
      */
-    private function applyModelListenersAndBehaviors(bool $value = true): self
+    protected function applyModelListenersAndBehaviors(bool $value = true): self
     {
         $this->listenersAndBehaviorsApplied = $value;
         return $this;
@@ -389,7 +397,7 @@ abstract class BaseFactory
      */
     public function with(string $associationName, $data = []): self
     {
-        $this->getAssociationBuilder()->checkAssociation($associationName);
+        $this->getAssociationBuilder()->getAssociation($associationName);
 
         if (strpos($associationName, '.') === false && $data instanceof BaseFactory) {
             $factory = $data;
@@ -400,19 +408,15 @@ abstract class BaseFactory
         // Extract the first Association in the string
         $associationName = strtok($associationName, '.');
 
-
         // Remove the brackets in the association
         $associationName = $this->getAssociationBuilder()->removeBrackets($associationName);
 
-        $this->getAssociationBuilder()->validateToOneAssociation($associationName, $factory);
+        $this->getAssociationBuilder()->processToOneAssociation($associationName, $factory);
 
         $this->getDataCompiler()->collectAssociation($associationName, $factory);
 
-        $this->associated[] = $associationName;
+        $this->addAssociated($associationName, $factory);
 
-        foreach ($factory->getAssociated() as $associated) {
-            $this->associated[] = $associationName . "." . Inflector::camelize($associated);
-        }
         return $this;
     }
 
