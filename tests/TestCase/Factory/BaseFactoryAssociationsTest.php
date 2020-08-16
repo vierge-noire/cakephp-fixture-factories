@@ -444,7 +444,12 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame($countryExpected, $city->country->name);
     }
 
-    public function testAssignWithToToManyAssociation()
+    /*
+     * The created city is associated with a country, which on the
+     * flies get $n cities assigned. We make sure that the first city
+     * is correctly associated to the country
+     */
+    public function testAssignWithToManyAssociation()
     {
         $nCities = rand(3, 10);
         $city = CityFactory::make()
@@ -462,4 +467,31 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertTrue(in_array($city->name, $citiesNameList));
     }
 
+    /*
+     * The same as above, but with belongsToMany association
+     */
+    public function testAssignWithBelongsToManyAssociation()
+    {
+        $nArticles = rand(3, 10);
+        $authorName = 'Foo';
+        $article = ArticleFactory::make()
+            ->with('Authors', AuthorFactory::make(['name' => 'Foo'])->with('Articles', $nArticles))
+            ->persist();
+
+        $authorsAssociatedToArticle = $this->AuthorsTable
+            ->find()
+            ->matching('Articles', function ($q) use ($article) {
+                return $q->where(['Articles.id' => $article->id]);
+            })
+            ->contain('Articles');
+
+        $articlesAssociatedToAuthor = $this->ArticlesTable
+            ->find()
+            ->matching('Authors', function ($q) use ($authorName) {
+                return $q->where(['Authors.name' => $authorName]);
+            });
+
+        $this->assertSame($nArticles + 1, $articlesAssociatedToAuthor->count());
+        $this->assertSame(1, $authorsAssociatedToArticle->count());
+    }
 }
