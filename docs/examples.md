@@ -109,3 +109,14 @@ $article = ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['na
 ```
 will create 5 articles, having themselves each 3 different associated authors, all located in Kenya.
   
+It is also possible to specify the fields of a toMany associated model.
+For example, if we wish to create a random country with two cities having known names:
+
+```
+$country = CountryFactory::make()->with('Cities', [
+    ['name' => 'Nairobi'],
+    ['name' => 'Mombasa'],
+])->persist();
+```
+
+This an be useful if your business logic uses hard coded values, or constants.

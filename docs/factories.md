@@ -70,7 +70,18 @@ You may add any methods related to your business model, such as `setJobTitle` to
 ### Validation / Behaviors
 With the aim of persisting data in the database as straighforwardly as possible, all behaviors (except Timestamp) and all validations
 are deactivated when creating CakePHP entities and persisting them to the database. Validation may be reactivated / customized by overwriting
- `$marshallerOptions` and `$saveOptions` in the factory concerned.
+ the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
+ 
+ ### Model events
+ Per default, all model events related to a factory's root table and all behaviors are switched off, expect the `timestamp` behavior. 
+ This is made in order to save the test fixtures in the test database as fast and straightforwardly as possible.
+ 
+ It is possible to create test fixtures with the behaviors and the models events as follows:
+ ```
+$article = ArticleFactory::makeWithModelListenersAndBehaviors()->persist();
+```
+ 
+ The static method `makeWithModelListenersAndBehaviors` accepts the same arguments as the method `make`.
  
  ### Namespace
  
@@ -81,4 +92,4 @@ are deactivated when creating CakePHP entities and persisting them to the databa
  
  ### Next
  
- Let us see [how to use them](examples.md)...
+ Let us now see [how to use them](examples.md)...

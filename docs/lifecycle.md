@@ -6,8 +6,29 @@ Here is the only step performed by the Fixture Factories Fixture Manager, and ho
 
 The Fixture Manager truncates the dirty tables at the beginning of each test. This is the only action performed.
 
-By dirty tables is meant tables on which a the primary key has been incremented at least one.
-Therefore an empty table may be considered as dirty. 
+Dirty tables are tables on which the primary key has been incremented at least one. The detection of dirty tables is made
+by SQL queries. These are called `TableSniffers` and there are located in the `src/TestSuite/Sniffer` folder
+ of the package. These are provided for:
+* Sqlite
+* MySQL
+* Postgres
+
+If you use a different database engine, you will have to provide your own. It should extend
+the `BaseTableSniffer`.
+
+You should then map in your `config/fixture_factories.php` file the driver to
+the custom table sniffer. E.g.:
+
+```$xslt
+<?php
+
+return [   
+    'TestFixtureTableSniffers' => [
+        '\Some\Database\Driver' => '\Custom\Table\Sniffer', 
+    ],
+];
+``` 
+ 
 
 ### Disabling the truncation
 
@@ -19,7 +40,7 @@ This can be achieved at the test class level, by letting your test class using t
 
 It is still possible to use the native CakePHP fixtures. To this aim, you may simply load them as described [here](https://book.cakephp.org/3/en/development/testing.html#creating-fixtures).
 This will have a slight impact on the speed of your tests. You may consider in such cases disabling the truncation
-of tables between each test as described above. The CakePHP fixtures will handle that.
+of tables between each test as described above.
 
 We however discourage using both Fixture Factories and CakePHP Fixtures within one single Test Class.
 It is possible, but may lead to confusion for the developer. 
