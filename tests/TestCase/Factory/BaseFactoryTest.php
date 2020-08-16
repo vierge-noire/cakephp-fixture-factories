@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -634,7 +633,6 @@ class BaseFactoryTest extends TestCase
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
             $this->assertSame($bill->article_id, $article->id);
-            $this->assertNotEquals($bill->article_id, $bill->article->id);
             $this->assertEquals($amount, $bill->amount);
             $this->assertInstanceOf(Bill::class, $bill);
             $this->assertNull($bill->article);
