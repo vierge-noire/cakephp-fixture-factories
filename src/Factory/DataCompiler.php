@@ -123,26 +123,8 @@ class DataCompiler
         $this
             ->mergeWithDefaultTemplate($entity)
             ->mergeWithInjectedData($entity, $injectedData)
-            ->mergeWithPatchedData($entity);
-
-        foreach ($this->dataFromAssociations as $propertyName => $data) {
-            $association = $this->getAssociationByPropertyName($propertyName);
-            if ($association) {
-                if ($data instanceof BaseFactory) {
-                    /** @var BaseFactory $dataFactory */
-                    $dataFactory = $data;
-                    if ($association instanceof HasOne || $association instanceof BelongsTo) {
-
-                      // toOne associated data must be singular when saved
-                      $propertyName = Inflector::singularize($propertyName);
-
-                      $entity[$propertyName] = $dataFactory->toArray()[0];
-                    } else {
-                        $entity[$propertyName] = $dataFactory->toArray();
-                    }
-                }
-            }
-        }
+            ->mergeWithPatchedData($entity)
+            ->mergeWithAssociatedData($entity);
 
         return $entity;
     }
@@ -196,6 +178,35 @@ class DataCompiler
     private function mergeWithPatchedData(array &$compiledTemplateData)
     {
         $compiledTemplateData = array_merge($compiledTemplateData, $this->dataFromPatch);
+        return $this;
+    }
+
+    /**
+     * Step 4:
+     * Merge with the data int the associations
+     * @param array $compiledTemplateData
+     */
+    private function mergeWithAssociatedData(array &$compiledTemplateData): self
+    {
+        foreach ($this->dataFromAssociations as $propertyName => $data) {
+            $association = $this->getAssociationByPropertyName($propertyName);
+            if ($association) {
+                if ($data instanceof BaseFactory) {
+                    /** @var BaseFactory $dataFactory */
+                    $dataFactory = $data;
+                    if ($association instanceof HasOne || $association instanceof BelongsTo) {
+
+                        // toOne associated data must be singular when saved
+                        $propertyName = Inflector::singularize($propertyName);
+
+                        $compiledTemplateData[$propertyName] = $dataFactory->toArray()[0];
+                    } else {
+                        $compiledTemplateData[$propertyName] = $dataFactory->toArray();
+                    }
+                }
+            }
+        }
+        return $this;
     }
 
     /**

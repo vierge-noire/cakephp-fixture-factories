@@ -28,6 +28,8 @@ class CitiesTable extends Table
             ],
         ]);
 
+        $this->hasMany('Addresses');
+
         parent::initialize($config);
     }
 }

@@ -33,7 +33,11 @@ class CityFactory extends BaseFactory
         ->withCountry();
     }
 
-    public function withCountry($parameter = null)
+    /**
+     * @param array|callable|null|int $parameter
+     * @return $this
+     */
+    public function withCountry($parameter = null): self
     {
         return $this->with('Country', CountryFactory::make($parameter));
     }
