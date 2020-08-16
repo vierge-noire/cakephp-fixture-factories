@@ -74,7 +74,7 @@ class BaseFactoryAssociationsTest extends TestCase
      */
     private $BillsTable;
 
-    public function setUp(): void
+    public function setUp()
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
 
@@ -89,7 +89,7 @@ class BaseFactoryAssociationsTest extends TestCase
         parent::setUp();
     }
 
-    public function tearDown(): void
+    public function tearDown()
     {
         Configure::delete('TestFixtureNamespace');
         unset($this->AuthorsTable);
