@@ -18,7 +18,7 @@ The `Migrator`approach presents the following advantages:
 
 ### Multiple migrations settings
 
-Should you have migrations at different places, or with connections other than the default ones, you can configure these by creating a `config/fixture_factories.php` file similar to the following:
+Should you have migrations at different places, or with connections other than the default ones, you can configure these in a `config/fixture_factories.php` file similar to the following:
 ```$xslt
 <?php
 
@@ -27,6 +27,7 @@ return [
         ['connection' => 'test'],       // this is the default migration configuration that you now have to include, if needed
         ['plugin' => 'FooPlugin'],      // these are the migrations of the FooPlugin
         ['source' => 'BarFolder']       // these are the migrations located in a BarFolder
+        ...
     ],
 ];
 ```
@@ -34,14 +35,28 @@ return [
 Alternatively, you can also pass the various migrations directly in the `Migrator` instanciation in your `tests/bootstrap.php`:
 ```$xslt
 \CakephpFixtureFactories\TestSuite\Migrator::migrate([
-     ['connection' => 'test'],       
-     ['plugin' => 'FooPlugin'],      
-     ['source' => 'BarFolder']
+    ['connection' => 'test'],       
+    ['plugin' => 'FooPlugin'],      
+    ['source' => 'BarFolder'],
+    ...
  ]);
 ```
 
 If you ever switched to a branch with different migrations, the `Migrator` will automatically drop the tables where needed, and re-run the migrations. Switching branches therefore
 does not require any intervention on your side.
+
+### Running migrations before each tests
+
+The tables of the database get emptied prior to each tests. If you use migrations to seed data in your data base, you may want to run these migrations before each tests.
+
+In order to do that, in the previously mentioned `config/fixture_factories.php` file, enter:
+
+```
+'TestFixtureMarkedNonMigrated' => [
+    ['source' => 'FolderWithMySeeds'],
+    ...
+], 
+```  
 
 ### Next
 
