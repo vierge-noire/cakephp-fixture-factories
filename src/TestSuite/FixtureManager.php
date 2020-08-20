@@ -51,7 +51,11 @@ class FixtureManager extends BaseFixtureManager
     public function initDb()
     {
         $this->_initDb();
+    }
 
+    public function aliasConnections()
+    {
+        $this->_aliasConnections();
     }
 
     public function getSniffer(string $connectionName): BaseTableSniffer

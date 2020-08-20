@@ -19,6 +19,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
+use CakephpFixtureFactories\TestSuite\FixtureManager;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
@@ -85,12 +86,21 @@ abstract class BaseFactory
      * @var AssociationBuilder
      */
     private $associationBuilder;
+    /**
+     * Required to alias the connections before anything
+     * in the test suite is launched. This solves the issue
+     * with Factories produced in PHPUnit dataProviders
+     * @var FixtureManager
+     */
+    private $fixtureManager;
 
     /**
      * BaseFactory constructor.
      */
     protected function __construct()
     {
+        $this->fixtureManager = new FixtureManager();
+        $this->fixtureManager->aliasConnections();
         $this->dataCompiler = new DataCompiler($this);
         $this->associationBuilder = new AssociationBuilder($this);
     }
