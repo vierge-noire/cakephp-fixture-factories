@@ -781,4 +781,24 @@ class BaseFactoryTest extends TestCase
         $this->assertEquals($amount1, $customer->bills[2]->amount);
         $this->assertEquals($amount2, $customer->bills[3]->amount);
     }
+
+    /**
+     * @return array
+     */
+    public function feedTestSetTimes()
+    {
+        return [[rand(1, 10)], [rand(1, 10)], [rand(1, 10)], ];
+    }
+
+    /**
+     * @dataProvider feedTestSetTimes
+     * @param int $times
+     * @throws \Exception
+     */
+    public function testSetTimes(int $times)
+    {
+        ArticleFactory::make()->setTimes($times)->persist();
+
+        $this->assertSame($times, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+    }
 }

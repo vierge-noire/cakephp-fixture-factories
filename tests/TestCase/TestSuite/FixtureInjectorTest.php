@@ -16,6 +16,7 @@ namespace CakephpFixtureFactories\Test\TestCase\TestSuite;
 
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\TestSuite\FixtureInjector;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
@@ -49,6 +50,32 @@ class FixtureInjectorTest extends TestCase
     }
 
     /**
+     * For each of the data provided, their should be
+     * $n Articles found, with $n being the index of the
+     * value
+     * @return array
+     * @throws \Exception
+     */
+    public function createWithOneFactoryInTheDataProvider()
+    {
+        $Factory = ArticleFactory::make();
+        return [
+            [$Factory],
+            [$Factory->setTimes(2)],
+            [$Factory->setTimes(10)],
+        ];
+    }
+
+    public function createWithDifferentFactoriesInTheDataProvider()
+    {
+        return [
+            [1, ArticleFactory::make()],
+            [2, ArticleFactory::make(2)],
+            [10, ArticleFactory::make(10)],
+        ];
+    }
+
+    /**
      * @dataProvider feedRollBackAndMigrateIfRequired
      * @see \SeedCountries::up()
      * @see FixtureInjector::rollbackAndMigrateIfRequired()
@@ -69,4 +96,32 @@ class FixtureInjectorTest extends TestCase
             Configure::delete('TestFixtureMarkedNonMigrated');
         }
    }
+
+    /**
+     * Since there is only one factory in this data provider,
+     * the factories will always return 10
+     * @dataProvider createWithOneFactoryInTheDataProvider
+     * @param $expected
+     * @param ArticleFactory $factory
+     * @throws \Exception
+     */
+    public function testCreateFactoryInTheDataProvider(ArticleFactory $factory)
+    {
+        $factory->persist();
+        $this->assertSame(10, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+    }
+
+    /**
+     * Since there are distinct factories in this data provider,
+     * the factories will produce different set of data
+     * @dataProvider createWithDifferentFactoriesInTheDataProvider
+     * @param $expected
+     * @param ArticleFactory $factory
+     * @throws \Exception
+     */
+    public function testCreateFactoryInTheDataProvider2(int $n, ArticleFactory $factory)
+    {
+        $factory->persist();
+        $this->assertSame($n, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+    }
 }
