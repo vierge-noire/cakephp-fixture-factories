@@ -51,7 +51,7 @@ class FixtureInjectorTest extends TestCase
 
     /**
      * For each of the data provided, their should be
-     * $n Articles found, with $n being the index of the
+     * 10 Articles found, which is the last value given to times
      * value
      * @return array
      * @throws \Exception
@@ -66,6 +66,11 @@ class FixtureInjectorTest extends TestCase
         ];
     }
 
+    /**
+     * For each test, a different factory is provided, so the expected
+     * number of articles is the first parameter
+     * @return array[]
+     */
     public function createWithDifferentFactoriesInTheDataProvider()
     {
         return [
