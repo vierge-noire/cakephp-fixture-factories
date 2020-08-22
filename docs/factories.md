@@ -73,15 +73,16 @@ are deactivated when creating CakePHP entities and persisting them to the databa
  the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
  
  ### Model events
- Per default, all model events related to a factory's root table and all behaviors are switched off, expect the `timestamp` behavior. 
+ Per default, all model events related to a factory's root table are switched off. This will have an impact on
+ a model's behavior actions.
  This is made in order to save the test fixtures in the test database as fast and straightforwardly as possible.
  
- It is possible to create test fixtures with the behaviors and the models events as follows:
+ It is possible to create test fixtures with the model events activated as follows:
  ```
-$article = ArticleFactory::makeWithModelListenersAndBehaviors()->persist();
+$article = ArticleFactory::makeWithModelEvents()->persist();
 ```
  
- The static method `makeWithModelListenersAndBehaviors` accepts the same arguments as the method `make`.
+ The static method `makeWithModelEvents` accepts the same arguments as the method `make`.
  
  ### Namespace
  
