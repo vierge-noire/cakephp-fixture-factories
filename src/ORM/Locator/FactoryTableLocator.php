@@ -23,6 +23,7 @@ class FactoryTableLocator extends TableLocator
         $ormEvents = [
             'Model.initialize',
             'Model.beforeMarshal',
+            'Model.afterMarshal',
             'Model.beforeFind',
             'Model.buildValidator',
             'Model.buildRules',
@@ -35,13 +36,6 @@ class FactoryTableLocator extends TableLocator
             'Model.afterDelete',
             'Model.afterDeleteCommit',
         ];
-
-        foreach ($cloneTable->behaviors()->loaded() as $behaviorName) {
-            if ($behaviorName === 'Timestamp') {
-                continue;
-            }
-            $cloneTable->removeBehavior($behaviorName);
-        }
 
         foreach ($ormEvents as $ormEvent) {
             foreach ($cloneTable->getEventManager()->listeners($ormEvent) as $listeners) {

@@ -65,7 +65,7 @@ abstract class BaseFactory
     /**
      * @var bool
      */
-    protected $listenersAndBehaviorsApplied = false;
+    protected $withModelEvents = false;
     /**
      * The number of records the factory should create
      *
@@ -139,7 +139,6 @@ abstract class BaseFactory
         }
 
         if ($factory) {
-            $factory->applyModelListenersAndBehaviors(self::$applyListenersAndBehaviors);
             $factory->setTimes($times);
             $factory->setDefaultTemplate();
         }
@@ -151,11 +150,11 @@ abstract class BaseFactory
      * @param int                     $times
      * @return self
      */
-    public static function makeWithModelListenersAndBehaviors($makeParameter = [], $times = 1): self
+    public static function makeWithModelEvents($makeParameter = [], $times = 1): self
     {
-        self::$applyListenersAndBehaviors = true;
         $factory = self::make($makeParameter, $times);
-        return $factory->applyModelListenersAndBehaviors();
+        $factory->withModelEvents = true;
+        return $factory;
     }
 
     /**
@@ -268,7 +267,7 @@ abstract class BaseFactory
      */
     public function getTable(): Table
     {
-        if ($this->listenersAndBehaviorsApplied) {
+        if ($this->withModelEvents) {
             return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         } else {
             return FactoryTableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
@@ -371,18 +370,6 @@ abstract class BaseFactory
     {
         $this->times = $times;
 
-        return $this;
-    }
-
-    /**
-     * Per default, listeners and behaviors on the table
-     * are skipped. This activates them all.
-     * @param $value
-     * @return $this
-     */
-    protected function applyModelListenersAndBehaviors(bool $value = true): self
-    {
-        $this->listenersAndBehaviorsApplied = $value;
         return $this;
     }
 

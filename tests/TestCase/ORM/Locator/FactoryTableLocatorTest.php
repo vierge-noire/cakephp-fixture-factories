@@ -15,38 +15,59 @@ namespace CakephpFixtureFactories\Test\TestCase\ORM\Locator;
 
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
-use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 use TestApp\Model\Entity\Country;
+use TestApp\Model\Table\AddressesTable;
 use TestApp\Model\Table\ArticlesTable;
+use TestApp\Model\Table\AuthorsTable;
+use TestApp\Model\Table\CitiesTable;
 use TestApp\Model\Table\CountriesTable;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use TestPlugin\Model\Table\BillsTable;
+use TestPlugin\Model\Table\CustomersTable;
 
 class FactoryTableLocatorTest extends TestCase
 {
-    public function testReturnedTableShouldHaveSameAssociations()
+
+    public function tables()
     {
-        $factoryArticlesTable = FactoryTableRegistry::getTableLocator()->get('Articles');
-        $articlesTable = TableRegistry::getTableLocator()->get('Articles');
+        return [
+            ['Articles', ArticlesTable::class],
+            ['Authors', AuthorsTable::class],
+            ['Addresses', AddressesTable::class],
+            ['Cities', CitiesTable::class],
+            ['Countries', CountriesTable::class],
+            ['TestPlugin.Bills', BillsTable::class],
+            ['TestPlugin.Customers', CustomersTable::class],
+        ];
+    }
 
-        $this->assertSame(true, $factoryArticlesTable instanceof ArticlesTable);
-        $this->assertSame(true, $articlesTable instanceof ArticlesTable);
+    /**
+     * @dataProvider tables
+     */
+    public function testReturnedTableShouldHaveSameAssociations(string $tableName, string $table)
+    {
+        $FactoryTable = FactoryTableRegistry::getTableLocator()->get($tableName);
+        $Table = TableRegistry::getTableLocator()->get($tableName);
+
+        $this->assertSame(true, $FactoryTable instanceof $table);
+        $this->assertSame(true, $Table instanceof $table);
         $this->assertNotSame(FactoryTableRegistry::getTableLocator(), TableRegistry::getTableLocator());
-        $this->assertSame($factoryArticlesTable->getEntityClass(), $articlesTable->getEntityClass());
+        $this->assertSame($FactoryTable->getEntityClass(), $Table->getEntityClass());
 
-        $this->assertNotSame($factoryArticlesTable->associations(), $articlesTable->associations());
-        foreach ($articlesTable->associations() as $association) {
-            $this->assertSame(true, $factoryArticlesTable->hasAssociation($association->getName()));
+        $this->assertNotSame($FactoryTable->associations(), $Table->associations());
+        foreach ($Table->associations() as $association) {
+            $this->assertSame(true, $FactoryTable->hasAssociation($association->getName()));
         }
 
-        // EntitiesTable from factory table locator should not have a Timestamp behavior. This is the only behavior that is allowed
-        $this->assertSame(true, $factoryArticlesTable->hasBehavior('Timestamp'));
+        // EntitiesTable from factory table locator should not have a Timestamp behavior.
+        $this->assertSame(true, $FactoryTable->hasBehavior('Timestamp'));
         // EntitiesTable from application table locator should have a Timestamp behavior
-        $this->assertSame(true, $articlesTable->hasBehavior('Timestamp'));
+        $this->assertSame(true, $Table->hasBehavior('Timestamp'));
     }
 
 
@@ -73,9 +94,14 @@ class FactoryTableLocatorTest extends TestCase
         $this->assertFalse($country->hasErrors());
         $country = CountryFactory::make(compact('name'))->persist();
         $this->assertInstanceOf(Country::class, $country);
+
+        $country = CountryFactory::makeWithModelEvents(compact('name'))->getEntity();
+        $this->assertFalse($country->hasErrors());
+        $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
+        $this->assertInstanceOf(Country::class, $country);
     }
 
-    public function testIgnoreBeforeSave()
+    public function testApplyOrIgnoreBeforeSave()
     {
         $name = 'Wonderland';
         $forcedName = 'Notwonderland';
@@ -92,9 +118,15 @@ class FactoryTableLocatorTest extends TestCase
 
         $country = CountryFactory::make(compact('name'))->persist();
         $this->assertEquals($name, $country->name);
+
+        $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
+        $this->assertEquals($forcedName, $country->name);
+
+        $country = CountryFactory::make(compact('name'))->persist();
+        $this->assertEquals($name, $country->name);
     }
 
-    public function testIgnoreBeforeMarshal()
+    public function testApplyOrIgnoreBeforeMarshal()
     {
         $name = 'Wonderland';
         $forcedName = 'Notwonderland';
@@ -109,33 +141,29 @@ class FactoryTableLocatorTest extends TestCase
 
         $country = CountryFactory::make(compact('name'))->getEntity();
         $this->assertEquals($name, $country->name);
+
+        $country = CountryFactory::makeWithModelEvents(compact('name'))->getEntity();
+        $this->assertEquals($forcedName, $country->name);
+
+        $country = CountryFactory::make(compact('name'))->getEntity();
+        $this->assertEquals($name, $country->name);
     }
 
-    public function testIgnoreBehaviors()
+    public function testApplyOrIgnoreEventInBehaviors()
     {
         $articlesTable = TableRegistry::getTableLocator()->get('Articles');
         $articlesTable->addBehavior('Sluggable');
 
         $title = "This Article";
-        $article = $articlesTable->newEntity(compact('title'));
-        $articlesTable->save($article);
 
+        $article = ArticleFactory::make(compact('title'))->persist();
+        $this->assertEquals(null, $article->slug);
+
+        $article = ArticleFactory::makeWithModelEvents(compact('title'))->persist();
         $this->assertEquals('This-Article', $article->slug);
 
         $article = ArticleFactory::make(compact('title'))->persist();
-        $this->assertNull($article->slug ?? null);
-        $this->assertTrue(is_int($article->id));
-    }
-
-    public function testApplyBehaviors()
-    {
-        $articlesTable = TableRegistry::getTableLocator()->get('Articles');
-        $articlesTable->addBehavior('Sluggable');
-
-        $title = "This Article";
-        $article = ArticleFactory::makeWithModelListenersAndBehaviors(compact('title'))->persist();
-        $this->assertEquals('This-Article', $article->slug);
-        $this->assertTrue(is_int($article->id));
+        $this->assertEquals(null, $article->slug);
     }
 
     public function testApplyBeforeSave()
@@ -153,7 +181,14 @@ class FactoryTableLocatorTest extends TestCase
 
         $this->assertEquals($forcedName, $country->name);
 
-        $country = CountryFactory::makeWithModelListenersAndBehaviors(compact('name'))->persist();
+        $country = CountryFactory::make(compact('name'))->persist();
+        $this->assertEquals($name, $country->name);
+
+        $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
         $this->assertEquals($forcedName, $country->name);
+
+        // Test that the events are switched off again
+        $country = CountryFactory::make(compact('name'))->persist();
+        $this->assertEquals($name, $country->name);
     }
 }
