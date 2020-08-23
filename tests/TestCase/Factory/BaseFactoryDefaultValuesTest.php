@@ -117,7 +117,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
     public function testDefaultValuesOfArticleDifferent()
     {
         $n = 5;
-        $articles = ArticleFactory::make($n)->toEntities();
+        $articles = ArticleFactory::make($n)->getEntities();
         $titles = Hash::extract($articles, '{n}.title');
         $this->assertEquals($n, count(array_unique($titles)));
     }

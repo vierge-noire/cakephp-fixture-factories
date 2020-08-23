@@ -47,7 +47,8 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         'Articles',
         'Authors',
         'Cities',
-        'Countries'
+        'Countries',
+        'PremiumAuthors',
     ];
 
     public $pluginTables = [
@@ -78,7 +79,10 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $expected = [
             'toOne' => [],
             'oneToMany' => ['Bills' => 'TestPlugin\Test\Factory\BillFactory'],
-            'manyToMany' => ['Authors' => 'TestApp\Test\Factory\AuthorFactory'],
+            'manyToMany' => [
+                'Authors' => 'TestApp\Test\Factory\AuthorFactory',
+                'ExclusivePremiumAuthors' => 'TestApp\Test\Factory\PremiumAuthorFactory',
+            ],
         ];
         $this->assertEquals($expected, $associations);
     }
