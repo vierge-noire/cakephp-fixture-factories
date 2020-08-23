@@ -506,10 +506,10 @@ class BaseFactoryAssociationsTest extends TestCase
             ->persist();
 
         $alias = PremiumAuthorsTable::ASSOCIATION_ALIAS;
-        $this->assertIsArray($article[$alias]);
+        $this->assertTrue(is_array($article[$alias]));
         foreach ($article[$alias] as $author) {
             $this->assertInstanceOf(PremiumAuthor::class, $author);
-            $this->assertIsInt($author->id);
+            $this->assertTrue(is_int($author->id));
         }
         $this->assertSame($nPremiumAuthors, $this->AuthorsTable->find()->count());
     }

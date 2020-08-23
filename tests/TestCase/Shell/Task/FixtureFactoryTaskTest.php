@@ -49,7 +49,8 @@ class FixtureFactoryTaskTest extends TestCase
         'Articles',
         'Authors',
         'Cities',
-        'Countries'
+        'Countries',
+        'PremiumAuthors',
     ];
 
     public $pluginTables = [
@@ -118,7 +119,8 @@ class FixtureFactoryTaskTest extends TestCase
                 'Bills' => 'TestPlugin\Test\Factory\BillFactory'
             ],
             'manyToMany' => [
-                'Authors' => 'TestApp\Test\Factory\AuthorFactory'
+                'Authors' => 'TestApp\Test\Factory\AuthorFactory',
+                'ExclusivePremiumAuthors' => 'TestApp\Test\Factory\PremiumAuthorFactory'
             ]
         ];
         $this->assertEquals($expected, $associations);

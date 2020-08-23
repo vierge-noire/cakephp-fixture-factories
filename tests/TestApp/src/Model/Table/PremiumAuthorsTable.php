@@ -16,9 +16,9 @@ namespace TestApp\Model\Table;
 class PremiumAuthorsTable extends AuthorsTable
 {
 
-    public const ASSOCIATION_ALIAS = 'special_authors';
+    const ASSOCIATION_ALIAS = 'special_authors';
 
-    public function initialize(array $config): void
+    public function initialize(array $config)
     {
         $this->setTable('authors');
         parent::initialize($config);
