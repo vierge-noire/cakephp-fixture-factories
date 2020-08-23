@@ -26,7 +26,14 @@ class ArticlesTable extends Table
                 'TestPlugin.Bills',
             ],
             'belongsToMany' => [
-                'Authors'
+                'Authors',
+                'ExclusivePremiumAuthors' => [
+                    'foreignKey' => 'article_id',
+                    'className' => 'PremiumAuthors',
+                    'targetForeignKey' => 'author_id',
+                    'joinTable' => 'articles_authors',
+                    'propertyName' => PremiumAuthorsTable::ASSOCIATION_ALIAS,
+                ],
             ],
         ]);
         parent::initialize($config);

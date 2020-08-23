@@ -25,6 +25,8 @@ use CakephpFixtureFactories\Util;
 
 class AssociationBuilder
 {
+    private $associated = [];
+
     /**
      * @var BaseFactory
      */
@@ -61,9 +63,14 @@ class AssociationBuilder
         }
     }
 
-    public function buildAssociationArrayForMarshaller(string $associationName, BaseFactory  $factory)
+    /**
+     * Collect an assocaited factory to the BaseFactory
+     * @param string $associationName
+     * @param BaseFactory $factory
+     */
+    public function collectAssociatedFactory(string $associationName, BaseFactory  $factory)
     {
-        $associations = $this->getFactory()->getAssociated();
+        $associations = $this->getAssociated();
 
         $addIfNotInAssociations = function ($associationName, &$associations){
             if (!in_array($associationName, $associations)) {
@@ -74,10 +81,10 @@ class AssociationBuilder
         $addIfNotInAssociations($associationName, $associations);
 
         foreach ($factory->getAssociated() as $associated) {
-            $addIfNotInAssociations($associationName . "." . Inflector::camelize($associated), $associations);
+            $addIfNotInAssociations("$associationName.$associated", $associations);
         }
 
-        return $associations;
+        $this->setAssociated($associations);
     }
 
     public function processToOneAssociation(string $associationName, BaseFactory $associationFactory)
@@ -213,5 +220,40 @@ class AssociationBuilder
     public function associationIsToMany(Association $association): bool
     {
         return ($association instanceof HasMany || $association instanceof BelongsToMany);
+    }
+
+    /**
+     * Scan for all associations starting by the $association path provided and drop them
+     * @param string $associationName
+     * @return void
+     */
+    public function dropAssociation(string $associationName)
+    {
+        $associated = $this->getAssociated();
+
+        foreach ($associated as $i => $ass) {
+            $strPos = strpos($ass, $associationName);
+            $nextChar = $ass[strlen($associationName)] ?? null;
+            if ($strPos === 0 && ($nextChar === null || $nextChar === '.')) {
+                unset($associated[$i]);
+            }
+        }
+        $this->setAssociated(array_values($associated));
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssociated(): array
+    {
+        return $this->associated;
+    }
+
+    /**
+     * @param array $associated
+     */
+    public function setAssociated(array $associated)
+    {
+        $this->associated = $associated;
     }
 }

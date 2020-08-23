@@ -15,9 +15,11 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use CakephpFixtureFactories\Factory\DataCompiler;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\TestSuite\SkipTablesTruncation;
 use PHPUnit\Framework\TestCase;
+use TestApp\Model\Table\PremiumAuthorsTable;
 
 class DataCompilerTest extends TestCase
 {
@@ -27,10 +29,15 @@ class DataCompilerTest extends TestCase
      * @var DataCompiler
      */
     public $authorDataCompiler;
+    /**
+     * @var DataCompiler
+     */
+    public $articleDataCompiler;
 
     public function setUp(): void
     {
         $this->authorDataCompiler = new DataCompiler(AuthorFactory::make());
+        $this->articleDataCompiler = new DataCompiler(ArticleFactory::make());
 
         parent::setUp();
     }
@@ -51,5 +58,17 @@ class DataCompilerTest extends TestCase
     {
         $marshallerAssociationName = $this->authorDataCompiler->getMarshallerAssociationName('BusinessAddress.City.Country');
         $this->assertSame('business_address.city.country', $marshallerAssociationName);
+    }
+
+    public function testGetMarshallerAssociationNameWithAliasedAssociationName()
+    {
+        $marshallerAssociationName = $this->articleDataCompiler->getMarshallerAssociationName('ExclusivePremiumAuthors');
+        $this->assertSame(PremiumAuthorsTable::ASSOCIATION_ALIAS, $marshallerAssociationName);
+    }
+
+    public function testGetMarshallerAssociationNameWithAliasedDeepAssociationName()
+    {
+        $marshallerAssociationName = $this->articleDataCompiler->getMarshallerAssociationName('ExclusivePremiumAuthors.Address');
+        $this->assertSame(PremiumAuthorsTable::ASSOCIATION_ALIAS.'.address', $marshallerAssociationName);
     }
 }
