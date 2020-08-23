@@ -37,11 +37,6 @@ use TestPlugin\Model\Table\CustomersTable;
 class AssociationBuilderTest extends TestCase
 {
     /**
-     * @var AssociationBuilder
-     */
-    public $associationBuilder;
-
-    /**
      * @var AuthorsTable
      */
     private $AuthorsTable;
@@ -94,7 +89,6 @@ class AssociationBuilderTest extends TestCase
     public function tearDown()
     {
         Configure::delete('TestFixtureNamespace');
-        unset($this->associationBuilder);
         unset($this->AuthorsTable);
         unset($this->AddressesTable);
         unset($this->ArticlesTable);
@@ -108,32 +102,32 @@ class AssociationBuilderTest extends TestCase
 
     public function testCheckAssociationWithCorrectAssociation()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $this->assertInstanceOf(
             Association::class,
-            $this->associationBuilder->getAssociation('Address')
+            $AssociationBuilder->getAssociation('Address')
         );
         $this->assertInstanceOf(
             Association::class,
-            $this->associationBuilder->getAssociation('Address.City.Country')
+            $AssociationBuilder->getAssociation('Address.City.Country')
         );
     }
 
     public function testCheckAssociationWithIncorrectAssociation()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $this->expectException(AssociationBuilderException::class);
-        $this->associationBuilder->getAssociation('Address.Country');
+        $AssociationBuilder->getAssociation('Address.Country');
     }
 
     public function testGetFactoryFromTableName()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $street = 'Foo';
-        $factory = $this->associationBuilder->getFactoryFromTableName('Address', compact('street'));
+        $factory = $AssociationBuilder->getFactoryFromTableName('Address', compact('street'));
         $this->assertInstanceOf(AddressFactory::class, $factory);
 
         $address = $factory->persist();
@@ -145,26 +139,26 @@ class AssociationBuilderTest extends TestCase
 
     public function testGetFactoryFromTableNameWrong()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $this->expectException(AssociationBuilderException::class);
-        $this->associationBuilder->getFactoryFromTableName('Address.UnknownAssociation');
+        $AssociationBuilder->getFactoryFromTableName('Address.UnknownAssociation');
     }
 
     public function testGetAssociatedFactoryWithNoDepth()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
-        $factory = $this->associationBuilder->getAssociatedFactory('Address');
+        $factory = $AssociationBuilder->getAssociatedFactory('Address');
         $this->assertInstanceOf(AddressFactory::class, $factory);
     }
 
     public function testGetAssociatedFactoryInPlugin()
     {
-        $this->associationBuilder = new AssociationBuilder(ArticleFactory::make());
+        $AssociationBuilder = new AssociationBuilder(ArticleFactory::make());
 
         $amount = 123;
-        $factory = $this->associationBuilder->getAssociatedFactory('Bills', compact('amount'));
+        $factory = $AssociationBuilder->getAssociatedFactory('Bills', compact('amount'));
         $this->assertInstanceOf(BillFactory::class, $factory);
 
         $bill = $factory->persist();
@@ -175,75 +169,74 @@ class AssociationBuilderTest extends TestCase
 
     public function testValidateToOneAssociationPass()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $this->assertTrue(
-            $this->associationBuilder->validateToOneAssociation('Articles', ArticleFactory::make(2))
+            $AssociationBuilder->validateToOneAssociation('Articles', ArticleFactory::make(2))
         );
     }
 
     public function testValidateToOneAssociationFail()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $this->expectException(AssociationBuilderException::class);
-        $this->associationBuilder->validateToOneAssociation('Address', AddressFactory::make(2));
+        $AssociationBuilder->validateToOneAssociation('Address', AddressFactory::make(2));
     }
 
     public function testRemoveBrackets()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $string = 'Authors[10].Address.City[10]';
         $expected = 'Authors.Address.City';
 
-        $this->assertSame($expected, $this->associationBuilder->removeBrackets($string));
+        $this->assertSame($expected, $AssociationBuilder->removeBrackets($string));
     }
 
     public function testGetTimeBetweenBracketsWithoutBrackets()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
-        $this->assertNull($this->associationBuilder->getTimeBetweenBrackets('Authors'));
+        $this->assertNull($AssociationBuilder->getTimeBetweenBrackets('Authors'));
     }
 
     public function testGetTimeBetweenBracketsWith1Brackets()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $n = 10;
-        $this->assertSame($n, $this->associationBuilder->getTimeBetweenBrackets("Authors[$n]"));
+        $this->assertSame($n, $AssociationBuilder->getTimeBetweenBrackets("Authors[$n]"));
     }
 
     public function testGetTimeBetweenBracketsWithEmptyBrackets()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $this->expectException(AssociationBuilderException::class);
-        $this->associationBuilder->getTimeBetweenBrackets("Authors[]");
+        $AssociationBuilder->getTimeBetweenBrackets("Authors[]");
     }
 
     public function testGetTimeBetweenBracketsWith2Brackets()
     {
-        $this->associationBuilder = new AssociationBuilder(AuthorFactory::make());
-
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
         $this->expectException(AssociationBuilderException::class);
-        $this->associationBuilder->getTimeBetweenBrackets("Authors[1][2]");
+        $AssociationBuilder->getTimeBetweenBrackets("Authors[1][2]");
     }
 
-    public function testBuildAssociationArrayForMarshaller()
+    public function testCollectAssociatedFactory()
     {
-        $CityFactory = CityFactory::make();
-        $this->associationBuilder = new AssociationBuilder($CityFactory);
-        $CountryFactory = CountryFactory::make();
-        $associated = $this->associationBuilder->buildAssociationArrayForMarshaller('Country', $CountryFactory);
-
-        $this->assertSame(['Country'], $associated);
+        $AssociationBuilder = new AssociationBuilder(CityFactory::make());
+        $AssociationBuilder->collectAssociatedFactory('Country', CountryFactory::make());
+        $this->assertSame(['Country'], $AssociationBuilder->getAssociated());
     }
 
-    public function testBuildAssociationArrayForMarshallerDeep2()
+    public function testCollectAssociatedFactoryDeep2()
     {
-        $AddressFactory = AddressFactory::make()->with('City', CityFactory::make()->withCountry());
+        $AddressFactory = AddressFactory::make()->with(
+            'City',
+            CityFactory::make()->withCountry()
+        );
 
         $this->assertSame([
             'City',
@@ -251,16 +244,97 @@ class AssociationBuilderTest extends TestCase
         ], $AddressFactory->getAssociated());
     }
 
-    public function testBuildAssociationArrayForMarshallerDeep3()
+    public function testCollectAssociatedFactoryDeep3()
     {
-        $AddressFactory = AddressFactory::make()->with('City', CityFactory::make()->with('Country', CountryFactory::make()->with('Cities')));
+        $AddressFactory = AddressFactory::make()->with(
+            'City',
+            CityFactory::make()->with(
+                'Country',
+                CountryFactory::make()->with('Cities')
+            )
+        );
 
         $this->assertSame([
             'City',
             'City.Country',
             'City.Country.Cities',
-            'City.Country.Cities.Country',
         ], $AddressFactory->getAssociated());
+    }
+
+    public function testDropAssociation()
+    {
+        $AssociationBuilder = new AssociationBuilder(AddressFactory::make());
+        $AssociationBuilder->setAssociated(['City', 'City.Country']);
+        $AssociationBuilder->dropAssociation('City');
+        $this->assertEmpty($AssociationBuilder->getAssociated());
+    }
+
+    public function testDropAssociationSingular()
+    {
+        $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
+        $AssociationBuilder->setAssociated(['Authors']);
+        $AssociationBuilder->dropAssociation('Author');
+        $this->assertSame(['Authors'], $AssociationBuilder->getAssociated());
+    }
+
+    public function testDropAssociationDeep2()
+    {
+        $AssociationBuilder = new AssociationBuilder(AddressFactory::make());
+        $AssociationBuilder->setAssociated(['City', 'City.Country']);
+        $AssociationBuilder->dropAssociation('City.Country');
+        $this->assertSame(['City'], $AssociationBuilder->getAssociated());
+    }
+
+    public function testCollectAssociatedFactoryWithoutAssociation()
+    {
+        $AddressFactory = AddressFactory::make()->without('City');
+
+        $this->assertSame([], $AddressFactory->getAssociated());
+    }
+
+    public function testCollectAssociatedFactoryWithoutAssociationDeep2()
+    {
+        $AddressFactory = AddressFactory::make()->without('City.Country');
+
+        $this->assertSame(['City'], $AddressFactory->getAssociated());
+    }
+
+    public function testCollectAssociatedFactoryWithBrackets()
+    {
+        $ArticleFactory = ArticleFactory::make()
+            ->with(
+                "Authors[5].Articles[10].Bills",
+                BillFactory::make()->without('Article')
+            );
+
+        $expected = [
+            'Authors',
+            'Authors.Address',
+            'Authors.Address.City',
+            'Authors.Address.City.Country',
+            'Authors.Articles',
+            'Authors.Articles.Authors',
+            'Authors.Articles.Authors.Address',
+            'Authors.Articles.Authors.Address.City',
+            'Authors.Articles.Authors.Address.City.Country',
+            'Authors.Articles.Bills',
+            'Authors.Articles.Bills.Customer',
+        ];
+        $this->assertSame($expected, $ArticleFactory->getAssociated());
+    }
+
+    public function testCollectAssociatedFactoryWithAliasedAssociation()
+    {
+        $ArticleFactory = ArticleFactory::make()
+            ->with('ExclusivePremiumAuthors')
+            ->without('Authors');
+
+        $this->assertSame([
+            'ExclusivePremiumAuthors',
+            'ExclusivePremiumAuthors.Address',
+            'ExclusivePremiumAuthors.Address.City',
+            'ExclusivePremiumAuthors.Address.City.Country',
+        ], $ArticleFactory->getAssociated());
     }
 
     /**
@@ -274,6 +348,8 @@ class AssociationBuilderTest extends TestCase
             'Cities',
             CityFactory::make(['name' => $cityName])->withCountry()
         );
+
+        $this->assertSame(['Cities'], $CountryFactory->getAssociated());
 
         $country = $CountryFactory->persist();
 

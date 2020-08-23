@@ -86,16 +86,17 @@ class DataCompiler
      */
     public function collectAssociation(string $associationName, BaseFactory $factory)
     {
-        $this->dataFromAssociations[
-            $this->getMarshallerAssociationName($associationName)
-        ] = $factory;
+        $this->dataFromAssociations[$associationName] = $factory;
     }
 
+    /**
+     * Scan for the data stored in the $association path provided and drop it
+     * @param string $associationName
+     * @return array
+     */
     public function dropAssociation(string $associationName)
     {
-        unset($this->dataFromAssociations[
-            $this->getMarshallerAssociationName($associationName)
-        ]);
+        unset($this->dataFromAssociations[$associationName]);
     }
 
     /**
@@ -190,19 +191,16 @@ class DataCompiler
     {
         foreach ($this->dataFromAssociations as $propertyName => $data) {
             $association = $this->getAssociationByPropertyName($propertyName);
-            if ($association) {
-                if ($data instanceof BaseFactory) {
-                    /** @var BaseFactory $dataFactory */
-                    $dataFactory = $data;
-                    if ($association instanceof HasOne || $association instanceof BelongsTo) {
-
-                        // toOne associated data must be singular when saved
-                        $propertyName = Inflector::singularize($propertyName);
-
-                        $compiledTemplateData[$propertyName] = $dataFactory->toArray()[0];
-                    } else {
-                        $compiledTemplateData[$propertyName] = $dataFactory->toArray();
-                    }
+            if ($association && $data instanceof BaseFactory) {
+                /** @var BaseFactory $dataFactory */
+                $dataFactory = $data;
+                $propertyName = $this->getMarshallerAssociationName($propertyName);
+                if ($association instanceof HasOne || $association instanceof BelongsTo) {
+                    // toOne associated data must be singular when saved
+                    $propertyName = Inflector::singularize($propertyName);
+                    $compiledTemplateData[$propertyName] = $dataFactory->toArray()[0];
+                } else {
+                    $compiledTemplateData[$propertyName] = $dataFactory->toArray();
                 }
             }
         }
@@ -210,7 +208,7 @@ class DataCompiler
     }
 
     /**
-     * Returns lowercase underscored version of an association name
+     * Returns the property name of the association. This can be dot separated for deep associations
      * Throws an exception if the association name does not exist on the rootTable of the factory
      * @param string $associationName
      * @return string underscore_version of the input string
@@ -218,9 +216,15 @@ class DataCompiler
      */
     public function getMarshallerAssociationName(string $associationName): string
     {
-        // Check that the association exists
-        $this->getFactory()->getTable()->getAssociation($associationName);
-        return Inflector::underscore($associationName);
+        $result = [];
+        $cast = explode('.', $associationName);
+        $table = $this->getFactory()->getTable();
+        foreach ($cast as $i => $ass) {
+            $association = $table->getAssociation($ass);
+            $result[] = $association->getProperty();
+            $table = $association->getTarget();
+        }
+        return implode('.', $result);
     }
 
     /**

@@ -27,11 +27,13 @@ use PHPUnit\Framework\TestCase;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
+use TestApp\Model\Entity\PremiumAuthor;
 use TestApp\Model\Table\AddressesTable;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\AuthorsTable;
 use TestApp\Model\Table\CitiesTable;
 use TestApp\Model\Table\CountriesTable;
+use TestApp\Model\Table\PremiumAuthorsTable;
 use TestPlugin\Model\Entity\Bill;
 use TestPlugin\Model\Entity\Customer;
 use TestPlugin\Model\Table\BillsTable;
@@ -493,5 +495,22 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertSame($nArticles + 1, $articlesAssociatedToAuthor->count());
         $this->assertSame(1, $authorsAssociatedToArticle->count());
+    }
+
+    public function testArticleWithPremiumAuthors()
+    {
+        $nPremiumAuthors = rand(2,5);
+        $article = ArticleFactory::make()
+            ->with('ExclusivePremiumAuthors', $nPremiumAuthors)
+            ->without('Authors')
+            ->persist();
+
+        $alias = PremiumAuthorsTable::ASSOCIATION_ALIAS;
+        $this->assertIsArray($article[$alias]);
+        foreach ($article[$alias] as $author) {
+            $this->assertInstanceOf(PremiumAuthor::class, $author);
+            $this->assertIsInt($author->id);
+        }
+        $this->assertSame($nPremiumAuthors, $this->AuthorsTable->find()->count());
     }
 }
