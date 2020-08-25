@@ -19,6 +19,7 @@ class ArticlesTable extends Table
 {
     public function initialize(array $config): void
     {
+        $this->addBehavior('Sluggable');
         $this->addBehavior('Timestamp');
 
         $this->addAssociations([

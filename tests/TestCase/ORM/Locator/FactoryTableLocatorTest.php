@@ -14,10 +14,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\ORM\Locator;
 
 use Cake\Datasource\EntityInterface;
-use Cake\Datasource\FactoryLocator;
 use Cake\Event\Event;
-use Cake\I18n\FrozenTime;
-use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
@@ -104,59 +101,45 @@ class FactoryTableLocatorTest extends TestCase
         $this->assertInstanceOf(Country::class, $country);
     }
 
-    public function testApplyOrIgnoreBeforeSave()
+    public function runSeveralTimes()
     {
-        $name = 'Wonderland';
-        $forcedName = 'Notwonderland';
-        $countriesTable = TableRegistry::getTableLocator()->get('Countries');
-
-        $countriesTable->getEventManager()->on('Model.beforeSave', function (Event $event, EntityInterface $entity) use ($forcedName) {
-            $entity->name = $forcedName;
-        });
-
-        $country = $countriesTable->newEntity(compact('name'));
-        $countriesTable->save($country);
-
-        $this->assertEquals($forcedName, $country->name);
-
-        $country = CountryFactory::make(compact('name'))->persist();
-        $this->assertEquals($name, $country->name);
-
-        $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
-        $this->assertEquals($forcedName, $country->name);
-
-        $country = CountryFactory::make(compact('name'))->persist();
-        $this->assertEquals($name, $country->name);
+        return [
+            [true], [true], [true], [true],
+        ];
     }
 
-    public function testApplyOrIgnoreBeforeMarshal()
+    /**
+     * @dataProvider runSeveralTimes
+     * @param $times
+     * @throws \Exception
+     */
+    public function testApplyOrIgnoreBeforeMarshal($times)
     {
-        $name = 'Wonderland';
-        $forcedName = 'Notwonderland';
+        $name = 'Foo';
+        $eventApplied = true;
         $countriesTable = TableRegistry::getTableLocator()->get('Countries');
 
-        $countriesTable->getEventManager()->on('Model.beforeMarshal', function (Event $event, \ArrayObject $entity) use ($forcedName) {
-            $entity['name'] = $forcedName;
+        $countriesTable->getEventManager()->on('Model.beforeMarshal', function (Event $event, \ArrayObject $entity) use ($eventApplied) {
+            $entity['eventApplied'] = $eventApplied;
         });
 
         $country = $countriesTable->newEntity(compact('name'));
-        $this->assertEquals($forcedName, $country->name);
+        $this->assertSame($eventApplied, $country->eventApplied);
 
         $country = CountryFactory::make(compact('name'))->getEntity();
-        $this->assertEquals($name, $country->name);
+        $this->assertSame(null, $country->eventApplied);
 
         $country = CountryFactory::makeWithModelEvents(compact('name'))->getEntity();
-        $this->assertEquals($forcedName, $country->name);
-
-        $country = CountryFactory::make(compact('name'))->getEntity();
-        $this->assertEquals($name, $country->name);
+        $this->assertSame($eventApplied, $country->eventApplied);
     }
 
-    public function testApplyOrIgnoreEventInBehaviors()
+    /**
+     * @dataProvider runSeveralTimes
+     * @param $times
+     * @throws \Exception
+     */
+    public function testApplyOrIgnoreEventInBehaviors(bool $times)
     {
-        $articlesTable = TableRegistry::getTableLocator()->get('Articles');
-        $articlesTable->addBehavior('Sluggable');
-
         $title = "This Article";
 
         $article = ArticleFactory::make(compact('title'))->persist();
@@ -167,31 +150,8 @@ class FactoryTableLocatorTest extends TestCase
 
         $article = ArticleFactory::make(compact('title'))->persist();
         $this->assertEquals(null, $article->slug);
-    }
 
-    public function testApplyBeforeSave()
-    {
-        $name = 'Wonderland';
-        $forcedName = 'Notwonderland';
-        $countriesTable = TableRegistry::getTableLocator()->get('Countries');
-
-        $countriesTable->getEventManager()->on('Model.beforeSave', function (Event $event, EntityInterface $entity) use ($forcedName) {
-            $entity->name = $forcedName;
-        });
-
-        $country = $countriesTable->newEntity(compact('name'));
-        $countriesTable->save($country);
-
-        $this->assertEquals($forcedName, $country->name);
-
-        $country = CountryFactory::make(compact('name'))->persist();
-        $this->assertEquals($name, $country->name);
-
-        $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
-        $this->assertEquals($forcedName, $country->name);
-
-        // Test that the events are switched off again
-        $country = CountryFactory::make(compact('name'))->persist();
-        $this->assertEquals($name, $country->name);
+        $article = ArticleFactory::makeWithModelEvents(compact('title'))->persist();
+        $this->assertEquals('This-Article', $article->slug);
     }
 }
