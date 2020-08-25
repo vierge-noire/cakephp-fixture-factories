@@ -104,30 +104,34 @@ class FactoryTableLocatorTest extends TestCase
     public function runSeveralTimes()
     {
         return [
-            [true], [true], [true], [true],
+            [true], [false], [false], [false],
         ];
     }
 
     /**
      * @dataProvider runSeveralTimes
-     * @param $times
+     * @param $applyEvent Bind the event once to the model
      * @throws \Exception
      */
-    public function testApplyOrIgnoreBeforeMarshal($times)
+    public function testApplyOrIgnoreBeforeMarshal($applyEvent)
     {
         $name = 'Foo';
         $eventApplied = true;
         $countriesTable = TableRegistry::getTableLocator()->get('Countries');
 
-        $countriesTable->getEventManager()->on('Model.beforeMarshal', function (Event $event, \ArrayObject $entity) use ($eventApplied) {
-            $entity['eventApplied'] = $eventApplied;
-        });
-
-        $country = $countriesTable->newEntity(compact('name'));
-        $this->assertSame($eventApplied, $country->eventApplied);
-
+        if ($applyEvent) {
+            $countriesTable->getEventManager()->on('Model.beforeMarshal', function (Event $event, \ArrayObject $entity) use ($eventApplied) {
+                $entity['eventApplied'] = $eventApplied;
+            });
+        }
+        
+        // Event should be skipped
         $country = CountryFactory::make(compact('name'))->getEntity();
         $this->assertSame(null, $country->eventApplied);
+
+        // Event should apply
+        $country = $countriesTable->newEntity(compact('name'));
+        $this->assertSame($eventApplied, $country->eventApplied);
 
         $country = CountryFactory::makeWithModelEvents(compact('name'))->getEntity();
         $this->assertSame($eventApplied, $country->eventApplied);
