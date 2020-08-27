@@ -29,7 +29,38 @@ For CakePHP 3.x, append:  ```"^0.1.0"```
 
 ## [Setup](docs/setup.md)
 
-Adjustments before using the fixture factories (1 minute).
+Ensure the CakephpFixtureFactories Plugin is loaded in `src/Application.php` file:
+```
+protected function bootstrapCli(): void
+{
+    // Load more plugins here
+    $this->addPlugin('CakephpFixtureFactories');
+}
+```
+
+Setup a listener for fixtures replacing on `phpunit.xml.dist`:
+```
+<!-- Setup a listener for fixtures -->
+<listeners>
+    <listener class="Cake\TestSuite\Fixture\FixtureInjector">
+        <arguments>
+            <object class="Cake\TestSuite\Fixture\FixtureManager"/>
+        </arguments>
+    </listener>
+</listeners>
+```
+to:
+```
+<!-- Setup a listener for fixtures -->
+<listeners>
+    <listener class="CakephpFixtureFactories\TestSuite\FixtureInjector">
+        <arguments>
+            <object class="CakephpFixtureFactories\TestSuite\FixtureManager" />
+        </arguments>
+    </listener>
+</listeners>
+```
+
 This is also illustrated, along with the usage of migrations, in [this video](https://www.youtube.com/watch?v=h8A3lHrwInI).
 
 ## [Use Migrations](docs/migrator.md)
