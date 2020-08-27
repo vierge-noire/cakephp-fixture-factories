@@ -11,9 +11,18 @@ The CakePHP Fixture Factories plugin
 
 You will never have to create, maintain or declare any test fixtures again.
 
+Example: you need to create a user belonging to a group of users with a certain permission `some-permission`? Once your `UserFactory`, `GroupFactory` and `PermissionFactory` are baked, you can create your users by calling:
+
+`$user = UserFactory::make()->with('Groups.Permissions', ['name' => 'some-permission'])->persist()`.
+
+Or move that logic in your `UserFactory` by creating your own `withPermission` method, and call
+
+`$user = UserFactory::make()->withPermission('some-permission')->persist()`.
+
+Inserting test data is made ridiculously simple, and your tests get readable.
+
 The package is compatible with the traditional [CakePHP test fixtures](https://book.cakephp.org/4/en/development/testing.html#fixtures).
-You may continue using them along with the Fixture Factories, these will work just as before. It is however recommended to migrate to
-the Fixture Factories approach. 
+You may continue using them along with the Fixture Factories, these will work just as before.
 
 [Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020.
 
