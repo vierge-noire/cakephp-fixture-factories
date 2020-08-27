@@ -29,15 +29,6 @@ For CakePHP 3.x, append:  ```"^0.1.0"```
 
 ## [Setup](docs/setup.md)
 
-Ensure the CakephpFixtureFactories Plugin is loaded in `src/Application.php` file:
-```
-protected function bootstrapCli(): void
-{
-    // Load more plugins here
-    $this->addPlugin('CakephpFixtureFactories');
-}
-```
-
 Setup a listener for fixtures replacing on `phpunit.xml.dist`:
 ```
 <!-- Setup a listener for fixtures -->
@@ -59,6 +50,15 @@ to:
         </arguments>
     </listener>
 </listeners>
+```
+
+In order to bake your factories, ensure the CakephpFixtureFactories Plugin is loaded in your `src/Application.php` file:
+```
+protected function bootstrapCli(): void
+{
+    // Load more plugins here
+    $this->addPlugin('CakephpFixtureFactories');
+}
 ```
 
 This is also illustrated, along with the usage of migrations, in [this video](https://www.youtube.com/watch?v=h8A3lHrwInI).
@@ -95,10 +95,10 @@ The only step performed by the package's test suite is to truncate *dirty* table
 
 The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
 
-Copyright 2020 Nicolas Masson and Juan Pablo Ramirez
+Copyright 2020 Juan Pablo Ramirez and Nicolas Masson
 
 Licensed under The MIT License Redistributions of files must retain the above copyright notice.
 
 ## Authors
+* Juan Pablo Ramirez
 * Nicolas Masson
-* Juan Pablo Ramirez 
