@@ -2,7 +2,7 @@
 
 CakePHP fixtures handle the test DB schema in a parallel manner to the default DB. On the one hand you will write migrations for your defautl DB. And on the other hand you either hard coded describe the schema structure in your fixtures, or meme the default DB. The later is simpler, but it forces you to have two DBs. And in CI tools, you will have to run the migrations on your default DB, and the fixtures meme the default DB. So why not running migrations directly on the test DB?
 
-With the CakePHP Fixture Factories, the schema of both default and test DB are handled exactly the same way. You do not need a default DB anymore. Tables are not droped anymore between test suites, which speeds up your tests. And migrations are part of the whole testing process: they get tested.
+With the CakePHP Fixture Factories, the schema of both default and test DB are handled exactly the same way. You do not need a default DB anymore. Tables are not droped anymore between test suites, which speeds up your tests. And migrations are part of the whole testing process: they get indirectly tested.
 
 ### Setting 
 
