@@ -17,6 +17,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\TestSuite\FixtureInjector;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
 
@@ -64,7 +65,7 @@ class SetupCommand extends Command
         }
 
         if (!file_exists($path)) {
-            $io->abort("The phpunit config file $path could not be found.");
+            $io->error("The phpunit config file $path could not be found.");
             return '';
         } else {
             return $path;
@@ -81,7 +82,9 @@ class SetupCommand extends Command
         try {
             $string = file_get_contents($filePath);
         } catch (\Exception $exception) {
-            $io->abort($exception->getMessage());
+            $io->error($exception->getMessage());
+            throw new FixtureFactoryException("$filePath could not be found.");
+
         }
 
         $dom = new \SimpleXMLElement($string);

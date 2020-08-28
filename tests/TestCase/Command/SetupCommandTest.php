@@ -15,10 +15,10 @@ namespace CakephpFixtureFactories\Test\TestCase\Command;
 
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
-use Cake\Console\Exception\StopException;
 use Cake\TestSuite\ConsoleIntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Command\SetupCommand;
+use CakephpFixtureFactories\Error\FixtureFactoryException;
 
 /**
  * App\Shell\Task\FactoryTask Test Case
@@ -133,7 +133,7 @@ class SetupCommandTest extends TestCase
 
     public function testReplaceListenersInPhpunitXmlFileWrongFile()
     {
-        $this->expectException(StopException::class);
+        $this->expectException(FixtureFactoryException::class);
         $cmd = new SetupCommand();
         $cmd->replaceListenersInPhpunitXmlFile('abc', $this->io);
     }
@@ -152,15 +152,14 @@ class SetupCommandTest extends TestCase
 
     public function testExecuteWithWrongFile()
     {
-        $this->expectException(StopException::class);
+        $this->expectException(FixtureFactoryException::class);
         $this->exec([], ['file' => 'foo']);
     }
 
     public function testExecuteWithPlugin()
     {
         $pluginName = 'Foo';
-        $this->expectException(StopException::class);
-        $this->expectExceptionMessage("plugins/$pluginName/phpunit.xml.dist could not be found.");
+        $this->expectException(FixtureFactoryException::class);
         $this->exec([], ['plugin' => $pluginName]);
     }
 
@@ -168,8 +167,7 @@ class SetupCommandTest extends TestCase
     {
         $fileName = 'Foo';
         $fullPath = ROOT . DS . $fileName;
-        $this->expectException(StopException::class);
-        $this->expectExceptionMessage("$fullPath could not be found.");
+        $this->expectException(FixtureFactoryException::class);
         $this->exec([], ['file' => $fileName]);
     }
 
@@ -178,8 +176,7 @@ class SetupCommandTest extends TestCase
         $fileName = 'Foo';
         $pluginName = 'Bar';
         $fullPath = ROOT . DS . 'plugins' . DS . $pluginName . DS . $fileName;
-        $this->expectException(StopException::class);
-        $this->expectExceptionMessage("$fullPath could not be found.");
+        $this->expectException(FixtureFactoryException::class);
         $this->exec([], ['file' => $fileName, 'plugin' => $pluginName]);
     }
 }
