@@ -34,12 +34,12 @@ class SetupCommand extends Command
     {
         $parser
             ->setDescription('Helper to setup your phpunit xml file')
-            ->addArgument('plugin', [
+            ->addOption('plugin', [
                 'help' => 'Set configs in a plugin',
                 'short' => 'p',
             ])
-            ->addArgument('file', [
-                'help' => 'Name of your phpunit config file (per default phpunit.xml.dist)',
+            ->addOption('file', [
+                'help' => 'Name of the phpunit config file (per default phpunit.xml.dist)',
                 'short' => 'f',
             ]);
 
@@ -84,6 +84,43 @@ class SetupCommand extends Command
             $io->abort($exception->getMessage());
         }
 
+        $this->replaceListenerInString($filePath, $string);
+    }
+
+    protected function replaceListenerInString(string $filePath, string $string)
+    {
+        $this->existsInString(\Cake\TestSuite\Fixture\FixtureInjector::class, $string, $filePath);
+        $this->existsInString(\Cake\TestSuite\Fixture\FixtureManager::class, $string, $filePath);
+
+        $string = str_replace(\Cake\TestSuite\Fixture\FixtureInjector::class, FixtureInjector::class, $string);
+        $string = str_replace(\Cake\TestSuite\Fixture\FixtureManager::class, FixtureManager::class, $string);
+
+        file_put_contents($filePath, $string);
+    }
+
+    /**
+     * Ensure that a string is well found in a file
+     * @param string $search
+     * @param string $subject
+     * @param string $filePath
+     */
+    protected function existsInString(string $search, string $subject, string $filePath)
+    {
+        if (strpos($subject, $search) === false) {
+            throw new FixtureFactoryException("$search could not be found in $filePath.");
+        }
+    }
+
+    /**
+     * Replace the listeners using the native XML DOM tool
+     * The disadvantage is that this changes the indentation
+     * and empty lines
+     * @param string $filePath
+     * @param string $string
+     * @deprecated
+     */
+    protected function replaceListenerWithDOMDocument(string $filePath, string $string)
+    {
         $dom = new \SimpleXMLElement($string);
         $dom->listeners = '';
         $listener = $dom->listeners->addChild('listener');
