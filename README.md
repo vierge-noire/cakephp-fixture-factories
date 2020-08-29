@@ -38,30 +38,8 @@ For CakePHP 3.x, append:  ```"^0.1.0"```
 
 ## [Setup](docs/setup.md)
 
-Setup a listener for fixtures replacing on `phpunit.xml.dist`:
-```
-<!-- Setup a listener for fixtures -->
-<listeners>
-    <listener class="Cake\TestSuite\Fixture\FixtureInjector">
-        <arguments>
-            <object class="Cake\TestSuite\Fixture\FixtureManager"/>
-        </arguments>
-    </listener>
-</listeners>
-```
-to:
-```
-<!-- Setup a listener for fixtures -->
-<listeners>
-    <listener class="CakephpFixtureFactories\TestSuite\FixtureInjector">
-        <arguments>
-            <object class="CakephpFixtureFactories\TestSuite\FixtureManager" />
-        </arguments>
-    </listener>
-</listeners>
-```
-
-In order to bake your factories, ensure the CakephpFixtureFactories Plugin is loaded in your `src/Application.php` file:
+To be able to bake your factories or to replace automatically the test listeners in your phpunit file,
+load the CakephpFixtureFactories plugin in your `src/Application.php` file:
 ```
 protected function bootstrapCli(): void
 {
@@ -69,6 +47,13 @@ protected function bootstrapCli(): void
     $this->addPlugin('CakephpFixtureFactories');
 }
 ```
+
+and set up the test listener in `phpunit.xml.dist` by running: 
+```
+bin/cake fixture_factories_setup
+```
+
+You can specify a plugin (`-p`) and a file (`-f`) if it differs from `phpunit.xml.dist`.
 
 This is also illustrated, along with the usage of migrations, in [this video](https://www.youtube.com/watch?v=h8A3lHrwInI).
 
