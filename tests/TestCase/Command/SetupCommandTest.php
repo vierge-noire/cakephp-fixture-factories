@@ -166,7 +166,6 @@ class SetupCommandTest extends TestCase
     public function testExecuteWithFile()
     {
         $fileName = 'Foo';
-        $fullPath = ROOT . DS . $fileName;
         $this->expectException(FixtureFactoryException::class);
         $this->exec([], ['file' => $fileName]);
     }
@@ -175,7 +174,6 @@ class SetupCommandTest extends TestCase
     {
         $fileName = 'Foo';
         $pluginName = 'Bar';
-        $fullPath = ROOT . DS . 'plugins' . DS . $pluginName . DS . $fileName;
         $this->expectException(FixtureFactoryException::class);
         $this->exec([], ['file' => $fileName, 'plugin' => $pluginName]);
     }
