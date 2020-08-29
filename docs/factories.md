@@ -73,9 +73,9 @@ are deactivated when creating CakePHP entities and persisting them to the databa
  the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
  
  ### Model events
- Per default, all model events related to a factory's root table are switched off. This will have an impact on
+ Per default, *all model events* of a factory's root table are switched off *except those of the timestamp behavior*. This will have an impact on
  a model's behavior actions.
- This is made in order to save the test fixtures in the test database as fast and straightforwardly as possible.
+ This is made in order to save the test fixtures in the test database as fast and straightforwardly as possible without interfering with the business model.
  
  It is possible to create test fixtures with the model events activated as follows:
  ```
