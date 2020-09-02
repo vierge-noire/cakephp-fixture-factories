@@ -36,13 +36,6 @@ use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 class FactoryTableRegistry extends TableRegistry
 {
     /**
-     * LocatorInterface implementation instance.
-     *
-     * @var \Cake\ORM\Locator\LocatorInterface
-     */
-    protected static $_locator;
-
-    /**
      * Default LocatorInterface implementation class.
      *
      * @var string
@@ -58,10 +51,6 @@ class FactoryTableRegistry extends TableRegistry
      */
     public static function getTableLocator(): LocatorInterface
     {
-        if (static::$_locator === null) {
-            static::$_locator = new static::$_defaultLocatorClass();
-        }
-
-        return static::$_locator;
+        return new static::$_defaultLocatorClass();
     }
 }

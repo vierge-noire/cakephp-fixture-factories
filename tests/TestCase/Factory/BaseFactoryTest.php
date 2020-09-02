@@ -16,6 +16,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
+use Cake\Validation\Validator;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -32,6 +33,7 @@ use TestApp\Model\Entity\Author;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Table\ArticlesTable;
+use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Entity\Bill;
 use function count;
 use function is_array;
@@ -800,5 +802,35 @@ class BaseFactoryTest extends TestCase
         ArticleFactory::make()->setTimes($times)->persist();
 
         $this->assertSame($times, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+    }
+
+    /**
+     * The max length of a country name being set in CountriesTable
+     * this test verifies that the validation is triggered on regular marshalling/saving
+     * , but is ignored by the factories
+     */
+    public function testSkipValidation()
+    {
+        $maxLength = CountriesTable::NAME_MAX_LENGTH;
+        $validator = new Validator();
+        $validator->maxLength('name', $maxLength);
+
+        $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
+
+        $name = str_repeat('a', $maxLength + 1);
+
+        $country = $CountriesTable->newEntity(compact('name'));
+        $this->assertTrue($country->hasErrors());
+        $this->assertFalse($CountriesTable->save($country));
+
+        $country = CountryFactory::make(compact('name'))->getEntity();
+        $this->assertFalse($country->hasErrors());
+        $country = CountryFactory::make(compact('name'))->persist();
+        $this->assertInstanceOf(Country::class, $country);
+
+        $country = CountryFactory::makeWithModelEvents(compact('name'))->getEntity();
+        $this->assertFalse($country->hasErrors());
+        $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
+        $this->assertInstanceOf(Country::class, $country);
     }
 }

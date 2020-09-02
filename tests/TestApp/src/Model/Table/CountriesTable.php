@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace TestApp\Model\Table;
 
+use Cake\Event\Event;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -23,6 +24,9 @@ class CountriesTable extends Table
     public function initialize(array $config): void
     {
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Sluggable', [
+            'field' => 'name',
+        ]);
 
         $this->addAssociations([
             'hasMany' => [
@@ -39,4 +43,16 @@ class CountriesTable extends Table
 
         return $validator;
     }
+
+
+    /**
+     * @param Event $event
+     * @param ArrayObject $data
+     * @param ArrayObject $options
+     */
+    public function beforeMarshal(Event $event, \ArrayObject $data, \ArrayObject $options)
+    {
+        $data['beforeMarshalTriggered'] = true;
+    }
+
 }

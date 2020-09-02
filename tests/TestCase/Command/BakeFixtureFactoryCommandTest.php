@@ -159,7 +159,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $articleFactory = ArticleFactory::make(compact('title'))->withAuthors([], 2);
         $this->assertInstanceOf(ArticleFactory::class, $articleFactory);
 
-        $article = $articleFactory->persist();
+        $article = $articleFactory->getEntity();
         $this->assertEquals($title, $article->title);
         $authors = $article->authors;
         $this->assertSame(2, count($authors));
