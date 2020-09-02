@@ -245,21 +245,20 @@ class EventManagerTest extends TestCase
         $this->CountriesTable->addBehavior('TestPlugin.SomePlugin');
 
         // The behavior should not apply
-        $country = CountryFactory::make(compact('name'))->persist();
+        $country = CountryFactory::make()->persist();
         $this->assertNull($country->$field);
 
         // The behavior should apply
-        $country = CountryFactory::make(compact('name'))->listeningToBehaviors('SomePlugin')->persist();
+        $country = CountryFactory::make()->listeningToBehaviors('SomePlugin')->persist();
         $this->assertTrue($country->$field);
 
         // The behavior should not apply
-        $country = CountryFactory::make(compact('name'))->persist();
+        $country = CountryFactory::make()->persist();
         $this->assertNull($country->$field);
 
         // The behavior should apply
         Configure::write('TestFixtureGlobalBehavior', ['SomePlugin']);
-        $country = CountryFactory::make(compact('name'))->persist();
+        $country = CountryFactory::make()->persist();
         $this->assertTrue($country->$field);
-
     }
 }
