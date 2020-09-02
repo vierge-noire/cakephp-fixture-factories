@@ -40,7 +40,7 @@ class CreateBills extends AbstractMigration
             ])
             ->addIndex('customer_id')
             ->addIndex('article_id')
-            ->addTimestamps()
+            ->addTimestamps('created', 'modified')
             ->create();
     }
 

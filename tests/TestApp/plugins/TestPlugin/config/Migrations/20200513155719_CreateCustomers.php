@@ -30,7 +30,7 @@ class CreateCustomers extends AbstractMigration
                 'limit' => 128,
                 'null' => false,
             ])
-            ->addTimestamps()
+            ->addTimestamps('created', 'modified')
             ->create();
     }
 
