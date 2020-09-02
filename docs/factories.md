@@ -81,7 +81,7 @@ The intention is to create fixtures as fast and transparently as possible withou
 
 #### Model events
 
-Is is however possible to activate an event model thanks to the methid `listeningToModelEvents`.
+Is is however possible to activate an event model with the method `listeningToModelEvents`.
 
 This can be made on the fly:
 ```$xslt
@@ -98,9 +98,14 @@ protected function setDefaultTemplate()
            ];
       })
       ->withAuthors(2)
-      ->listeningToModelEvents('Model.beforeMarshal');
+      ->listeningToModelEvents([
+        'Model.beforeMarshal',
+        'Model.beforeSave',
+      ]);
 }
 ```
+
+Note that you can provide either a single event, or an array of events. You will find a list of all model events [here](https://book.cakephp.org/4/en/orm/table-objects.html#event-list).
 
 #### Behavior events
 
