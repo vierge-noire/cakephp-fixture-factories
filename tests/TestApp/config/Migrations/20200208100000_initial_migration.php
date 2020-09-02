@@ -38,7 +38,7 @@ class InitialMigration extends AbstractMigration
             ])
             ->addIndex('address_id')
             ->addIndex('business_address_id')
-            ->addTimestamps()
+            ->addTimestamps('created', 'modified')
             ->create();
 
         $this->table('articles')
@@ -56,7 +56,7 @@ class InitialMigration extends AbstractMigration
                 'default' => 0,
                 'null' => false,
             ])
-            ->addTimestamps()
+            ->addTimestamps('created', 'modified')
             ->create();
 
         $this->table('articles_authors')
@@ -87,7 +87,7 @@ class InitialMigration extends AbstractMigration
                 'null' => false,
             ])
             ->addIndex('city_id')
-            ->addTimestamps()
+            ->addTimestamps('created', 'modified')
             ->create();
 
         $this->table('cities')
@@ -101,7 +101,7 @@ class InitialMigration extends AbstractMigration
                 'null' => false,
             ])
             ->addIndex('country_id')
-            ->addTimestamps()
+            ->addTimestamps('created', 'modified')
             ->create();
 
         $this->table('countries')
@@ -110,7 +110,7 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => false,
             ])
-            ->addTimestamps()
+            ->addTimestamps('created', 'modified')
             ->create();
 
         $this->table('authors')

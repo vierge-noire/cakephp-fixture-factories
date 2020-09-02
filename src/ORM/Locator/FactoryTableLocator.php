@@ -12,42 +12,7 @@
  */
 namespace CakephpFixtureFactories\ORM\Locator;
 
-use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Locator\TableLocator;
 
 class FactoryTableLocator extends TableLocator
-{
-    protected function _create(array $options)
-    {
-        $cloneTable = parent::_create($options);
-        $ormEvents = [
-            'Model.initialize',
-            'Model.beforeMarshal',
-            'Model.afterMarshal',
-            'Model.beforeFind',
-            'Model.buildValidator',
-            'Model.buildRules',
-            'Model.beforeRules',
-            'Model.afterRules',
-            'Model.beforeSave',
-            'Model.afterSave',
-            'Model.afterSaveCommit',
-            'Model.beforeDelete',
-            'Model.afterDelete',
-            'Model.afterDeleteCommit',
-        ];
-
-        foreach ($ormEvents as $ormEvent) {
-            foreach ($cloneTable->getEventManager()->listeners($ormEvent) as $listeners) {
-                if (array_key_exists('callable', $listeners) && is_array($listeners['callable'])) {
-                    if ($listeners['callable'][0] instanceof TimestampBehavior) {
-                        continue;
-                    }
-                }
-                $cloneTable->getEventManager()->off($ormEvent, $listeners['callable']);
-            }
-        }
-
-        return $cloneTable;
-    }
-}
+{}
