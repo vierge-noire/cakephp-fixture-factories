@@ -49,7 +49,7 @@ class EventManagerTest extends TestCase
     public function tearDown()
     {
         Configure::delete('TestFixtureNamespace');
-        Configure::delete('TestFixtureGlobalBehavior');
+        Configure::delete('TestFixtureGlobalBehaviors');
         unset($this->CountriesTable);
 
         parent::tearDown();
@@ -60,7 +60,7 @@ class EventManagerTest extends TestCase
      */
     public function testSetDefaultListeningBehaviors()
     {
-        Configure::write('TestFixtureGlobalBehavior', ['Sluggable']);
+        Configure::write('TestFixtureGlobalBehaviors', ['Sluggable']);
 
         $factoryMock = $this->createMock(BaseFactory::class);
         $EventManager = new EventManager($factoryMock, 'Foo');
@@ -257,7 +257,7 @@ class EventManagerTest extends TestCase
         $this->assertNull($country->$field);
 
         // The behavior should apply
-        Configure::write('TestFixtureGlobalBehavior', ['SomePlugin']);
+        Configure::write('TestFixtureGlobalBehaviors', ['SomePlugin']);
         $country = CountryFactory::make()->persist();
         $this->assertTrue($country->$field);
     }

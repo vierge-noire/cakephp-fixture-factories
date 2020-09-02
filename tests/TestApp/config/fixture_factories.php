@@ -11,4 +11,7 @@ return [
     'TestFixtureIgnoredConnections' => [
         'test_dummy',
     ],
+    'TestFixtureGlobalBehaviors' => [
+        'SomeBehaviorUsedInMultipleTables',
+    ],
 ];

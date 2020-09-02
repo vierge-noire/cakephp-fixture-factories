@@ -210,7 +210,7 @@ class EventManager
      */
     protected function setDefaultListeningBehaviors()
     {
-        $defaultBehaviors = (array) Configure::read('TestFixtureGlobalBehavior', []);
+        $defaultBehaviors = (array) Configure::read('TestFixtureGlobalBehaviors', []);
         $defaultBehaviors[] = 'Timestamp';
         $this->defaultListeningBehaviors = $defaultBehaviors;
         $this->listeningBehaviors = $defaultBehaviors;
