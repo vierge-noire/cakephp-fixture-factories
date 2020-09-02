@@ -68,29 +68,72 @@ class ArticleFactory extends BaseFactory
 You may add any methods related to your business model, such as `setJobTitle` to help you build efficient and reusable factories.
 
 ### Validation / Behaviors
-With the aim of persisting data in the database as straighforwardly as possible, all behaviors (except Timestamp) and all validations
-are deactivated when creating CakePHP entities and persisting them to the database. Validation may be reactivated / customized by overwriting
- the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
+
+With the aim of persisting data in the database as straighforwardly as possible, all validations and rules
+are deactivated when creating CakePHP entities and persisting them to the database. Validationa nd rules may be reactivated / customized by overwriting
+the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
  
- ### Model events
- Per default, *all model events* of a factory's root table are switched off *except those of the timestamp behavior*. This will have an impact on
- a model's behavior actions.
- This is made in order to save the test fixtures in the test database as fast and straightforwardly as possible without interfering with the business model.
- 
- It is possible to create test fixtures with the model events activated as follows:
- ```
-$article = ArticleFactory::makeWithModelEvents()->persist();
+### Model events and behaviors
+
+Per default, *all model events* of a factory's root table and their behaviors are switched off *except those of the timestamp behavior*.
+
+The intention is to create fixtures as fast and transparently as possible without interfering with the business model.
+
+#### Model events
+
+Is is however possible to activate an event model thanks to the methid `listeningToModelEvents`.
+
+This can be made on the fly:
+```$xslt
+$article = ArticleFactory::make()->listeningToModelEvents('Model.beforeMarshal')->getEntity();
 ```
+or per default in the factory's `setDefaultTemplate` method:
+```$xslt
+protected function setDefaultTemplate()
+{
+      $this->setDefaultData(function(Generator $faker) {
+           return [
+                'title' => $faker->text(30),
+                'body'  => $faker->text(1000),
+           ];
+      })
+      ->withAuthors(2)
+      ->listeningToModelEvents('Model.beforeMarshal');
+}
+```
+
+#### Behavior events
+
+It is possible to activate the model events of a behavior in the same way with the method `listeningToBehaviors`.
+
+This can be made on the fly:
+```
+$article = ArticleFactory::make()->listeningToBehaviors('Sluggable')->getEntity();
+```
+or per default in the factory's `setDefaultTemplate` method.
+
+Additionaly, you can declare a behavior globaly. This can be useful for behaviors that impact a large amount of tables
+and for which not nullable fields need to be populated.
+
+You may create a `fixture_factories.php` config file in your application's `config` folder. Under the key `TestFixtureGlobalBehaviors`, you will need to define all the behaviors that will be listened to, provided that the root table itself is listening to them.
+
+```$xslt
+'TestFixtureGlobalBehaviors' => [
+        'SomeBehaviorUsedInMultipleTables',
+    ],
+```
+
+Note that even if the behavior is located in a plugin, you should, according to CakePHP conventions, provide the name of the behavior only. Provide `BehaviorName` and not `SomeVendor/WithPluginName.BehaviorName`.
+
+The static method `makeWithModelEvents` is now deprecated and will be removed soon.
  
- The static method `makeWithModelEvents` accepts the same arguments as the method `make`.
+### Namespace
  
- ### Namespace
+Assuming your application namespace in `App`, factories should be placed in the `App\Test\Factory` namespace of your application.
+Or for a plugin Foo, in `Foo\Test\Factory`.
  
- Assuming your application namespace in `App`, factories should be placed in the `App\Test\Factory` namespace of your application.
- Or for a plugin Foo, in `Foo\Test\Factory`.
+You may change that by setting in your configuration the key `TestFixtureNamespace` to the desired namespace.
  
- You may change that by setting in your configuration the key `TestFixtureNamespace` to the desired namespace.
+### Next
  
- ### Next
- 
- Let us now see [how to use them](examples.md)...
+Let us now see [how to use them](examples.md)...
