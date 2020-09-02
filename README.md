@@ -71,7 +71,7 @@ bin/cake bake fixture_factory -h
 
 ## [Inside Fixture Factories](docs/factories.md)
 
-What the Fixture Factories look like, and how they can incoporate your business logic.
+What the fixture factories are. Have a careful look at this section to understand the concept of the package.
 
 ## [Creating Test Fixtures](docs/examples.md)
 
