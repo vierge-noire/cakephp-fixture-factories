@@ -11,10 +11,11 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace CakephpFixtureFactories\Test\TestCase\ORM\Locator;
+namespace CakephpFixtureFactories\Test\TestCase\ORM\TableRegistry;
 
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
+use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use PHPUnit\Framework\TestCase;
 use TestApp\Model\Table\AddressesTable;
 use TestApp\Model\Table\ArticlesTable;
@@ -24,7 +25,7 @@ use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Table\BillsTable;
 use TestPlugin\Model\Table\CustomersTable;
 
-class FactoryTableLocatorTest extends TestCase
+class FactoryTableRegistryTest extends TestCase
 {
 
     public function setUp(): void
@@ -67,5 +68,21 @@ class FactoryTableLocatorTest extends TestCase
         $this->assertTrue($FactoryTable->hasBehavior('Timestamp'));
         // EntitiesTable from application table locator should have a Timestamp behavior
         $this->assertTrue($Table->hasBehavior('Timestamp'));
+    }
+
+    public function testLoadedPlugin()
+    {
+        $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
+
+        $expectedPluginsLoaded = [
+            'Timestamp',
+            'Sluggable',
+            'SomePlugin',
+        ];
+
+        $this->assertSame($expectedPluginsLoaded, $CountriesTable->behaviors()->loaded());
+
+        $CountryFactory = CountryFactory::make();
+        $this->assertSame($expectedPluginsLoaded, $CountryFactory->getTable()->behaviors()->loaded());
     }
 }

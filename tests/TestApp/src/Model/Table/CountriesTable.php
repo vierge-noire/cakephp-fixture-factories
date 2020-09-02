@@ -23,10 +23,12 @@ class CountriesTable extends Table
 
     public function initialize(array $config): void
     {
-        $this->addBehavior('Timestamp');
-        $this->addBehavior('Sluggable', [
-            'field' => 'name',
-        ]);
+        $this
+            ->addBehavior('Timestamp')
+            ->addBehavior('Sluggable', [
+                'field' => 'name',
+            ])
+            ->addBehavior('TestPlugin.SomePlugin');
 
         $this->addAssociations([
             'hasMany' => [
