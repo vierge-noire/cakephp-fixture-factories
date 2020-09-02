@@ -28,6 +28,7 @@ use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use PHPUnit\Framework\TestCase;
 use TestApp\Model\Table\CountriesTable;
+use TestPlugin\Model\Behavior\SomePluginBehavior;
 
 class EventManagerTest extends TestCase
 {
@@ -230,5 +231,35 @@ class EventManagerTest extends TestCase
             ->listeningToBehaviors('Sluggable')
             ->persist();
         $this->assertEquals($slug, $country->slug);
+    }
+
+    /**
+     * @dataProvider runSeveralTimesWithOrWithoutEvents
+     * @param $times
+     * @throws \Exception
+     */
+    public function testApplyOrIgnoreEventInPluginBehaviorsOnTheFlyWithCountries(bool $times)
+    {
+        $field = SomePluginBehavior::BEFORE_SAVE_FIELD;
+
+        $this->CountriesTable->addBehavior('TestPlugin.SomePlugin');
+
+        // The behavior should not apply
+        $country = CountryFactory::make(compact('name'))->persist();
+        $this->assertNull($country->$field);
+
+        // The behavior should apply
+        $country = CountryFactory::make(compact('name'))->listeningToBehaviors('SomePlugin')->persist();
+        $this->assertTrue($country->$field);
+
+        // The behavior should not apply
+        $country = CountryFactory::make(compact('name'))->persist();
+        $this->assertNull($country->$field);
+
+        // The behavior should apply
+        Configure::write('TestFixtureGlobalBehavior', ['SomePlugin']);
+        $country = CountryFactory::make(compact('name'))->persist();
+        $this->assertTrue($country->$field);
+
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * Licensed under The MIT License
@@ -12,12 +13,8 @@
  */
 namespace CakephpFixtureFactories\ORM\TableRegistry;
 
-use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Locator\TableLocator;
-use Cake\ORM\Table;
-use function strpos;
 use Cake\ORM\TableRegistry;
-use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 
 /**
  * Alternative TableRegistry to be used by fixture factories
@@ -38,16 +35,10 @@ use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 class FactoryTableRegistry extends TableRegistry
 {
     /**
-     * Default LocatorInterface implementation class.
-     *
-     * @var string
-     */
-    protected static $_defaultLocatorClass = FactoryTableLocator::class;
-
-    /**
      * Returns a singleton instance of LocatorInterface implementation.
-     * This has been removed in CakePHP 4.1.0, and has been re-added here
-     * (https://github.com/cakephp/cakephp/compare/4.0.8...4.1.0-RC1#diff-28239f653d4163b32ba7450ec45f0c3f)
+     *
+     * A new LocatorClass is returned. This is very important in regards
+     * to the handling of events
      *
      * @return \Cake\ORM\Locator\LocatorInterface
      */

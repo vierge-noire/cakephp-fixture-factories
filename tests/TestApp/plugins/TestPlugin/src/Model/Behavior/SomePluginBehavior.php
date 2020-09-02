@@ -11,33 +11,20 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace TestApp\Model\Behavior;
+namespace TestPlugin\Model\Behavior;
 
 use ArrayObject;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
-use Cake\ORM\Entity;
-use Cake\Utility\Text;
 
-class SluggableBehavior extends Behavior
+class SomePluginBehavior extends Behavior
 {
-    protected $_defaultConfig = [
-        'field' => 'title',
-        'slug' => 'slug',
-        'replacement' => '-',
-    ];
-
-    public function slug(Entity $entity)
-    {
-        $config = $this->getConfig();
-        $value = $entity->get($config['field']);
-        $entity->set($config['slug'], Text::slug($value, $config['replacement']));
-    }
+    const BEFORE_SAVE_FIELD =  'beforeSaveWasCalledInSomePluginBehavior';
 
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options)
     {
-        $this->slug($entity);
+        $entity->set(self::BEFORE_SAVE_FIELD, true);
     }
 
 }
