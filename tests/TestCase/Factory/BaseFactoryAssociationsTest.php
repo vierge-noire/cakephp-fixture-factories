@@ -71,6 +71,16 @@ class BaseFactoryAssociationsTest extends TestCase
      */
     private $CustomersTable;
 
+    public static function setUpBeforeClass(): void
+    {
+        Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        Configure::delete('TestFixtureNamespace');
+    }
+
     /**
      * @var BillsTable
      */
@@ -78,8 +88,6 @@ class BaseFactoryAssociationsTest extends TestCase
 
     public function setUp(): void
     {
-        Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
-
         $this->AuthorsTable     = TableRegistry::getTableLocator()->get('Authors');
         $this->AddressesTable   = TableRegistry::getTableLocator()->get('Addresses');
         $this->ArticlesTable    = TableRegistry::getTableLocator()->get('Articles');

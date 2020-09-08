@@ -37,7 +37,7 @@ class FixtureManager extends BaseFixtureManager
      */
     public function __construct()
     {
-        $this->loadConfig();
+        $this->initDb();
     }
 
     /**

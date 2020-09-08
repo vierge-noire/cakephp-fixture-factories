@@ -37,10 +37,18 @@ class EventManagerTest extends TestCase
      */
     private $CountriesTable;
 
-    public function setUp(): void
+    public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
+    }
 
+    public static function tearDownAfterClass(): void
+    {
+        Configure::delete('TestFixtureNamespace');
+    }
+
+    public function setUp(): void
+    {
         $this->CountriesTable   = TableRegistry::getTableLocator()->get('Countries');
 
         parent::setUp();
@@ -48,7 +56,6 @@ class EventManagerTest extends TestCase
 
     public function tearDown(): void
     {
-        Configure::delete('TestFixtureNamespace');
         Configure::delete('TestFixtureGlobalBehaviors');
         unset($this->CountriesTable);
 
@@ -76,7 +83,10 @@ class EventManagerTest extends TestCase
         $factoryMock = $this->createMock(BaseFactory::class);
         $EventManager = new EventManager($factoryMock, 'Foo');
 
-        $expected = ['Timestamp'];
+        $expected = [
+            'SomeBehaviorUsedInMultipleTables',
+            'Timestamp',
+        ];
         $this->assertSame(
             $expected,
             $EventManager->getListeningBehaviors()
@@ -122,13 +132,10 @@ class EventManagerTest extends TestCase
     public function testApplyOrIgnoreBeforeMarshalSetOnTheFly($applyEvent)
     {
         $name = 'Foo';
-        $eventApplied = true;
 
-        if ($applyEvent) {
-            $this->CountriesTable->getEventManager()->on('Model.beforeMarshal', function (Event $event, \ArrayObject $entity) use ($eventApplied) {
-                $entity['eventApplied'] = $eventApplied;
-            });
-        }
+        $this->CountriesTable->getEventManager()->on('Model.beforeMarshal', function (Event $event, \ArrayObject $entity) use ($applyEvent) {
+            $entity['eventApplied'] = $applyEvent;
+        });
 
         // Event should be skipped
         $country = CountryFactory::make()->getEntity();
@@ -139,10 +146,10 @@ class EventManagerTest extends TestCase
 
         // Event should apply
         $country = $this->CountriesTable->newEntity(compact('name'));
-        $this->assertSame($eventApplied, $country->eventApplied);
+        $this->assertSame($applyEvent, $country->eventApplied);
 
         $country = CountryFactory::makeWithModelEvents()->getEntity();
-        $this->assertSame($eventApplied, $country->eventApplied);
+        $this->assertSame($applyEvent, $country->eventApplied);
     }
 
     /**
@@ -197,6 +204,7 @@ class EventManagerTest extends TestCase
         $EventManager->listeningToBehaviors('Foo');
 
         $expected = [
+            'SomeBehaviorUsedInMultipleTables',
             'Timestamp',
             $behavior,
         ];

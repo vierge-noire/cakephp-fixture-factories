@@ -31,19 +31,23 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
      */
     public $_fixtureManager;
 
-    public function __construct(\Cake\TestSuite\Fixture\FixtureManager $manager)
+    public function __construct(FixtureManager $manager)
     {
         $this->_fixtureManager = $manager;
+        $this->_fixtureManager->loadConfig();
+        $this->_fixtureManager->initDb();
     }
 
-
     /**
+     * Nothing to do there. The tables should be created
+     * in tests/bootstrap.php, either by migration or by running
+     * the relevant Sql commands on the test DBs
+     * See the Migrator tool provided in this package
+     * @see Migrator
      * @param TestSuite $suite
      */
     public function startTestSuite(TestSuite $suite): void
-    {
-        $this->_fixtureManager->initDb();
-    }
+    {}
 
     /**
      * Cleanup before test starts
@@ -55,12 +59,17 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
      */
     public function startTest(Test $test): void
     {
+        // Truncation can be skipped if no DB interaction are expected
         if (!$this->skipTablesTruncation($test)) {
             $this->_fixtureManager->truncateDirtyTablesForAllTestConnections();
         }
+
+        // Load CakePHP fixtures if defined
         if (!empty($test->getFixtures())) {
             parent::startTest($test);
         }
+
+        // Run the seeds of your DB
         $this->rollbackAndMigrateIfRequired();
     }
 
