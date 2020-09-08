@@ -15,6 +15,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
@@ -23,7 +24,6 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
-use PHPUnit\Framework\TestCase;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;

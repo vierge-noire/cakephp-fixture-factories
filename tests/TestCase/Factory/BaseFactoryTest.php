@@ -15,6 +15,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
@@ -25,7 +26,6 @@ use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use Faker\Generator;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;

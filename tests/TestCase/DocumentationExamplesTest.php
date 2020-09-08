@@ -14,16 +14,19 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase;
 
 
-use Faker\Generator;
-use PHPUnit\Framework\TestCase;
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use Faker\Generator;
+use TestApp\Model\Entity\Article;
 
 class DocumentationExamplesTest extends TestCase
 {
     public function testExampleStaticData()
     {
-        ArticleFactory::make()->getEntity();
+        $article = ArticleFactory::make()->getEntity();
+        $this->assertInstanceOf(Article::class, $article);
+
         $articles = ArticleFactory::make(2)->getEntities();
         $previous = '';
         foreach ($articles as $article) {

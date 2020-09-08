@@ -17,6 +17,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\EventManager;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
@@ -26,7 +27,6 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
-use PHPUnit\Framework\TestCase;
 use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
