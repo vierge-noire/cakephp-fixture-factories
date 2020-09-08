@@ -58,7 +58,7 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
         if (!$this->skipTablesTruncation($test)) {
             $this->_fixtureManager->truncateDirtyTablesForAllTestConnections();
         }
-        if (!empty($test->fixtures)) {
+        if (!empty($test->getFixtures())) {
             parent::startTest($test);
         }
         $this->rollbackAndMigrateIfRequired();
