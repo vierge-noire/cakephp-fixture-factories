@@ -16,13 +16,10 @@ namespace CakephpFixtureFactories\Test\TestCase\TestSuite;
 
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
-use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\TestSuite\FixtureInjector;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
-use CakephpFixtureFactories\TestSuite\Sniffer\MysqlTableSniffer;
-use PHPUnit\Framework\TestCase;
-use TestApp\Model\Entity\Country;
 
 class FixtureInjectorTest extends TestCase
 {

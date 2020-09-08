@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase;
 
 
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use Faker\Generator;
-use PHPUnit\Framework\TestCase;
 use TestApp\Model\Entity\Article;
 
 class DocumentationExamplesTest extends TestCase

@@ -14,18 +14,17 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\TestSuite\Sniffer;
 
 
-use Cake\Core\Configure;
 use Cake\Database\Driver\Sqlite;
 use Cake\Database\Exception;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\TestSuite\FixtureManager;
 use CakephpFixtureFactories\TestSuite\Migrator;
 use CakephpFixtureFactories\TestSuite\Sniffer\BaseTableSniffer;
 use CakephpFixtureFactories\TestSuite\Sniffer\SqliteTableSniffer;
-use PHPUnit\Framework\TestCase;
 
 class TableSnifferTest extends TestCase
 {

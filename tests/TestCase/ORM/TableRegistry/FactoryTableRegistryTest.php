@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\ORM\TableRegistry;
 
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use PHPUnit\Framework\TestCase;
 use TestApp\Model\Table\AddressesTable;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\AuthorsTable;
