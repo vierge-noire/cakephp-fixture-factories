@@ -63,7 +63,7 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
         }
 
         // Load CakePHP fixtures if defined
-        if (!empty($test->getFixtures())) {
+        if (!empty($test->fixtures)) {
             parent::startTest($test);
         }
 
