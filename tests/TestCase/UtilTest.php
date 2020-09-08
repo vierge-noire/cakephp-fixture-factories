@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase;
 
 
-use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\TestSuite\SkipTablesTruncation;
 use CakephpFixtureFactories\Util;

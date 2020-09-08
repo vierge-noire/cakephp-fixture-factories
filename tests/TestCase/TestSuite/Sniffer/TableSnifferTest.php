@@ -100,7 +100,7 @@ class TableSnifferTest extends TestCase
     }
 
     /**
-     * After droping all tables, only the package migration table should remain
+     * After dropping all tables, only the package migration table should remain
      * This should never be dropped
      *  We run the migrations in the end in order not to create interference with other tests
      */
@@ -108,7 +108,10 @@ class TableSnifferTest extends TestCase
     {
         $this->FixtureManager->dropTables('test');
         $this->assertSame([], $this->TableSniffer->getAllTables());
-        Migrator::migrate();
+        Migrator::migrate([
+            ['connection' => 'test'],
+            ['plugin' => 'TestPlugin'],
+        ]);
     }
 
     /**
