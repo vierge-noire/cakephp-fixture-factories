@@ -71,12 +71,12 @@ class BaseFactoryAssociationsTest extends TestCase
      */
     private $CustomersTable;
 
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
     }
 
-    public static function tearDownAfterClass(): void
+    public static function tearDownAfterClass()
     {
         Configure::delete('TestFixtureNamespace');
     }
