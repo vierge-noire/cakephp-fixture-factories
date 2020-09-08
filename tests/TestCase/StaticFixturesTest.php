@@ -21,7 +21,7 @@ use Cake\TestSuite\TestCase;
 
 class StaticFixturesTest extends TestCase
 {
-    protected $fixtures = [
+    public $fixtures = [
         ArticlesFixture::class
     ];
 
