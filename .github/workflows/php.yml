@@ -44,6 +44,9 @@ jobs:
           ini-values: apc.enable_cli = 1
           coverage: pcov
 
+      - name: Update composer
+        run: composer self-update
+
       - name: Validate composer.json
         run: composer validate
 

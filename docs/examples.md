@@ -119,4 +119,4 @@ $country = CountryFactory::make()->with('Cities', [
 ])->persist();
 ```
 
-This an be useful if your business logic uses hard coded values, or constants.
+This can be useful if your business logic uses hard coded values, or constants.
