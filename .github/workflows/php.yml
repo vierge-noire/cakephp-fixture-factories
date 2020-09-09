@@ -46,6 +46,9 @@ jobs:
           extensions: mbstring, intl, apcu, pdo_${{ matrix.db-type }}
           ini-values: apc.enable_cli = 1
 
+      - name: Update composer
+        run: composer self-update
+
       - name: Validate composer.json
         run: composer validate
 
