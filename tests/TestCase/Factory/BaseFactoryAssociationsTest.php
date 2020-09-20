@@ -18,6 +18,7 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
+use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
@@ -115,13 +116,16 @@ class BaseFactoryAssociationsTest extends TestCase
 
     public function testWithMultipleAssociations()
     {
-        $n = 10;
+        $n = 5;
+        $street = 'FooStreet';
         $article = ArticleFactory::make()
-            ->with("Authors[$n].Address")
+            ->with("Authors[$n].Address", compact('street'))
             ->persist();
 
-        $authors = $article->authors;
-        $this->assertSame($n, count($authors));
+        $this->assertSame($n, count($article->authors));
+        foreach ($article->authors as $author) {
+            $this->assertSame($street, $author->address->street);
+        }
         $this->assertSame($n, $this->AuthorsTable->find()->count());
     }
 
@@ -520,5 +524,125 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertTrue(is_int($author->id));
         }
         $this->assertSame($nPremiumAuthors, $this->AuthorsTable->find()->count());
+    }
+
+    public function testCountryWith2CitiesEachOfThemWith2DifferentAddresses()
+    {
+        $street1 = 'street1';
+        $street2 = 'street2';
+        CountryFactory::make()->with('Cities[2].Addresses', [
+            ['street' => $street1],
+            ['street' => $street2],
+        ])->persist();
+
+        $country = TableRegistry::getTableLocator()->get('Countries')
+            ->find()
+            ->contain('Cities.Addresses')
+            ->firstOrFail();
+
+        $this->assertSame(2, count($country->cities));
+        foreach ($country->cities as $city) {
+            $this->assertSame(2, count($city->addresses));
+            $this->assertSame($street1, $city->addresses[0]->street);
+            $this->assertSame($street2, $city->addresses[1]->street);
+        }
+    }
+
+    public function testCountryWith2CitiesEachOfThemWithADifferentSpecifiedAddress()
+    {
+        $country = CountryFactory::make()->persist();
+        $street1 = 'street1';
+        $street2 = 'street2';
+        AddressFactory::make([
+            ['street' => $street1],
+            ['street' => $street2],
+        ])->with('City', CityFactory::make(['country_id' => $country->id])->without('Country'))
+        ->persist();
+
+        $country = TableRegistry::getTableLocator()->get('Countries')
+            ->get($country->id, [
+                'contain' => 'Cities.Addresses',
+            ]);
+
+        $this->checkCountryWithTwoCitiesEachWithOneAddress($country, $street1, $street2);
+    }
+
+    private function checkCountryWithTwoCitiesEachWithOneAddress(Country $country, string $street1, string $street2)
+    {
+        $this->assertSame(2, count($country->cities));
+        foreach ($country->cities as $city) {
+            $this->assertSame(1, count($city->addresses));
+        }
+        $this->assertSame($street1, $country->cities[0]->addresses[0]->street);
+        $this->assertSame($street2, $country->cities[1]->addresses[0]->street);
+    }
+
+    public function testCountryWith2CitiesEachOfThemWithADifferentSpecifiedAddressTheOtherWay()
+    {
+        $street1 = 'street1';
+        $street2 = 'street2';
+
+        $country = CountryFactory::make()
+            ->with('Cities.Addresses', ['street' => $street1])
+            ->with('Cities.Addresses', ['street' => $street2])
+            ->persist();
+
+        $this->checkCountryWithTwoCitiesEachWithOneAddress($country, $street1, $street2);
+
+        // Make sure that all was correctly persisted
+        $country = TableRegistry::getTableLocator()->get('Countries')
+            ->get($country->id, [
+                'contain' => 'Cities.Addresses',
+            ]);
+
+        $this->checkCountryWithTwoCitiesEachWithOneAddress($country, $street1, $street2);
+    }
+
+    public function testCountryWith2Cities()
+    {
+        $city1 = 'foo';
+        $city2 = 'bar';
+
+        $country = CountryFactory::make()
+            ->with('Cities', ['name' => $city1])
+            ->with('Cities', ['name' => $city2])
+            ->persist();
+
+        // Make sure that all was correctly persisted
+        $country = TableRegistry::getTableLocator()->get('Countries')
+            ->get($country->id, [
+                'contain' => 'Cities',
+            ]);
+
+        $this->assertSame(2, count($country->cities));
+        $this->assertSame($city1, $country->cities[0]->name);
+        $this->assertSame($city2, $country->cities[1]->name);
+    }
+
+    public function testCountryWith4Cities()
+    {
+        $city1 = 'foo';
+        $city2 = 'bar';
+        $street1 = 'street1';
+        $street2 = 'street2';
+
+        $country = CountryFactory::make()
+            ->with('Cities', ['name' => $city1])
+            ->with('Cities', ['name' => $city2])
+            ->with('Cities.Addresses', ['street' => $street1])
+            ->with('Cities.Addresses', ['street' => $street2])
+            ->persist();
+
+        // Make sure that all was correctly persisted
+        $country = TableRegistry::getTableLocator()->get('Countries')
+            ->get($country->id, [
+                'contain' => 'Cities.Addresses',
+            ]);
+
+        $this->assertSame(4, count($country->cities));
+        $this->assertSame($city1, $country->cities[0]->name);
+        $this->assertSame($city2, $country->cities[1]->name);
+        $this->assertSame($street1, $country->cities[2]->addresses[0]->street);
+        $this->assertSame($street2, $country->cities[3]->addresses[0]->street);
     }
 }

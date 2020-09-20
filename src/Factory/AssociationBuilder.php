@@ -64,7 +64,7 @@ class AssociationBuilder
     }
 
     /**
-     * Collect an assocaited factory to the BaseFactory
+     * Collect an associated factory to the BaseFactory
      * @param string $associationName
      * @param BaseFactory $factory
      */

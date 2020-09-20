@@ -18,6 +18,7 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -41,6 +42,24 @@ use function is_int;
 
 class BaseFactoryTest extends TestCase
 {
+    public function dataForTestConnectionInDataProvider()
+    {
+        return [
+            [AuthorFactory::make()],
+            [BillFactory::make()],
+        ];
+    }
+
+    /**
+     * @dataProvider dataForTestConnectionInDataProvider
+     * @param BaseFactory $factory
+     */
+    public function testConnectionInDataProvider(BaseFactory $factory)
+    {
+        $connectionName = $factory->getTable()->getConnection()->configName();
+        $this->assertSame('test', $connectionName);
+    }
+
     public function testGetEntityWithArray()
     {
         $title = 'blah';
@@ -238,16 +257,17 @@ class BaseFactoryTest extends TestCase
     {
         $n = 3;
         $m = 2;
-        $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) use ($m) {
-            $factory->withAuthors(function (AuthorFactory $factory, Generator $faker) use ($m) {
-                return [
-                    'name' => $faker->lastName
-                ];
-            }, $m);
-            return [
-                'title' => $faker->sentence
-            ];
-        }, 3)->persist();
+        $articles = ArticleFactory::make(
+            function (ArticleFactory $factory, Generator $faker) use ($m) {
+                return ['title' => $faker->sentence];
+            },
+        $n)
+        ->withAuthors(
+            function (AuthorFactory $factory, Generator $faker) use ($m) {
+                return ['name' => $faker->lastName];
+            },
+        $m)
+        ->persist();
 
         foreach ($articles as $article) {
             $this->assertSame(true, $article instanceof Article);
@@ -322,7 +342,6 @@ class BaseFactoryTest extends TestCase
         $this->assertSame(true, $author->address->city instanceof City);
         $this->assertSame(true, $author->address->city->country instanceof Country);
     }
-
 
     /**
      * Given : The AuthorsTable has an association of type 'belongsTo' to table AddressesTable called 'BusinessAddress'

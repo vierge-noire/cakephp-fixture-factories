@@ -94,12 +94,6 @@ abstract class BaseFactory
      */
     protected function __construct()
     {
-        /**
-         * Required to alias the connections before anything
-         * in the test suite is launched. This solves the issue
-         * with Factories produced in PHPUnit dataProviders
-        **/
-        (new FixtureManager())->aliasConnections();
         $this->dataCompiler = new DataCompiler($this);
         $this->associationBuilder = new AssociationBuilder($this);
         $this->eventManager = new EventManager($this, $this->getRootTableRegistryName());
@@ -139,10 +133,16 @@ abstract class BaseFactory
         }
 
         if ($factory) {
-            $factory->setTimes($times);
-            $factory->setDefaultTemplate();
+            $factory->setUp($factory, $times);
         }
         return $factory;
+    }
+
+    protected function setUp(BaseFactory $factory, int $times)
+    {
+        $factory->setTimes($times);
+        $factory->setDefaultTemplate();
+        $factory->getDataCompiler()->collectAssociationsFromDefaultTemplate();
     }
 
     /**
@@ -230,14 +230,6 @@ abstract class BaseFactory
     public function getAssociated(): array
     {
         return $this->getAssociationBuilder()->getAssociated();
-    }
-
-    /**
-     * @return array
-     */
-    protected function addAssociated(string $associationName, BaseFactory $factory)
-    {
-        $this->getAssociationBuilder()->collectAssociatedFactory($associationName, $factory);
     }
 
     /**
@@ -442,7 +434,7 @@ abstract class BaseFactory
 
         $this->getDataCompiler()->collectAssociation($associationName, $factory);
 
-        $this->addAssociated($associationName, $factory);
+        $this->getAssociationBuilder()->collectAssociatedFactory($associationName, $factory);
 
         return $this;
     }
