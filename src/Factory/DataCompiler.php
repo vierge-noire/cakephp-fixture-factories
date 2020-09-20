@@ -27,6 +27,7 @@ class DataCompiler
     private $dataFromInstantiation = [];
     private $dataFromPatch = [];
     private $dataFromAssociations = [];
+    private $dataFromDefaultAssociations = [];
 
     /**
      * @var BaseFactory
@@ -86,7 +87,11 @@ class DataCompiler
      */
     public function collectAssociation(string $associationName, BaseFactory $factory): void
     {
-        $this->dataFromAssociations[$associationName] = $factory;
+        if (isset($this->dataFromAssociations[$associationName])) {
+            $this->dataFromAssociations[$associationName][] = $factory;
+        } else {
+            $this->dataFromAssociations[$associationName] = [$factory];
+        }
     }
 
     /**
@@ -97,6 +102,7 @@ class DataCompiler
     public function dropAssociation(string $associationName): void
     {
         unset($this->dataFromAssociations[$associationName]);
+        unset($this->dataFromDefaultAssociations[$associationName]);
     }
 
     /**
@@ -184,27 +190,69 @@ class DataCompiler
 
     /**
      * Step 4:
-     * Merge with the data int the associations
+     * Merge with the data from the associations
      * @param array $compiledTemplateData
      */
     private function mergeWithAssociatedData(array &$compiledTemplateData): self
     {
-        foreach ($this->dataFromAssociations as $propertyName => $data) {
+        // Overwrite the default associations if these are found in the associations
+        $associatedData = array_merge($this->dataFromDefaultAssociations, $this->dataFromAssociations);
+
+        foreach ($associatedData as $propertyName => $data) {
             $association = $this->getAssociationByPropertyName($propertyName);
-            if ($association && $data instanceof BaseFactory) {
-                /** @var BaseFactory $dataFactory */
-                $dataFactory = $data;
-                $propertyName = $this->getMarshallerAssociationName($propertyName);
-                if ($association instanceof HasOne || $association instanceof BelongsTo) {
-                    // toOne associated data must be singular when saved
-                    $propertyName = Inflector::singularize($propertyName);
-                    $compiledTemplateData[$propertyName] = $dataFactory->toArray()[0];
-                } else {
-                    $compiledTemplateData[$propertyName] = $dataFactory->toArray();
-                }
+            $propertyName = $this->getMarshallerAssociationName($propertyName);
+            if ($association instanceof HasOne || $association instanceof BelongsTo) {
+                // toOne associated data must be singular when saved
+                $this->mergeWithToOne($compiledTemplateData, $propertyName, $data);
+            } else {
+                $this->mergeWithToMany($compiledTemplateData, $propertyName, $data);
             }
         }
         return $this;
+    }
+
+    /**
+     * There might be several data feeding a toOne relation
+     * One reason can be the default template value.
+     * Here the latest inserted record is taken
+     *
+     * @param $compiledTemplateData
+     * @param $associationName
+     * @param $data
+     */
+    private function mergeWithToOne(array &$compiledTemplateData, string $associationName, array $data)
+    {
+        $count                                  = count($data);
+        $associationName                        = Inflector::singularize($associationName);
+        $compiledTemplateData[$associationName] = $data[$count - 1]->toArray()[0];
+    }
+
+    /**
+     * @param $compiledTemplateData
+     * @param $associationName
+     * @param $data
+     */
+    private function mergeWithToMany(array &$compiledTemplateData, string $associationName, array $data)
+    {
+        $associationData = $compiledTemplateData[$associationName] ?? null;
+        foreach ($data as $factory) {
+            if ($associationData) {
+                $associationData = array_merge($associationData, $factory->toArray());
+            } else {
+                $associationData = $factory->toArray();
+            }
+        }
+        $compiledTemplateData[$associationName] = $associationData;
+    }
+
+    /**
+     * Used in the Factory make in order to distinguish default associations
+     * from conscious associations
+     */
+    public function collectAssociationsFromDefaultTemplate()
+    {
+        $this->dataFromDefaultAssociations = $this->dataFromAssociations;
+        $this->dataFromAssociations        = [];
     }
 
     /**
