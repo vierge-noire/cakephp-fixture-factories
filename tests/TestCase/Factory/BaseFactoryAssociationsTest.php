@@ -407,6 +407,7 @@ class BaseFactoryAssociationsTest extends TestCase
     {
         $author = AuthorFactory::make()
             ->with('BusinessAddress.City.Country')
+            ->with('BusinessAddress.City')
             ->without('BusinessAddress')
             ->persist();
 
