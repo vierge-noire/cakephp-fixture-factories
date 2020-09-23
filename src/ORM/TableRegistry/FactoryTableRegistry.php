@@ -13,8 +13,10 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\ORM\TableRegistry;
 
+use Cake\ORM\Locator\LocatorInterface;
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\TableRegistry;
+use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 
 /**
  * Alternative TableRegistry to be used by fixture factories
@@ -35,6 +37,13 @@ use Cake\ORM\TableRegistry;
 class FactoryTableRegistry extends TableRegistry
 {
     /**
+     * Default LocatorInterface implementation class.
+     *
+     * @var string
+     */
+    protected static $_defaultLocatorClass = FactoryTableLocator::class;
+
+    /**
      * Returns a singleton instance of LocatorInterface implementation.
      *
      * A new LocatorClass is returned. This is very important in regards
@@ -42,7 +51,7 @@ class FactoryTableRegistry extends TableRegistry
      *
      * @return \Cake\ORM\Locator\LocatorInterface
      */
-    public static function getTableLocator(): TableLocator
+    public static function getTableLocator()
     {
         return new static::$_defaultLocatorClass();
     }

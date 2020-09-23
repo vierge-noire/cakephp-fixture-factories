@@ -18,7 +18,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
-use CakephpFixtureFactories\TestSuite\FixtureManager;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
