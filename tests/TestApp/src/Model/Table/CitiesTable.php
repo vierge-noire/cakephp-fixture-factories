@@ -36,16 +36,16 @@ class CitiesTable extends Table
         parent::initialize($config);
     }
 
-    public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator): Validator
     {
         return $validator
             ->requirePresence('country_id', 'create')
             ->notEmptyString('country_id');
     }
 
-    public function buildRules(RulesChecker $rules)
+    public function buildRules(RulesChecker $rules): RulesChecker
     {
-        $rules->add(function ($entity, $options) {
+        return $rules->add(function ($entity, $options) {
             return false;
         }, 'someRuleToSkip');
     }
