@@ -19,6 +19,7 @@ use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Association\HasOne;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
 use CakephpFixtureFactories\Util;
@@ -72,16 +73,8 @@ class AssociationBuilder
     {
         $associations = $this->getAssociated();
 
-        $addIfNotInAssociations = function ($associationName, &$associations){
-            if (!in_array($associationName, $associations)) {
-                $associations[] = $associationName;
-            }
-        };
-
-        $addIfNotInAssociations($associationName, $associations);
-
-        foreach ($factory->getAssociated() as $associated) {
-            $addIfNotInAssociations("$associationName.$associated", $associations);
+        if (!in_array($associationName, $associations)) {
+            $associations[$associationName] = $factory->getMarshallerOptions();
         }
 
         $this->setAssociated($associations);
@@ -229,16 +222,12 @@ class AssociationBuilder
      */
     public function dropAssociation(string $associationName)
     {
-        $associated = $this->getAssociated();
-
-        foreach ($associated as $i => $ass) {
-            $strPos = strpos($ass, $associationName);
-            $nextChar = $ass[strlen($associationName)] ?? null;
-            if ($strPos === 0 && ($nextChar === null || $nextChar === '.')) {
-                unset($associated[$i]);
-            }
-        }
-        $this->setAssociated(array_values($associated));
+        $this->setAssociated(
+            Hash::remove(
+                $this->getAssociated(),
+                $associationName
+            )
+        );
     }
 
     /**

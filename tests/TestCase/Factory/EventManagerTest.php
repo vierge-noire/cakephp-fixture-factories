@@ -27,6 +27,8 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use TestApp\Model\Entity\Address;
+use TestApp\Model\Entity\City;
 use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
@@ -268,5 +270,39 @@ class EventManagerTest extends TestCase
         Configure::write('TestFixtureGlobalBehaviors', ['SomePlugin']);
         $country = CountryFactory::make()->persist();
         $this->assertTrue($country->$field);
+    }
+
+    public function testSkipValidation()
+    {
+        $city = CityFactory::make()->without('Country')->getEntity();
+        $this->assertInstanceOf(City::class, $city);
+        $this->assertEmpty($city->getErrors());
+    }
+
+    public function testSkipValidationInAssociation()
+    {
+        $address = AddressFactory::make()->getEntity();
+        $this->assertInstanceOf(Address::class, $address);
+        $this->assertInstanceOf(City::class, $address->city);
+        $this->assertEmpty($address->getErrors());
+    }
+
+    /**
+     * Cities have a rule that always return false
+     * @throws \Exception
+     */
+    public function testSkipRules()
+    {
+        $city = CityFactory::make()->persist();
+        $this->assertInstanceOf(City::class, $city);
+        $this->assertEmpty($city->getErrors());
+    }
+
+    public function testSkipdRuleInAssociation()
+    {
+        $address = AddressFactory::make()->getEntity();
+        $this->assertInstanceOf(Address::class, $address);
+        $this->assertInstanceOf(City::class, $address->city);
+        $this->assertEmpty($address->getErrors());
     }
 }

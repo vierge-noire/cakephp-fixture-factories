@@ -235,7 +235,10 @@ class AssociationBuilderTest extends TestCase
     {
         $AssociationBuilder = new AssociationBuilder(CityFactory::make());
         $AssociationBuilder->collectAssociatedFactory('Country', CountryFactory::make());
-        $this->assertSame(['Country'], $AssociationBuilder->getAssociated());
+        $expected = [
+            'Country' => CountryFactory::make()->getMarshallerOptions()
+        ];
+        $this->assertSame($expected, $AssociationBuilder->getAssociated());
     }
 
     public function testCollectAssociatedFactoryDeep2()
@@ -245,10 +248,14 @@ class AssociationBuilderTest extends TestCase
             CityFactory::make()->withCountry()
         );
 
-        $this->assertSame([
-            'City',
-            'City.Country'
-        ], $AddressFactory->getAssociated());
+        $expected = [
+            'City' => CityFactory::make()->getMarshallerOptions() + [
+                'associated' => [
+                    'Country' =>  CountryFactory::make()->getMarshallerOptions(),
+                ]
+            ]
+        ];
+        $this->assertSame($expected, $AddressFactory->getAssociated());
     }
 
     public function testCollectAssociatedFactoryDeep3()
@@ -261,17 +268,32 @@ class AssociationBuilderTest extends TestCase
             )
         );
 
-        $this->assertSame([
-            'City',
-            'City.Country',
-            'City.Country.Cities',
-        ], $AddressFactory->getAssociated());
+        $expected = [
+            'City' => [
+                'validate' => false,
+                'forceNew' => true,
+                'associated' => [
+                    'Country' => [
+                        'validate' => false,
+                        'forceNew' => true,
+                        'associated' => [
+                            'Cities' => [
+                                'validate' => false,
+                                'forceNew' => true
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $this->assertSame($expected, $AddressFactory->getAssociated());
     }
 
     public function testDropAssociation()
     {
         $AssociationBuilder = new AssociationBuilder(AddressFactory::make());
-        $AssociationBuilder->setAssociated(['City', 'City.Country']);
+        $AssociationBuilder->setAssociated(['City' => ['Country' => 'Foo']]);
         $AssociationBuilder->dropAssociation('City');
         $this->assertEmpty($AssociationBuilder->getAssociated());
     }
@@ -287,47 +309,40 @@ class AssociationBuilderTest extends TestCase
     public function testDropAssociationDeep2()
     {
         $AssociationBuilder = new AssociationBuilder(AddressFactory::make());
-        $AssociationBuilder->setAssociated(['City', 'City.Country']);
+        $AssociationBuilder->setAssociated(['City' => ['Country' => 'Foo', 'Bar']]);
         $AssociationBuilder->dropAssociation('City.Country');
-        $this->assertSame(['City'], $AssociationBuilder->getAssociated());
+        $this->assertSame(['City' => ['Bar']], $AssociationBuilder->getAssociated());
     }
 
     public function testCollectAssociatedFactoryWithoutAssociation()
     {
         $AddressFactory = AddressFactory::make()->without('City');
 
-        $this->assertSame([], $AddressFactory->getAssociated());
+        $this->assertEmpty($AddressFactory->getAssociated());
     }
 
     public function testCollectAssociatedFactoryWithoutAssociationDeep2()
     {
         $AddressFactory = AddressFactory::make()->without('City.Country');
 
-        $this->assertSame(['City'], $AddressFactory->getAssociated());
+        $this->assertSame(['City' => CityFactory::make()->getMarshallerOptions()], $AddressFactory->getAssociated());
     }
 
     public function testCollectAssociatedFactoryWithBrackets()
     {
-        $ArticleFactory = ArticleFactory::make()
-            ->with(
-                "Authors[5].Articles[10].Bills",
-                BillFactory::make()->without('Article')
-            );
+        $CityFactory = CityFactory::make()->with('Addresses[5]');
 
         $expected = [
-            'Authors',
-            'Authors.Address',
-            'Authors.Address.City',
-            'Authors.Address.City.Country',
-            'Authors.Articles',
-            'Authors.Articles.Authors',
-            'Authors.Articles.Authors.Address',
-            'Authors.Articles.Authors.Address.City',
-            'Authors.Articles.Authors.Address.City.Country',
-            'Authors.Articles.Bills',
-            'Authors.Articles.Bills.Customer',
+            'Country' => [
+                'validate' => false,
+                'forceNew' => true
+            ],
+            'Addresses' => [
+                'validate' => false,
+                'forceNew' => true
+            ]
         ];
-        $this->assertSame($expected, $ArticleFactory->getAssociated());
+        $this->assertSame($expected, $CityFactory->getAssociated());
     }
 
     public function testCollectAssociatedFactoryWithAliasedAssociation()
@@ -337,10 +352,28 @@ class AssociationBuilderTest extends TestCase
             ->without('Authors');
 
         $this->assertSame([
-            'ExclusivePremiumAuthors',
-            'ExclusivePremiumAuthors.Address',
-            'ExclusivePremiumAuthors.Address.City',
-            'ExclusivePremiumAuthors.Address.City.Country',
+            'ExclusivePremiumAuthors' => [
+                'validate' => false,
+                'forceNew' => true,
+                'associated' => [
+                    'Address' => [
+                        'validate' => false,
+                        'forceNew' => true,
+                        'associated' => [
+                            'City' => [
+                                'validate' => false,
+                                'forceNew' => true,
+                                'associated' => [
+                                    'Country' => [
+                                        'validate' => false,
+                                        'forceNew' => true
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ], $ArticleFactory->getAssociated());
     }
 
@@ -356,7 +389,10 @@ class AssociationBuilderTest extends TestCase
             CityFactory::make(['name' => $cityName])->withCountry()
         );
 
-        $this->assertSame(['Cities'], $CountryFactory->getAssociated());
+        $this->assertSame(['Cities' => [
+            'validate' => false,
+            'forceNew' => true
+        ]], $CountryFactory->getAssociated());
 
         $country = $CountryFactory->persist();
 

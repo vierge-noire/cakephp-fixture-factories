@@ -17,7 +17,6 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
@@ -216,11 +215,16 @@ abstract class BaseFactory
     /**
      * @return array
      */
-    protected function getMarshallerOptions(): array
+    public function getMarshallerOptions(): array
     {
-        return array_merge($this->marshallerOptions, [
-            'associated' => $this->getAssociationBuilder()->getAssociated()
-        ]);
+        $associated = $this->getAssociationBuilder()->getAssociated();
+        if (!empty($associated)) {
+            return array_merge($this->marshallerOptions, [
+                'associated' => $this->getAssociationBuilder()->getAssociated()
+            ]);
+        } else {
+            return $this->marshallerOptions;
+        }
     }
 
     /**
