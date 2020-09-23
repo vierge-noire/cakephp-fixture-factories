@@ -53,23 +53,6 @@ class EventManager
      */
     private $originalTable;
 
-    private $ormEvents = [
-        'Model.initialize',
-        'Model.beforeMarshal',
-        'Model.afterMarshal',
-        'Model.beforeFind',
-        'Model.buildValidator',
-        'Model.buildRules',
-        'Model.beforeRules',
-        'Model.afterRules',
-        'Model.beforeSave',
-        'Model.afterSave',
-        'Model.afterSaveCommit',
-        'Model.beforeDelete',
-        'Model.afterDelete',
-        'Model.afterDeleteCommit',
-    ];
-
     /**
      * DataCompiler constructor.
      * @param BaseFactory $factory
@@ -89,17 +72,18 @@ class EventManager
      */
     public function getTable(): Table
     {
-        $tableRegistry = FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName);
-        $this->ignoreModelEvents($tableRegistry);
-        return $tableRegistry;
+        return FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, [
+            'CakephpFixtureFactoriesEventManager' => $this
+        ]);
     }
 
     /**
      * @param Table $table
+     * @param array$ormEvents
      */
-    public function ignoreModelEvents(Table $table)
+    public function ignoreModelEvents(Table $table, array $ormEvents)
     {
-        foreach ($this->ormEvents as $ormEvent) {
+        foreach ($ormEvents as $ormEvent) {
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {
                 if (array_key_exists('callable', $listeners) && is_array($listeners['callable'])) {
                     foreach ($listeners['callable'] as $listener) {
