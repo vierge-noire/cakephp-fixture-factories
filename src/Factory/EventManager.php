@@ -49,6 +49,11 @@ class EventManager
     private $rootTableRegistryName;
 
     /**
+     * @var Table
+     */
+    private $table;
+
+    /**
      * DataCompiler constructor.
      * @param BaseFactory $factory
      * @param string $rootTableRegistryName
@@ -66,7 +71,10 @@ class EventManager
      */
     public function getTable(): Table
     {
-        return FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, [
+        if ($this->table) {
+            return $this->table;
+        } else
+        return $this->table = FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, [
             'CakephpFixtureFactoriesEventManager' => $this
         ]);
     }
@@ -164,6 +172,7 @@ class EventManager
     {
         $activeBehaviors = (array) $activeBehaviors;
         $this->listeningBehaviors = array_merge($this->defaultListeningBehaviors, $activeBehaviors);
+        $this->clearTable();
     }
 
     /**
@@ -172,6 +181,7 @@ class EventManager
     public function listeningToModelEvents($activeModelEvents)
     {
         $this->listeningModelEvents = (array) $activeModelEvents;
+        $this->clearTable();
     }
 
     /**
@@ -191,5 +201,13 @@ class EventManager
         $defaultBehaviors[] = 'Timestamp';
         $this->defaultListeningBehaviors = $defaultBehaviors;
         $this->listeningBehaviors = $defaultBehaviors;
+    }
+
+    /**
+     * Unset the manager's table
+     */
+    public function clearTable()
+    {
+        $this->table = null;
     }
 }
