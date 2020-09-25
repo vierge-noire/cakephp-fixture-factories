@@ -18,7 +18,7 @@ namespace CakephpFixtureFactories\Factory;
 use Cake\Core\Configure;
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
+use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 use CakephpFixtureFactories\ORM\TableRegistry\FactoryTableRegistry;
 
 class EventManager
@@ -49,11 +49,6 @@ class EventManager
     private $rootTableRegistryName;
 
     /**
-     * @var Table
-     */
-    private $originalTable;
-
-    /**
      * DataCompiler constructor.
      * @param BaseFactory $factory
      * @param string $rootTableRegistryName
@@ -62,7 +57,6 @@ class EventManager
     {
         $this->factory = $factory;
         $this->rootTableRegistryName = $rootTableRegistryName;
-        $this->originalTable = TableRegistry::getTableLocator()->get($rootTableRegistryName);
         $this->setDefaultListeningBehaviors();
     }
 
@@ -79,11 +73,10 @@ class EventManager
 
     /**
      * @param Table $table
-     * @param array$ormEvents
      */
-    public function ignoreModelEvents(Table $table, array $ormEvents)
+    public function ignoreModelEvents(Table $table)
     {
-        foreach ($ormEvents as $ormEvent) {
+        foreach (FactoryTableLocator::$ormEvents as $ormEvent) {
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {
                 if (array_key_exists('callable', $listeners) && is_array($listeners['callable'])) {
                     foreach ($listeners['callable'] as $listener) {

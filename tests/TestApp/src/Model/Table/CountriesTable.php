@@ -56,5 +56,4 @@ class CountriesTable extends Table
     {
         $data['beforeMarshalTriggered'] = true;
     }
-
 }

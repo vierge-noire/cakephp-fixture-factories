@@ -514,10 +514,21 @@ class BaseFactoryTest extends TestCase
         }
     }
 
-    public function testGetEntityAfterMakingMultipleShouldThrowException()
+    public function testGetEntityAfterMakingMultipleShouldReturnTheFirstOfAll()
     {
-        $this->expectException(RuntimeException::class);
-        ArticleFactory::make(['name' => 'blah'], 2)->getEntity();
+        $name = 'Foo';
+        $article = ArticleFactory::make(compact('name'), 2)->getEntity();
+        $this->assertSame($name, $article->name);
+    }
+
+    public function testGetEntityAfterMakingMultipleFromArrayShouldReturnTheFirstOfAll()
+    {
+        $name = 'Foo';
+        $article = ArticleFactory::make([
+            ['name' => $name],
+            ['name' => 'Bar'],
+        ], 2)->getEntity();
+        $this->assertSame($name, $article->name);
     }
 
     public function testGetEntitiesAfterMakingOneShouldThrowException()
