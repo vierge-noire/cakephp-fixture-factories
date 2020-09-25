@@ -13,39 +13,41 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\ORM\Locator;
 
-use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
+use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Factory\EventManager;
 
 class FactoryTableLocator extends TableLocator
 {
+    public static $ormEvents = [
+        'Model.initialize',
+        'Model.beforeMarshal',
+        'Model.afterMarshal',
+        'Model.beforeFind',
+        'Model.buildValidator',
+        'Model.buildRules',
+        'Model.beforeRules',
+        'Model.afterRules',
+        'Model.beforeSave',
+        'Model.afterSave',
+        'Model.afterSaveCommit',
+        'Model.beforeDelete',
+        'Model.afterDelete',
+        'Model.afterDeleteCommit',
+    ];
+
     protected function _create(array $options): Table
     {
         $cloneTable = parent::_create($options);
 
-        $ormEvents = [
-            'Model.initialize',
-            'Model.beforeMarshal',
-            'Model.afterMarshal',
-            'Model.beforeFind',
-            'Model.buildValidator',
-            'Model.buildRules',
-            'Model.beforeRules',
-            'Model.afterRules',
-            'Model.beforeSave',
-            'Model.afterSave',
-            'Model.afterSaveCommit',
-            'Model.beforeDelete',
-            'Model.afterDelete',
-            'Model.afterDeleteCommit',
-        ];
+        $eventManager = $options['CakephpFixtureFactoriesEventManager'] ?? false;
 
-        if ($eventManager = $options['CakephpFixtureFactoriesEventManager'] ?? null) {
+        if ($eventManager) {
             /** @var EventManager $eventManager */
-            $eventManager->ignoreModelEvents($cloneTable, $ormEvents);
+            $eventManager->ignoreModelEvents($cloneTable);
         } else {
-            foreach ($ormEvents as $ormEvent) {
+            foreach (self::$ormEvents as $ormEvent) {
                 foreach ($cloneTable->getEventManager()->listeners($ormEvent) as $listeners) {
                     if (array_key_exists('callable', $listeners) && is_array($listeners['callable'])) {
                         if ($listeners['callable'][0] instanceof TimestampBehavior) {

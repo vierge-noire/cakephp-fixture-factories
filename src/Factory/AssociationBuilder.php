@@ -53,14 +53,14 @@ class AssociationBuilder
         $this->removeBrackets($associationName);
 
         try {
-            $association = $this->getFactory()->getTable()->getAssociation($associationName);
+            $association = $this->getTable()->getAssociation($associationName);
         } catch (\Exception $e) {
             throw new AssociationBuilderException($e->getMessage());
         }
         if ($this->associationIsToOne($association) || $this->associationIsToMany($association)) {
             return $association;
         } else {
-            throw new AssociationBuilderException("Unknown association type $association on table {$this->getFactory()->getTable()}");
+            throw new AssociationBuilderException("Unknown association type $association on table {$this->getTable()}");
         }
     }
 
@@ -96,7 +96,7 @@ class AssociationBuilder
     {
         if ($this->associationIsToOne($this->getAssociation($associationName)) && $associationFactory->getTimes() > 1) {
             throw new AssociationBuilderException(
-                "Association $associationName on " . $this->getFactory()->getTable()->getEntityClass() . " cannot be multiple");
+                "Association $associationName on " . $this->getTable()->getEntityClass() . " cannot be multiple");
         }
         return true;
     }
@@ -107,8 +107,8 @@ class AssociationBuilder
             return;
         }
 
-        $thisFactoryRegistryName = $this->getFactory()->getTable()->getRegistryAlias();
-        $associatedFactoryTable = $associatedFactory->getTable();
+        $thisFactoryRegistryName = $this->getTable()->getRegistryAlias();
+        $associatedFactoryTable = $associatedFactory->getRootTableRegistry();
 
         $associatedAssociationName = Inflector::singularize($thisFactoryRegistryName);
 
@@ -131,7 +131,7 @@ class AssociationBuilder
         $times = $this->getTimeBetweenBrackets($firstAssociation);
         $this->removeBrackets($firstAssociation);
 
-        $table = $this->getFactory()->getTable()->getAssociation($firstAssociation)->getClassName() ?? $this->getFactory()->getTable()->getAssociation($firstAssociation)->getName();
+        $table = $this->getTable()->getAssociation($firstAssociation)->getClassName() ?? $this->getTable()->getAssociation($firstAssociation)->getName();
 
         if (!empty($associations)) {
             $factory = $this->getFactoryFromTableName($table);
@@ -244,5 +244,13 @@ class AssociationBuilder
     public function setAssociated(array $associated)
     {
         $this->associated = $associated;
+    }
+
+    /**
+     * @return \Cake\ORM\Table
+     */
+    public function getTable(): \Cake\ORM\Table
+    {
+        return $this->getFactory()->getRootTableRegistry();
     }
 }

@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace TestApp\Model\Table;
 
+use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -48,5 +49,15 @@ class CitiesTable extends Table
         return $rules->add(function ($entity, $options) {
             return false;
         }, 'someRuleToSkip');
+    }
+
+    /**
+     * @param Event $event
+     * @param ArrayObject $data
+     * @param ArrayObject $options
+     */
+    public function beforeMarshal(Event $event, \ArrayObject $data, \ArrayObject $options)
+    {
+        $data['beforeMarshalTriggered'] = true;
     }
 }

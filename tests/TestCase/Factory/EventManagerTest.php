@@ -281,10 +281,29 @@ class EventManagerTest extends TestCase
 
     public function testSkipValidationInAssociation()
     {
-        $address = AddressFactory::make()->getEntity();
+        $address = AddressFactory::make()
+            ->with('City', CityFactory::make()->without('Country'))
+            ->getEntity();
         $this->assertInstanceOf(Address::class, $address);
         $this->assertInstanceOf(City::class, $address->city);
+        $this->assertNull($address->city->country);
         $this->assertEmpty($address->getErrors());
+    }
+
+    public function testApplyValidationInAssociation()
+    {
+        $address = AddressFactory::make()
+            ->with(
+                'City',
+                CityFactory::make()
+                    ->listeningToModelEvents('Model.beforeMarshal')
+                    ->without('Country')
+            )
+            ->getEntity();
+        $this->assertInstanceOf(Address::class, $address);
+        $this->assertInstanceOf(City::class, $address->city);
+        $this->assertNull($address->city->country);
+        $this->assertTrue($address->city->beforeMarshalTriggered);
     }
 
     /**

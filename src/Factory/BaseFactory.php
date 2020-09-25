@@ -204,12 +204,20 @@ abstract class BaseFactory
     public function getEntity(): EntityInterface
     {
         $data = $this->toArray();
-
-        if (count($data) > 1) {
-            throw new RuntimeException("Cannot call getEntity on a factory with {$this->times} records");
-        }
-
         return $this->getTable()->newEntity($data[0], $this->getMarshallerOptions());
+    }
+
+    /**
+     * Produce a set of entities from the present factory
+     * @return array|EntityInterface[]
+     */
+    public function getEntities()
+    {
+        $data = $this->toArray();
+        if (count($data) === 1) {
+            throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
+        }
+        return $this->getTable()->newEntities($data, $this->getMarshallerOptions());
     }
 
     /**
@@ -254,16 +262,25 @@ abstract class BaseFactory
     }
 
     /**
-     * The table on which the factories are build
+     * The table on which the factories are build, the package's one
      * @return Table
      */
     public function getTable(): Table
     {
         if ($this->withModelEvents) {
-            return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
+            return $this->getRootTableRegistry();
         } else {
             return $this->getEventManager()->getTable();
         }
+    }
+
+    /**
+     * The default table registry, the CakePHP one
+     * @return Table
+     */
+    public function getRootTableRegistry(): Table
+    {
+        return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
     }
 
     /**
@@ -469,18 +486,5 @@ abstract class BaseFactory
         );
 
         return $this;
-    }
-
-    /**
-     * Produce a set of entities from the present factory
-     * @return array|EntityInterface[]
-     */
-    public function getEntities()
-    {
-        $data = $this->toArray();
-        if (count($data) === 1) {
-            throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
-        }
-        return $this->getTable()->newEntities($data, $this->getMarshallerOptions());
     }
 }

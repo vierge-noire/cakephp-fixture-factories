@@ -224,7 +224,9 @@ class DataCompiler
     {
         $count                                  = count($data);
         $associationName                        = Inflector::singularize($associationName);
-        $compiledTemplateData[$associationName] = $data[$count - 1]->toArray()[0];
+        /** @var BaseFactory $factory */
+        $factory = $data[$count - 1];
+        $compiledTemplateData[$associationName] = $factory->getEntity()->toArray();
     }
 
     /**
@@ -237,12 +239,33 @@ class DataCompiler
         $associationData = $compiledTemplateData[$associationName] ?? null;
         foreach ($data as $factory) {
             if ($associationData) {
-                $associationData = array_merge($associationData, $factory->toArray());
+                $associationData = array_merge($associationData, $this->getManyEntities($factory));
             } else {
-                $associationData = $factory->toArray();
+                $associationData = $this->getManyEntities($factory);
             }
         }
         $compiledTemplateData[$associationName] = $associationData;
+    }
+
+    /**
+     * @param BaseFactory $factory
+     *
+     * @return array
+     */
+    private function getManyEntities(BaseFactory $factory): array
+    {
+        $data = $factory->toArray();
+        if (isset($data[0]) && !isset($data[1])) {
+            return [
+                $factory->getEntity()->toArray()
+            ];
+        } else {
+            $result = [];
+            foreach ($factory->getEntities() as $entity) {
+                $result[] = $entity->toArray();
+            }
+            return $result;
+        }
     }
 
     /**
@@ -266,7 +289,7 @@ class DataCompiler
     {
         $result = [];
         $cast = explode('.', $associationName);
-        $table = $this->getFactory()->getTable();
+        $table = $this->getFactory()->getRootTableRegistry();
         foreach ($cast as $i => $ass) {
             $association = $table->getAssociation($ass);
             $result[] = $association->getProperty();
@@ -282,7 +305,7 @@ class DataCompiler
     public function getAssociationByPropertyName(string $propertyName)
     {
         try {
-            return $this->getFactory()->getTable()->getAssociation(Inflector::camelize($propertyName));
+            return $this->getFactory()->getRootTableRegistry()->getAssociation(Inflector::camelize($propertyName));
         } catch (InvalidArgumentException $e) {
             return false;
         }
