@@ -136,6 +136,12 @@ abstract class BaseFactory
         return $factory;
     }
 
+    /**
+     * Collect the number of entities to be created
+     * Apply the default template in the factory
+     * @param BaseFactory $factory
+     * @param int         $times
+     */
     protected function setUp(BaseFactory $factory, int $times)
     {
         $factory->setTimes($times);

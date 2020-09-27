@@ -60,7 +60,7 @@ class AssociationBuilder
         if ($this->associationIsToOne($association) || $this->associationIsToMany($association)) {
             return $association;
         } else {
-            throw new AssociationBuilderException("Unknown association type $association on table {$this->getTable()}");
+            throw new AssociationBuilderException("Unknown association type $association on table {$this->getTable()->getAlias()}");
         }
     }
 

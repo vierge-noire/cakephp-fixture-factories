@@ -15,7 +15,6 @@ namespace CakephpFixtureFactories\ORM\Locator;
 
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
-use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Factory\EventManager;
 
 class FactoryTableLocator extends TableLocator
@@ -39,25 +38,14 @@ class FactoryTableLocator extends TableLocator
 
     protected function _create(array $options): Table
     {
-        $cloneTable = parent::_create($options);
-
         $eventManager = $options['CakephpFixtureFactoriesEventManager'] ?? false;
-
         if ($eventManager) {
+            $cloneTable = parent::_create($options);
             /** @var EventManager $eventManager */
             $eventManager->ignoreModelEvents($cloneTable);
+            return $cloneTable;
         } else {
-            foreach (self::$ormEvents as $ormEvent) {
-                foreach ($cloneTable->getEventManager()->listeners($ormEvent) as $listeners) {
-                    if (array_key_exists('callable', $listeners) && is_array($listeners['callable'])) {
-                        if ($listeners['callable'][0] instanceof TimestampBehavior) {
-                            continue;
-                        }
-                    }
-                    $cloneTable->getEventManager()->off($ormEvent, $listeners['callable']);
-                }
-            }
+            return parent::_create($options);
         }
-        return $cloneTable;
     }
 }
