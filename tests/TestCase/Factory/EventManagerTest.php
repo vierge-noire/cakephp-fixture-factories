@@ -317,7 +317,7 @@ class EventManagerTest extends TestCase
         $this->assertEmpty($city->getErrors());
     }
 
-    public function testSkipdRuleInAssociation()
+    public function testSkipRuleInAssociation()
     {
         $address = AddressFactory::make()->getEntity();
         $this->assertInstanceOf(Address::class, $address);
