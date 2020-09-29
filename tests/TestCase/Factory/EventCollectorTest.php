@@ -19,7 +19,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\BaseFactory;
-use CakephpFixtureFactories\Factory\EventManager;
+use CakephpFixtureFactories\Factory\EventCollector;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -28,11 +28,12 @@ use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use TestApp\Model\Entity\Address;
+use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
-class EventManagerTest extends TestCase
+class EventCollectorTest extends TestCase
 {
     /**
      * @var CountriesTable
@@ -65,14 +66,14 @@ class EventManagerTest extends TestCase
     }
 
     /**
-     * @see EventManager::setDefaultListeningBehaviors()
+     * @see EventCollector::setDefaultListeningBehaviors()
      */
     public function testSetDefaultListeningBehaviors()
     {
         Configure::write('TestFixtureGlobalBehaviors', ['Sluggable']);
 
         $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventManager($factoryMock, 'Foo');
+        $EventManager = new EventCollector($factoryMock, 'Foo');
 
         $this->assertSame(
             ['Sluggable', 'Timestamp'],
@@ -83,7 +84,7 @@ class EventManagerTest extends TestCase
     public function testSetBehaviorEmpty()
     {
         $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventManager($factoryMock, 'Foo');
+        $EventManager = new EventCollector($factoryMock, 'Foo');
 
         $expected = [
             'SomeBehaviorUsedInMultipleTables',
@@ -202,7 +203,7 @@ class EventManagerTest extends TestCase
     {
         $behavior = 'Foo';
         $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventManager($factoryMock, 'Bar');
+        $EventManager = new EventCollector($factoryMock, 'Bar');
         $EventManager->listeningToBehaviors('Foo');
 
         $expected = [
@@ -218,9 +219,9 @@ class EventManagerTest extends TestCase
 
     public function testGetEntityOnNonExistentBehavior()
     {
-        $this->expectException(\InvalidArgumentException::class);
         $behavior = 'Foo';
-        ArticleFactory::make()->listeningToBehaviors($behavior)->getEntity();
+        $article = ArticleFactory::make()->listeningToBehaviors($behavior)->getEntity();
+        $this->assertInstanceOf(Article::class, $article);
     }
 
     /**

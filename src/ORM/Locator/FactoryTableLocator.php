@@ -15,37 +15,23 @@ namespace CakephpFixtureFactories\ORM\Locator;
 
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
-use CakephpFixtureFactories\Factory\EventManager;
+use CakephpFixtureFactories\Event\ModelEventsHandler;
 
 class FactoryTableLocator extends TableLocator
 {
-    public static $ormEvents = [
-        'Model.initialize',
-        'Model.beforeMarshal',
-        'Model.afterMarshal',
-        'Model.beforeFind',
-        'Model.buildValidator',
-        'Model.buildRules',
-        'Model.beforeRules',
-        'Model.afterRules',
-        'Model.beforeSave',
-        'Model.afterSave',
-        'Model.afterSaveCommit',
-        'Model.beforeDelete',
-        'Model.afterDelete',
-        'Model.afterDeleteCommit',
-    ];
-
     protected function _create(array $options): Table
     {
-        $eventManager = $options['CakephpFixtureFactoriesEventManager'] ?? false;
-        if ($eventManager) {
-            $cloneTable = parent::_create($options);
-            /** @var EventManager $eventManager */
-            $eventManager->ignoreModelEvents($cloneTable);
-            return $cloneTable;
-        } else {
-            return parent::_create($options);
-        }
+        $options['CakephpFixtureFactoriesListeningModelEvents'] = $options['CakephpFixtureFactoriesListeningModelEvents'] ?? [];
+        $options['CakephpFixtureFactoriesListeningBehaviors'] = $options['CakephpFixtureFactoriesListeningBehaviors'] ?? [];
+
+        $cloneTable = parent::_create($options);
+
+        ModelEventsHandler::handle(
+            $cloneTable,
+            $options['CakephpFixtureFactoriesListeningModelEvents'],
+            $options['CakephpFixtureFactoriesListeningBehaviors']
+        );
+
+        return $cloneTable;
     }
 }

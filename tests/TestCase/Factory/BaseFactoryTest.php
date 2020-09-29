@@ -863,4 +863,18 @@ class BaseFactoryTest extends TestCase
         $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
         $this->assertInstanceOf(Country::class, $country);
     }
+
+    public function testMakeEntityWithNumber()
+    {
+        $n = 2;
+        $country = CountryFactory::make($n)->getEntity();
+        $this->assertInstanceOf(Country::class, $country);
+    }
+
+    public function testMakeEntitiesWithNumber()
+    {
+        $n = 2;
+        $country = CountryFactory::make($n)->getEntities();
+        $this->assertSame($n, count($country));
+    }
 }
