@@ -44,15 +44,25 @@ class FactoryTableRegistry extends TableRegistry
     protected static $_defaultLocatorClass = FactoryTableLocator::class;
 
     /**
+     * @var null
+     */
+    protected static $_locator;
+
+    /**
      * Returns a singleton instance of LocatorInterface implementation.
      *
      * A new LocatorClass is returned. This is very important in regards
      * to the handling of events
      *
-     * @return \Cake\ORM\Locator\LocatorInterface
+     * @return LocatorInterface
      */
     public static function getTableLocator()
     {
-        return new static::$_defaultLocatorClass();
+
+        if (!isset(self::$_locator)) {
+            self::$_locator = new static::$_defaultLocatorClass();
+        }
+
+        return self::$_locator;
     }
 }

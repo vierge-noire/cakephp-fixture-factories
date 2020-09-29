@@ -83,9 +83,10 @@ abstract class BaseFactory
     /**
      * Handles the events at the model and behavior level
      * for the table on which the factories will be built
-     * @var EventManager
+     *
+     * @var EventCollector
      */
-    private $eventManager;
+    private $eventCompiler;
 
     /**
      * BaseFactory constructor.
@@ -94,7 +95,7 @@ abstract class BaseFactory
     {
         $this->dataCompiler = new DataCompiler($this);
         $this->associationBuilder = new AssociationBuilder($this);
-        $this->eventManager = new EventManager($this, $this->getRootTableRegistryName());
+        $this->eventCompiler = new EventCollector($this, $this->getRootTableRegistryName());
     }
 
     /**
@@ -276,7 +277,7 @@ abstract class BaseFactory
         if ($this->withModelEvents) {
             return $this->getRootTableRegistry();
         } else {
-            return $this->getEventManager()->getTable();
+            return $this->getEventCompiler()->getTable();
         }
     }
 
@@ -376,11 +377,12 @@ abstract class BaseFactory
 
     /**
      * A protected class to manage the Model Events inhrent to the creation of fixtures
-     * @return EventManager
+     *
+     * @return EventCollector
      */
-    protected function getEventManager(): EventManager
+    protected function getEventCompiler(): EventCollector
     {
-        return $this->eventManager;
+        return $this->eventCompiler;
     }
 
     /**
@@ -408,7 +410,7 @@ abstract class BaseFactory
      */
     public function listeningToBehaviors($activeBehaviors)
     {
-        $this->getEventManager()->listeningToBehaviors($activeBehaviors);
+        $this->getEventCompiler()->listeningToBehaviors($activeBehaviors);
         return $this;
     }
 
@@ -417,7 +419,7 @@ abstract class BaseFactory
      */
     public function listeningToModelEvents($activeModelEvents)
     {
-        $this->getEventManager()->listeningToModelEvents($activeModelEvents);
+        $this->getEventCompiler()->listeningToModelEvents($activeModelEvents);
         return $this;
     }
 
