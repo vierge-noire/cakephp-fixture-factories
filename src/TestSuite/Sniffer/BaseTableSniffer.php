@@ -79,12 +79,13 @@ abstract class BaseTableSniffer
     }
 
     /**
+     * Execute a query returning a list of table
      * In case where the query fails because the database queried does
      * not exist, an exception is thrown.
      * @param string $query
      * @return array
      */
-    protected function executeQuery(string $query): array
+    protected function fetchQuery(string $query): array
     {
         try {
             $tables = $this->getConnection()->execute($query)->fetchAll();
@@ -96,5 +97,17 @@ abstract class BaseTableSniffer
         }
 
         return Hash::extract($tables, '{n}.0');
+    }
+
+    /**
+     * @param string $glueBefore
+     * @param array  $array
+     * @param string $glueAfter
+     *
+     * @return string
+     */
+    public function implodeSpecial(string $glueBefore, array $array, string $glueAfter): string
+    {
+        return $glueBefore . implode($glueAfter.$glueBefore, $array) . $glueAfter;
     }
 }

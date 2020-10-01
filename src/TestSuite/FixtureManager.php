@@ -30,6 +30,7 @@ use function strpos;
  */
 class FixtureManager extends BaseFixtureManager
 {
+    private static $_configIsLoaded = false;
 
     /**
      * FixtureManager constructor.
@@ -38,6 +39,7 @@ class FixtureManager extends BaseFixtureManager
     public function __construct()
     {
         $this->initDb();
+        $this->loadConfig();
     }
 
     /**
@@ -98,12 +100,15 @@ class FixtureManager extends BaseFixtureManager
      */
     public function loadConfig()
     {
-        Configure::write([
-            'TestFixtureTableSniffers' => $this->getDefaultTableSniffers()
-        ]);
-        try {
-            Configure::load('fixture_factories');
-        } catch (Exception $exception) {}
+        if (!self::$_configIsLoaded) {
+            Configure::write([
+                'TestFixtureTableSniffers' => $this->getDefaultTableSniffers()
+            ]);
+            try {
+                Configure::load('fixture_factories');
+            } catch (Exception $exception) {}
+            self::$_configIsLoaded = true;
+        }
     }
 
     /**

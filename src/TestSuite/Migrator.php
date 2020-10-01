@@ -19,6 +19,9 @@ use Migrations\Migrations;
 
 class Migrator
 {
+    /**
+     * @var array
+     */
     private $config;
 
     /**
@@ -78,7 +81,7 @@ class Migrator
      * @param Migrations $migrations
      * @return bool
      */
-    public function isMigrationMissing(Migrations $migrations): bool
+    private function isMigrationMissing(Migrations $migrations): bool
     {
         $status = $migrations->status();
         foreach ($status as $migration) {
