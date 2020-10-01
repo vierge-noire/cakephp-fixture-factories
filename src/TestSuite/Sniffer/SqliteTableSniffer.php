@@ -24,7 +24,7 @@ class SqliteTableSniffer extends BaseTableSniffer
      */
     public function getDirtyTables(): array
     {
-        return $this->executeQuery("
+        return $this->fetchQuery("
              SELECT name FROM sqlite_sequence WHERE name NOT LIKE '%phinxlog';
          ");
     }
@@ -63,7 +63,7 @@ class SqliteTableSniffer extends BaseTableSniffer
      */
     public function getAllTables(): array
     {
-        return $this->executeQuery("
+        return $this->fetchQuery("
              SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence';
         ");
     }

@@ -24,13 +24,11 @@ class MysqlTableSniffer extends BaseTableSniffer
      */
     public function getDirtyTables(): array
     {
-        $databaseName = $this->getConnection()->config()['database'];
-
-        return $this->executeQuery("
-            SELECT table_name, table_rows
+        return $this->fetchQuery("
+            SELECT table_name
             FROM INFORMATION_SCHEMA.TABLES
             WHERE
-                TABLE_SCHEMA = '$databaseName'
+                TABLE_SCHEMA = DATABASE()
                 AND table_name NOT LIKE '%phinxlog'
                 AND AUTO_INCREMENT > 1;
         ");
@@ -50,7 +48,11 @@ class MysqlTableSniffer extends BaseTableSniffer
         $this->getConnection()->disableConstraints(function (Connection $connection) use ($tables) {
             $connection->transactional(function(Connection $connection) use ($tables) {
                 $connection->execute(
-                    "TRUNCATE TABLE `" . implode("`; TRUNCATE TABLE `", $tables) . "`;"
+                    $this->implodeSpecial(
+                        "TRUNCATE TABLE `",
+                        $tables,
+                        "`;"
+                    )
                 );
             });
         });
@@ -64,8 +66,8 @@ class MysqlTableSniffer extends BaseTableSniffer
     {
         $databaseName = $this->getConnection()->config()['database'];
 
-        return $this->executeQuery("
-            SELECT table_name, table_rows
+        return $this->fetchQuery("
+            SELECT table_name
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_SCHEMA = '$databaseName';
         ");
@@ -83,7 +85,11 @@ class MysqlTableSniffer extends BaseTableSniffer
         $this->getConnection()->disableConstraints(function (Connection $connection) use ($tables) {
             $connection->transactional(function(Connection $connection) use ($tables) {
                 $connection->execute(
-                    "DROP TABLE IF EXISTS `" . implode("`; DROP TABLE IF EXISTS `", $tables) . "`;"
+                    $this->implodeSpecial(
+                        'DROP TABLE IF EXISTS `',
+                        $tables,
+                        '`;'
+                    )
                 );
             });
         });

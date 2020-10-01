@@ -33,7 +33,6 @@ class FixtureInjector extends \Cake\TestSuite\Fixture\FixtureInjector
     public function __construct(FixtureManager $manager)
     {
         $this->_fixtureManager = $manager;
-        $this->_fixtureManager->loadConfig();
     }
 
     /**

@@ -24,7 +24,7 @@ class PostgresTableSniffer extends BaseTableSniffer
      */
     public function getDirtyTables(): array
     {
-        return $this->executeQuery("
+        return $this->fetchQuery("
             SELECT substr(sequencename, 1, length(sequencename) - 7)
             FROM pg_sequences
             WHERE last_value > 0;
@@ -58,7 +58,7 @@ class PostgresTableSniffer extends BaseTableSniffer
      */
     public function getAllTables(): array
     {
-        return $this->executeQuery("            
+        return $this->fetchQuery("            
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'            

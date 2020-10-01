@@ -180,4 +180,13 @@ class TableSnifferTest extends TestCase
         $Countries->delete($country);
         $this->assertSame(0, $Countries->find()->count());
     }
+
+    public function testImplodeSpecial()
+    {
+        $array = ['foo', 'bar'];
+        $glueBefore = 'ABC';
+        $glueAfter = 'DEF';
+        $expect = 'ABCfooDEFABCbarDEF';
+        $this->assertSame($expect, $this->TableSniffer->implodeSpecial($glueBefore, $array, $glueAfter));
+    }
 }
