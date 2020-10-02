@@ -64,12 +64,10 @@ class MysqlTableSniffer extends BaseTableSniffer
      */
     public function getAllTables(): array
     {
-        $databaseName = $this->getConnection()->config()['database'];
-
         return $this->fetchQuery("
             SELECT table_name
             FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_SCHEMA = '$databaseName';
+            WHERE TABLE_SCHEMA = DATABASE();
         ");
     }
 
