@@ -18,8 +18,8 @@ use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
-use CakephpFixtureFactories\TestSuite\FixtureManager;
-use CakephpFixtureFactories\TestSuite\Sniffer\MysqlTableSniffer;
+use CakephpTestSuiteLight\FixtureManager;
+use CakephpTestSuiteLight\Sniffer\MysqlTableSniffer;
 
 class FixtureManagerTest extends TestCase
 {

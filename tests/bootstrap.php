@@ -182,7 +182,7 @@ Inflector::rules('irregular', array(
 
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
-\CakephpFixtureFactories\TestSuite\Migrator::migrate([
+\CakephpTestMigrator\Migrator::migrate([
     ['connection' => 'test'],
     ['plugin' => 'TestPlugin'],
 ]);

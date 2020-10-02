@@ -18,7 +18,7 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
-use CakephpFixtureFactories\TestSuite\SkipTablesTruncation;
+use CakephpTestSuiteLight\SkipTablesTruncation;
 use TestApp\Model\Table\PremiumAuthorsTable;
 
 class DataCompilerTest extends TestCase

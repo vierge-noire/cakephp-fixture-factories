@@ -18,8 +18,8 @@ use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
-use CakephpFixtureFactories\TestSuite\FixtureInjector;
-use CakephpFixtureFactories\TestSuite\FixtureManager;
+use CakephpTestSuiteLight\FixtureInjector;
+use CakephpTestSuiteLight\FixtureManager;
 
 class FixtureInjectorTest extends TestCase
 {
