@@ -15,8 +15,8 @@ namespace CakephpFixtureFactories\Test\TestCase;
 
 
 use Cake\TestSuite\TestCase;
-use CakephpFixtureFactories\TestSuite\SkipTablesTruncation;
 use CakephpFixtureFactories\Util;
+use CakephpTestSuiteLight\SkipTablesTruncation;
 
 class UtilTest extends TestCase
 {

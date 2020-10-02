@@ -183,7 +183,7 @@ Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
 \Cake\Core\Plugin::load('TestPlugin');
 \Cake\Core\Plugin::load('CakephpFixtureFactories');
-\CakephpFixtureFactories\TestSuite\Migrator::migrate([
+\CakephpTestMigrator\Migrator::migrate([
     ['connection' => 'test'],
     ['plugin' => 'TestPlugin'],
 ]);

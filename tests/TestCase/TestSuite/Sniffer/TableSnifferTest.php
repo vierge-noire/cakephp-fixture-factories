@@ -21,10 +21,9 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
-use CakephpFixtureFactories\TestSuite\FixtureManager;
-use CakephpFixtureFactories\TestSuite\Migrator;
-use CakephpFixtureFactories\TestSuite\Sniffer\BaseTableSniffer;
-use CakephpFixtureFactories\TestSuite\Sniffer\SqliteTableSniffer;
+use CakephpTestMigrator\Migrator;
+use CakephpTestSuiteLight\FixtureManager;
+use CakephpTestSuiteLight\Sniffer\SqliteTableSniffer;
 
 class TableSnifferTest extends TestCase
 {
@@ -68,7 +67,7 @@ class TableSnifferTest extends TestCase
     {
         $driver = explode('\\', getenv('DB_DRIVER'));
         $driver = array_pop($driver);
-        $expectedClass = '\CakephpFixtureFactories\TestSuite\Sniffer\\' . $driver . 'TableSniffer';
+        $expectedClass = '\CakephpTestSuiteLight\Sniffer\\' . $driver . 'TableSniffer';
         $this->assertInstanceOf($expectedClass, $this->TableSniffer);
     }
 

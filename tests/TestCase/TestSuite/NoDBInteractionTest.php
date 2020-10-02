@@ -15,9 +15,8 @@ namespace CakephpFixtureFactories\Test\TestCase\TestSuite;
 
 
 use Cake\ORM\TableRegistry;
-use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use CakephpFixtureFactories\TestSuite\SkipTablesTruncation;
+use CakephpTestSuiteLight\SkipTablesTruncation;
 use TestApp\Model\Entity\Country;
 
 class NoDBInteractionTest extends \Cake\TestSuite\TestCase
