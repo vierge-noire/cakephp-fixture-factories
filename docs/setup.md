@@ -9,9 +9,9 @@ Make sure you *replace* the native CakePHP listener by the following one inside 
 ```
 <!-- Setup a listener for fixtures -->
      <listeners>
-         <listener class="CakephpFixtureFactories\TestSuite\FixtureInjector">
+         <listener class="CakephpTestSuiteLight\FixtureInjector">
              <arguments>
-                 <object class="CakephpFixtureFactories\TestSuite\FixtureManager" />
+                 <object class="CakephpTestSuiteLight\FixtureManager" />
              </arguments>
          </listener>
      </listeners>
@@ -38,7 +38,7 @@ return [
 ];
 ```
 
-This can be usefull for example if you have connections to a third party server in the cloud that should be ignored.
+This can be useful for example if you have connections to a third party server in the cloud that should be ignored.
 
 ### Next
 

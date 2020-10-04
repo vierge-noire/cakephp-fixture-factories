@@ -33,8 +33,8 @@ return [
 ### Disabling the truncation
 
 You may wish to skip the truncation of tables between the tests. For example if you know in advance that
-your tests do not interact with the database, or if you do not mind not having a dirty DB at the beginning of your tests.
-This can be achieved at the test class level, by letting your test class using the trait `CakephpFixtureFactories\TestSuite\SkipTablesTruncation`.
+your tests do not interact with the database, or if you do not mind having a dirty DB at the beginning of your tests.
+This is made at the test class level, by letting your test class using the trait `CakephpTestSuiteLight\SkipTablesTruncation`.
 
 ### Using CakePHP fixtures
 

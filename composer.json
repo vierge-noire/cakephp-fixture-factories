@@ -20,7 +20,7 @@
         "cakephp/cakephp": "^3.7",
         "fzaninotto/faker": "^1.9@dev",
         "vierge-noire/cakephp-test-migrator": "^1.1",
-        "vierge-noire/cakephp-test-suite-light": "^1.3"
+        "vierge-noire/cakephp-test-suite-light": "^1.4"
     },
     "require-dev": {
         "cakephp/bake": "^1.5",
