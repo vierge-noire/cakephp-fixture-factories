@@ -117,9 +117,9 @@ class SetupCommandTest extends TestCase
 
         $expected = [
             '<listeners>',
-            '<listener class="CakephpFixtureFactories\TestSuite\FixtureInjector">',
+            '<listener class="CakephpTestSuiteLight\FixtureInjector">',
             '<arguments>',
-            '<object class="CakephpFixtureFactories\TestSuite\FixtureManager"/>',
+            '<object class="CakephpTestSuiteLight\FixtureManager"/>',
             '</arguments>',
             '</listener>',
             '</listeners>',

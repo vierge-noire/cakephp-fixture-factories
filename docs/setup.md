@@ -10,9 +10,9 @@ per default located in the root folder of your application:
 ```
 <!-- Setup a listener for fixtures -->
      <listeners>
-         <listener class="CakephpFixtureFactories\TestSuite\FixtureInjector">
+         <listener class="CakephpTestSuiteLight\FixtureInjector">
              <arguments>
-                 <object class="CakephpFixtureFactories\TestSuite\FixtureManager" />
+                 <object class="CakephpTestSuiteLight\FixtureManager" />
              </arguments>
          </listener>
      </listeners>

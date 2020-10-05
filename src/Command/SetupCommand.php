@@ -17,8 +17,8 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use CakephpFixtureFactories\TestSuite\FixtureInjector;
-use CakephpFixtureFactories\TestSuite\FixtureManager;
+use CakephpTestSuiteLight\FixtureInjector;
+use CakephpTestSuiteLight\FixtureManager;
 
 class SetupCommand extends Command
 {

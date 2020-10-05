@@ -9,4 +9,3 @@ composer.lock
 /tests/TestApp/tests/Factory/*
 /tests/TestApp/plugins/TestPlugin/tests/Factory/*
 !/**/.gitkeep
-dummy_database

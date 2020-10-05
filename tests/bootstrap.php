@@ -19,6 +19,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
+use CakephpTestMigrator\Migrator;
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
@@ -133,12 +134,6 @@ $dbConnection = [
 ConnectionManager::setConfig('default', $dbConnection);
 ConnectionManager::setConfig('test', $dbConnection);
 
-// This connection is meant to be ignored
-$dummyConnection = $dbConnection;
-$dummyConnection['driver'] = 'Foo';
-ConnectionManager::setConfig('test_dummy', $dummyConnection);
-
-
 Configure::write('Session', [
     'defaults' => 'php',
 ]);
@@ -182,7 +177,7 @@ Inflector::rules('irregular', array(
 
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
-\CakephpTestMigrator\Migrator::migrate([
+Migrator::migrate([
     ['connection' => 'test'],
     ['plugin' => 'TestPlugin'],
 ]);

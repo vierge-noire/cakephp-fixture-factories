@@ -43,11 +43,13 @@ class EventCollectorTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
+        Configure::write('TestFixtureGlobalBehaviors', 'SomeBehaviorUsedInMultipleTables');
     }
 
     public static function tearDownAfterClass(): void
     {
         Configure::delete('TestFixtureNamespace');
+        Configure::delete('TestFixtureGlobalBehaviors');
     }
 
     public function setUp(): void
