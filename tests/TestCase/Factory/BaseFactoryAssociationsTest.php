@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
@@ -179,8 +180,8 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2, $this->CountriesTable->find()->count());
         $this->assertSame($name1, $countries[0]->name);
         $this->assertSame($name2, $countries[1]->name);
-        $this->assertSame($name1, $this->CountriesTable->get(1)->name);
-        $this->assertSame($name2, $this->CountriesTable->get(2)->name);
+        $this->assertSame($name1, $this->CountriesTable->get($countries[0]->id)->name);
+        $this->assertSame($name2, $this->CountriesTable->get($countries[1]->id)->name);
     }
 
     public function testSaveMultipleInArrayWithTimes()
@@ -199,16 +200,16 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame($name2, $countries[1]->name);
         $this->assertSame($name1, $countries[2]->name);
         $this->assertSame($name2, $countries[3]->name);
-        $this->assertSame($name1, $this->CountriesTable->get(1)->name);
-        $this->assertSame($name2, $this->CountriesTable->get(2)->name);
-        $this->assertSame($name1, $this->CountriesTable->get(3)->name);
-        $this->assertSame($name2, $this->CountriesTable->get(4)->name);
+        $this->assertSame($name1, $this->CountriesTable->get($countries[0]->id)->name);
+        $this->assertSame($name2, $this->CountriesTable->get($countries[1]->id)->name);
+        $this->assertSame($name1, $this->CountriesTable->get($countries[2]->id)->name);
+        $this->assertSame($name2, $this->CountriesTable->get($countries[3]->id)->name);
     }
 
     public function testSaveMultipleHasManyAssociation()
     {
-        $amount1 = rand(1, 100);
-        $amount2 = rand(1, 100);
+        $amount1 = rand(1, 10000);
+        $amount2 = rand(1, 10000);
         $customer = CustomerFactory::make()
             ->withBills([
                 ['amount' => $amount1],
@@ -227,8 +228,8 @@ class BaseFactoryAssociationsTest extends TestCase
     public function testSaveMultipleHasManyAssociationAndTimes()
     {
         $times = 2;
-        $amount1 = rand(1, 100);
-        $amount2 = rand(1, 100);
+        $amount1 = rand(1, 10000);
+        $amount2 = rand(1, 10000);
         $customer = CustomerFactory::make()
             ->withBills([
                 ['amount' => $amount1],
@@ -536,7 +537,7 @@ class BaseFactoryAssociationsTest extends TestCase
             ['street' => $street2],
         ])->persist();
 
-        $country = TableRegistry::getTableLocator()->get('Countries')
+        $country = $this->CountriesTable
             ->find()
             ->contain('Cities.Addresses')
             ->firstOrFail();
@@ -560,7 +561,7 @@ class BaseFactoryAssociationsTest extends TestCase
         ])->with('City', CityFactory::make(['country_id' => $country->id])->without('Country'))
         ->persist();
 
-        $country = TableRegistry::getTableLocator()->get('Countries')
+        $country = $this->CountriesTable
             ->get($country->id, [
                 'contain' => 'Cities.Addresses',
             ]);
@@ -580,8 +581,8 @@ class BaseFactoryAssociationsTest extends TestCase
 
     public function testCountryWith2CitiesEachOfThemWithADifferentSpecifiedAddressTheOtherWay()
     {
-        $street1 = 'street1';
-        $street2 = 'street2';
+        $street1 = 'A street';
+        $street2 = 'B street';
 
         $country = CountryFactory::make()
             ->with('Cities.Addresses', ['street' => $street1])
@@ -591,18 +592,24 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->checkCountryWithTwoCitiesEachWithOneAddress($country, $street1, $street2);
 
         // Make sure that all was correctly persisted
-        $country = TableRegistry::getTableLocator()->get('Countries')
-            ->get($country->id, [
-                'contain' => 'Cities.Addresses',
-            ]);
+        $addresses = $this->AddressesTable->find()
+            ->innerJoinWith('City.Country', function (Query $q) use ($country) {
+                return $q->where(['Country.id' => $country->id]);
+            })
+            ->orderAsc('street')
+            ->toArray();
 
-        $this->checkCountryWithTwoCitiesEachWithOneAddress($country, $street1, $street2);
+        $this->assertSame(2, count($addresses));
+        $this->assertSame($street1, $addresses[0]->street);
+        $this->assertSame($street2, $addresses[1]->street);
+        $this->assertTrue(abs($addresses[0]->id - $addresses[1]->id) > 1);
+
     }
 
     public function testCountryWith2Cities()
     {
-        $city1 = 'foo';
-        $city2 = 'bar';
+        $city1 = 'A city';
+        $city2 = 'B city';
 
         $country = CountryFactory::make()
             ->with('Cities', ['name' => $city1])
@@ -610,14 +617,15 @@ class BaseFactoryAssociationsTest extends TestCase
             ->persist();
 
         // Make sure that all was correctly persisted
-        $country = TableRegistry::getTableLocator()->get('Countries')
-            ->get($country->id, [
-                'contain' => 'Cities',
-            ]);
+        $cities = $this->CitiesTable->find()
+            ->where(['country_id' => $country->id])
+            ->orderAsc('name')
+            ->toArray();
 
-        $this->assertSame(2, count($country->cities));
-        $this->assertSame($city1, $country->cities[0]->name);
-        $this->assertSame($city2, $country->cities[1]->name);
+        $this->assertSame(2, count($cities));
+        $this->assertSame($city1, $cities[0]->name);
+        $this->assertSame($city2, $cities[1]->name);
+        $this->assertTrue(abs($cities[0]->id - $cities[1]->id) > 1);
     }
 
     public function testCountryWith4Cities()
@@ -628,22 +636,23 @@ class BaseFactoryAssociationsTest extends TestCase
         $street2 = 'street2';
 
         $country = CountryFactory::make()
-            ->with('Cities', ['name' => $city1])
-            ->with('Cities', ['name' => $city2])
-            ->with('Cities.Addresses', ['street' => $street1])
-            ->with('Cities.Addresses', ['street' => $street2])
+            ->with('Cities', ['id' => 1, 'name' => $city1])
+            ->with('Cities', ['id' => 2, 'name' => $city2])
+            ->with('Cities.Addresses', ['id' => 1, 'street' => $street1])
+            ->with('Cities.Addresses', ['id' => 2, 'street' => $street2])
             ->persist();
 
         // Make sure that all was correctly persisted
-        $country = TableRegistry::getTableLocator()->get('Countries')
+        $country = $this->CountriesTable
             ->get($country->id, [
-                'contain' => 'Cities.Addresses',
+                'contain' => 'Cities',
             ]);
 
         $this->assertSame(4, count($country->cities));
-        $this->assertSame($city1, $country->cities[0]->name);
-        $this->assertSame($city2, $country->cities[1]->name);
-        $this->assertSame($street1, $country->cities[2]->addresses[0]->street);
-        $this->assertSame($street2, $country->cities[3]->addresses[0]->street);
+        $this->assertSame(4, $this->CitiesTable->find()->count());
+        $this->assertSame($city1, $this->CitiesTable->get(1)->name);
+        $this->assertSame($city2, $this->CitiesTable->get(2)->name);
+        $this->assertSame($street1, $this->AddressesTable->get(1)->street);
+        $this->assertSame($street2, $this->AddressesTable->get(2)->street);
     }
 }

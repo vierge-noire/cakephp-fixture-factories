@@ -36,7 +36,10 @@ class FixtureManagerTest extends TestCase
     public function testTablePopulation()
     {
         $testName = 'Test Name';
-        AuthorFactory::make(['name' => $testName])->persist();
+        AuthorFactory::make([
+            'id' => 1,
+            'name' => $testName,
+        ])->persist();
 
 
         $authors = TableRegistry::getTableLocator()
