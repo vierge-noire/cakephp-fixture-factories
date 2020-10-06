@@ -162,7 +162,7 @@ class TableSnifferTest extends TestCase
         $this->FixtureManager->getSniffer('test_dummy_connection')->getAllTables();
     }
 
-    public function testDeleteWithForeignKey()
+    public function testDeleteWithTargetKey()
     {
         $connection = ConnectionManager::get('test');
         if ($connection->config()['driver'] === Sqlite::class) {
