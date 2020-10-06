@@ -56,7 +56,7 @@ class FixtureManagerTest extends TestCase
 
         foreach ($tables as $table) {
             $Table = TableRegistry::getTableLocator()->get($table);
-            $this->assertEquals(0, $Table->find()->count());
+            $this->assertEquals(0, $Table->find()->count(), "Table $table is not empty on test begin");
         }
     }
 

@@ -19,7 +19,7 @@ use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 
-class BaseFactoryForeignKeyOffsetTest extends TestCase
+class BaseFactoryTargetKeyOffsetTest extends TestCase
 {
 
     public function dataForTestSetPrimaryKeyOffset()
@@ -156,7 +156,7 @@ class BaseFactoryForeignKeyOffsetTest extends TestCase
         $this->assertSame($expectedLastCityId, $lastCityId);
     }
 
-    public function testForeignKeyOffsetWithCollectedAssociation()
+    public function testTargetKeyOffsetWithCollectedAssociation()
     {
         $offset1 = rand(1, 100000);
         $offset2 = $offset1 + rand(1, 100);
