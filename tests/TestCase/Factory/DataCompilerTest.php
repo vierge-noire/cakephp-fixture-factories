@@ -71,4 +71,14 @@ class DataCompilerTest extends TestCase
         $marshallerAssociationName = $this->articleDataCompiler->getMarshallerAssociationName('ExclusivePremiumAuthors.Address');
         $this->assertSame(PremiumAuthorsTable::ASSOCIATION_ALIAS.'.address', $marshallerAssociationName);
     }
+
+    public function testGetPrimaryKey()
+    {
+        $this->assertSame('id', $this->articleDataCompiler->getRootTablePrimaryKey());
+    }
+
+    public function testGenerateRandomPrimaryKey()
+    {
+        $this->assertTrue(is_int($this->articleDataCompiler->generateRandomPrimaryKey()));
+    }
 }
