@@ -24,7 +24,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
     public function setUp()
     {
-        $this->skipIf(Util::isRunningOnPostgresql(CountryFactory::make()));
+        $this->skipIf(Util::isRunningOnPostgresql(CountryFactory::make()), 'Skip on Postgresql');
     }
 
     public function dataForTestSetPrimaryKeyOffset()
