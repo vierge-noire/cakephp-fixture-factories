@@ -14,17 +14,17 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-use Cake\Database\Driver\Postgres;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpFixtureFactories\Util;
 
 class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
     public function setUp()
     {
-        $this->skipIf(CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class);
+        $this->skipIf(Util::isRunningOnPostgresql(CountryFactory::make()));
     }
 
     public function dataForTestSetPrimaryKeyOffset()

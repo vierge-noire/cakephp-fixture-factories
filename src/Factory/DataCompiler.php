@@ -14,12 +14,12 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
-use Cake\Database\Driver\Postgres;
 use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
+use CakephpFixtureFactories\Util;
 use InvalidArgumentException;
 
 class DataCompiler
@@ -45,6 +45,7 @@ class DataCompiler
     public function __construct(BaseFactory $factory)
     {
         $this->factory = $factory;
+        $this->primaryKeyOffset = !Util::isRunningOnPostgresql($factory);
     }
 
     /**
@@ -393,10 +394,5 @@ class DataCompiler
     public function endPersistMode()
     {
         self::$inPersistMode = false;
-    }
-
-    public function isRunningOnPostgres(): bool
-    {
-        return $this->getFactory()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class;
     }
 }
