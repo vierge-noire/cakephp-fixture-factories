@@ -1,8 +1,9 @@
 #!/bin/bash
 
 DRIVER=$1;
-USER=$2;
-PWD=$3;
+HOST=$2;
+USER=$3;
+PWD=$4;
 DRIVER_NAMESPACE='Cake\Database\Driver\'
 
 echo "Starting PHPUNIT tests"
@@ -13,6 +14,13 @@ if [ -n "$DRIVER" ]; then
   echo "With driver: $DRIVER"
 else
   echo "Using default driver $DB_DRIVER"
+fi
+
+if [ -n "$HOST" ]; then
+  export DB_HOST=$HOST
+  echo "On host: $HOST"
+else
+  echo "Using default host"
 fi
 
 if [ -n "$USER" ]; then

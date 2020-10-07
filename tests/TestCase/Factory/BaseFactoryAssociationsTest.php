@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
+use Cake\Database\Driver\Postgres;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -602,8 +603,11 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2, count($addresses));
         $this->assertSame($street1, $addresses[0]->street);
         $this->assertSame($street2, $addresses[1]->street);
-        $this->assertTrue(abs($addresses[0]->id - $addresses[1]->id) > 1);
-
+        if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
+            $this->assertTrue(abs($addresses[0]->id - $addresses[1]->id) === 1);
+        } else {
+            $this->assertTrue(abs($addresses[0]->id - $addresses[1]->id) > 1);
+        }
     }
 
     public function testCountryWith2Cities()
@@ -625,7 +629,11 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2, count($cities));
         $this->assertSame($city1, $cities[0]->name);
         $this->assertSame($city2, $cities[1]->name);
-        $this->assertTrue(abs($cities[0]->id - $cities[1]->id) > 1);
+        if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
+            $this->assertTrue(abs($cities[0]->id - $cities[1]->id) === 1);
+        } else {
+            $this->assertTrue(abs($cities[0]->id - $cities[1]->id) > 1);
+        }
     }
 
     public function testCountryWith4Cities()
