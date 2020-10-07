@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DRIVER=$1;
-HOST=$2;
-USER=$3;
-PWD=$4;
+USER=$2;
+PWD=$3;
+HOST=$4;
 DRIVER_NAMESPACE='Cake\Database\Driver\'
 
 echo "Starting PHPUNIT tests"
