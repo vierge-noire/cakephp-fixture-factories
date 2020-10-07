@@ -15,9 +15,11 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\TestSuite\TestCase;
+use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpTestSuiteLight\SkipTablesTruncation;
 use TestApp\Model\Table\PremiumAuthorsTable;
 
@@ -77,8 +79,75 @@ class DataCompilerTest extends TestCase
         $this->assertSame('id', $this->articleDataCompiler->getRootTablePrimaryKey());
     }
 
-    public function testGenerateRandomPrimaryKey()
+    public function testGenerateRandomPrimaryKeyInteger()
     {
-        $this->assertTrue(is_int($this->articleDataCompiler->generateRandomPrimaryKey()));
+        $this->assertTrue(is_int($this->articleDataCompiler->generateRandomPrimaryKey('integer')));
+    }
+
+    public function testGenerateRandomPrimaryKeyBigInteger()
+    {
+        $this->assertTrue(is_int($this->articleDataCompiler->generateRandomPrimaryKey('biginteger')));
+    }
+    public function testGenerateRandomPrimaryKeyUuid()
+    {
+        $this->assertTrue(is_string($this->articleDataCompiler->generateRandomPrimaryKey('uuid')));
+    }
+
+    public function testGenerateRandomPrimaryKeyWhateverColumnType()
+    {
+        $this->assertTrue(is_int($this->articleDataCompiler->generateRandomPrimaryKey('foo')));
+    }
+
+    public function testGenerateArrayOfRandomPrimaryKeys()
+    {
+        $res = $this->articleDataCompiler->generateArrayOfRandomPrimaryKeys();
+        $this->assertTrue(is_array($res));
+        $this->assertTrue(is_int($res['id']));
+        $this->assertSame(1, count($res));
+    }
+
+    public function testCreatePrimaryKeyOffset()
+    {
+        $res = $this->articleDataCompiler->createPrimaryKeyOffset();
+        $this->assertTrue(is_array($res));
+        $this->assertTrue(is_int($res['id']));
+        $this->assertSame(1, count($res));
+
+        $this->expectException(PersistenceException::class);
+        $this->articleDataCompiler->createPrimaryKeyOffset();
+    }
+
+    /**
+     * If the id is set be the user, the primary key is set to this id
+     * No random primary key is generated
+     */
+    public function testSetPrimaryKey()
+    {
+        $id = rand(1, 10000);
+        $res = $this->articleDataCompiler->setPrimaryKey(compact('id'));
+        $this->assertSame($id, $res['id']);
+    }
+
+    /**
+     *
+     */
+    public function testSetPrimaryKeyOnArrayOfData()
+    {
+        $data = [
+            CountryFactory::make()->getEntity()->toArray(),
+            CountryFactory::make()->getEntity()->toArray(),
+        ];
+
+        $this->articleDataCompiler->startPersistMode();
+        $res = $this->articleDataCompiler->setPrimaryKey($data);
+
+        $this->assertTrue(is_int($res[0]['id']));
+        $this->assertTrue(is_null($res[1]['id']));
+
+        $res = $this->articleDataCompiler->setPrimaryKey($data);
+        $this->assertTrue(is_null($res[0]['id']));
+        $this->assertTrue(is_null($res[1]['id']));
+
+        $this->articleDataCompiler->endPersistMode();
     }
 }

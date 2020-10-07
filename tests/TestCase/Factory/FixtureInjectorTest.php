@@ -84,6 +84,7 @@ class FixtureInjectorTest extends TestCase
      */
     public function testRollBackAndMigrateIfRequired($i)
     {
+        $this->markTestSkipped('The seed migrations between tests are not supported for the moment');
         $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
         if ($i === 1) {
             Configure::write('TestFixtureMarkedNonMigrated', [[

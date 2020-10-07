@@ -19,6 +19,7 @@ use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
+use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Util;
 use InvalidArgumentException;
 
@@ -29,7 +30,7 @@ class DataCompiler
     private $dataFromPatch = [];
     private $dataFromAssociations = [];
     private $dataFromDefaultAssociations = [];
-    private $primaryKeyOffset = true;
+    private $primaryKeyOffset = [];
 
     static private $inPersistMode = false;
 
@@ -45,7 +46,6 @@ class DataCompiler
     public function __construct(BaseFactory $factory)
     {
         $this->factory = $factory;
-        $this->primaryKeyOffset = !Util::isRunningOnPostgresql($factory);
     }
 
     /**
@@ -321,36 +321,74 @@ class DataCompiler
      */
     public function setPrimaryKey(array $data): array
     {
-        if (!$this->isInPersistMode() || !$this->primaryKeyOffset) {
+        // A set of primary keys is produced if in persistence mode, and if a first set was not produced yet
+        if (!$this->isInPersistMode() || !is_array($this->primaryKeyOffset) || Util::isRunningOnPostgresql($this->getFactory())) {
             return $data;
         }
+
+        // If we have an array of multiple entities, set only for the first one
         if (isset($data[0])) {
             $data[0] = $this->setPrimaryKey($data[0]);
         } else {
-            $data[$this->getRootTablePrimaryKey()] = $data[$this->getRootTablePrimaryKey()] ?? $this->getPrimaryKeyOffset();
-            $this->primaryKeyOffset = null;
+            $data = array_merge(
+                $this->createPrimaryKeyOffset(),
+                $data
+            );
         }
         return $data;
     }
 
-    public function getPrimaryKeyOffset(): int
+    /**
+     *
+     * @return array|int
+     */
+    public function createPrimaryKeyOffset(): array
     {
-        return ($this->primaryKeyOffset === true) ? $this->generateRandomPrimaryKey() : (int) $this->primaryKeyOffset;
+        if (!is_array($this->primaryKeyOffset)) {
+            throw new PersistenceException('A set of primary keys was already created');
+        }
+        $res = empty($this->primaryKeyOffset) ? $this->generateArrayOfRandomPrimaryKeys() : $this->primaryKeyOffset;
+
+        // Set to null, this factory will never generate a primaryKeyOffset again
+        $this->primaryKeyOffset = null;
+        return $res;
     }
 
-    public function getRootTablePrimaryKey(): string
+    /**
+     * Get the primary key, or set of composite primary keys
+     * @return string|string[]
+     */
+    public function getRootTablePrimaryKey()
     {
         return $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
+    }
+
+    public function generateArrayOfRandomPrimaryKeys(): array
+    {
+        $primaryKeys = (array) $this->getRootTablePrimaryKey();
+        $res = [];
+        foreach ($primaryKeys as $pk) {
+            $res[$pk] = $this->generateRandomPrimaryKey(
+                $this->getFactory()->getRootTableRegistry()->getSchema()->getColumnType($pk)
+            );
+        }
+        return $res;
     }
 
     /**
      * Credits to Faker
      * https://github.com/fzaninotto/Faker/blob/master/src/Faker/ORM/CakePHP/ColumnTypeGuesser.php
-     * @return int
+     *
+     * @param string $primaryKey
+     * @param string $columnType
+     * @return int|string
      */
-    public function generateRandomPrimaryKey(): int
+    public function generateRandomPrimaryKey(string $columnType)
     {
-        switch ($this->getFactory()->getRootTableRegistry()->getSchema()->getColumnType($this->getRootTablePrimaryKey())) {
+        switch ($columnType) {
+            case 'uuid':
+                $res = $this->getFactory()->getFaker()->uuid;
+                break;
             case 'biginteger':
                 $res = mt_rand(0, intval('9223372036854775807'));
                 break;
@@ -371,11 +409,19 @@ class DataCompiler
     }
 
     /**
-     * @param bool|int $primaryKeyOffset
+     * @param int|string|array $primaryKeyOffset
      */
     public function setPrimaryKeyOffset($primaryKeyOffset)
     {
-        $this->primaryKeyOffset = $primaryKeyOffset;
+        if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
+            $this->primaryKeyOffset = [
+                $this->getRootTablePrimaryKey() => $primaryKeyOffset
+            ];
+        } elseif (is_array($primaryKeyOffset)) {
+            $this->primaryKeyOffset = $primaryKeyOffset;
+        } else {
+            throw new FixtureFactoryException("$primaryKeyOffset must be either an integer, a string or an array of format ['primaryKey1' => value, ...]");
+        }
     }
 
     /**
