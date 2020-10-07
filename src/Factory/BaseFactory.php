@@ -13,14 +13,16 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Database\Driver\Postgres;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
+use CakephpFixtureFactories\Util;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
-use RuntimeException;
 use function array_merge;
 use function is_array;
 use function is_callable;
@@ -206,25 +208,27 @@ abstract class BaseFactory
     }
 
     /**
+     * Produce one entity from the present factory
      * @return EntityInterface
      */
     public function getEntity(): EntityInterface
     {
-        $data = $this->toArray();
-        return $this->getTable()->newEntity($data[0], $this->getMarshallerOptions());
+        return $this->getTable()->newEntity(
+            $this->toArray()[0],
+            $this->getMarshallerOptions()
+        );
     }
 
     /**
      * Produce a set of entities from the present factory
-     * @return array|EntityInterface[]
+     * @return EntityInterface[]
      */
-    public function getEntities()
+    public function getEntities(): array
     {
-        $data = $this->toArray();
-        if (count($data) === 1) {
-            throw new RuntimeException("Cannot call getEntities on a factory with 1 record");
-        }
-        return $this->getTable()->newEntities($data, $this->getMarshallerOptions());
+        return $this->getTable()->newEntities(
+            $this->toArray(),
+            $this->getMarshallerOptions()
+        );
     }
 
     /**
@@ -296,7 +300,9 @@ abstract class BaseFactory
      */
     public function persist()
     {
+        $this->getDataCompiler()->startPersistMode();
         $data = $this->toArray();
+        $this->getDataCompiler()->endPersistMode();
 
         try {
             if (count($data) === 1) {
@@ -310,7 +316,6 @@ abstract class BaseFactory
             throw new PersistenceException("Error in Factory $factory.\n Message: $message \n");
         }
     }
-
 
     /**
      * @param $data
@@ -420,6 +425,23 @@ abstract class BaseFactory
     public function listeningToModelEvents($activeModelEvents)
     {
         $this->getEventCompiler()->listeningToModelEvents($activeModelEvents);
+        return $this;
+    }
+
+    /**
+     * Set an offset for the Ids of the entities
+     * persisted by this factory
+     * If not set, the offset is set randomly
+     * @param int $primaryKeyOffset
+     * @return self
+     */
+    public function setPrimaryKeyOffset(int $primaryKeyOffset): self
+    {
+        if (Util::isRunningOnPostgresql($this)) {
+            $driver = Postgres::class;
+            throw new FixtureFactoryException("The setPrimaryKeyOffset is not available for $driver");
+        }
+        $this->getDataCompiler()->setPrimaryKeyOffset($primaryKeyOffset);
         return $this;
     }
 

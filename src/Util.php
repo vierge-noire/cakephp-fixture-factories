@@ -15,7 +15,9 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories;
 
 use Cake\Core\Configure;
+use Cake\Database\Driver\Postgres;
 use Cake\Utility\Inflector;
+use CakephpFixtureFactories\Factory\BaseFactory;
 
 class Util
 {
@@ -53,5 +55,10 @@ class Util
             $modelName = $cast[0];
         }
         return self::getFactoryNamespace($plugin) . '\\' . self::getFactoryNameFromModelName($modelName);
+    }
+
+    static public function isRunningOnPostgresql(BaseFactory $factory): bool
+    {
+        return $factory->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class;
     }
 }
