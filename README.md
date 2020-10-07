@@ -60,10 +60,12 @@ You can specify a plugin (`-p`) and a file (`-f`) if it differs from `phpunit.xm
 
 This is also illustrated, along with the usage of migrations, in [this video](https://www.youtube.com/watch?v=h8A3lHrwInI).
 
-## [Use Migrations](docs/migrator.md)
+## [Use Migrations](https://github.com/vierge-noire/cakephp-test-migrator)
 
 Take full advantage of the [Phinx migrations](https://book.cakephp.org/migrations/3/en/index.html) in order to maintain the schema
 of your test DB. This is optional, but __highly recommended__.
+
+The [CakePHP Test Migrator package](https://github.com/vierge-noire/cakephp-test-migrator) will assist you in doing this very simply.
 
 ## [Baking Fixture Factories](docs/bake.md)
 
