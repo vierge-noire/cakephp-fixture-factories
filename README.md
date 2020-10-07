@@ -31,10 +31,13 @@ You may continue using them along with the Fixture Factories, these will work ju
 ## Installation
 For CakePHP 4.x:
 ```
-composer require --dev pakacuda/cakephp-fixture-factories
+composer require --dev pakacuda/cakephp-fixture-factories "^2.0"
 ```
 
-For CakePHP 3.x, append:  ```"^0.1.0"```
+For CakePHP 3.x:
+```
+composer require --dev pakacuda/cakephp-fixture-factories "^1.0"
+```
 
 ## [Setup](docs/setup.md)
 
