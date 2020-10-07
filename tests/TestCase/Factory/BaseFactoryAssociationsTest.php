@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
-use Cake\Database\Driver\Postgres;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -27,6 +26,7 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use CakephpFixtureFactories\Util;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
@@ -603,7 +603,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2, count($addresses));
         $this->assertSame($street1, $addresses[0]->street);
         $this->assertSame($street2, $addresses[1]->street);
-        if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
+        if (Util::isRunningOnPostgresql(CountryFactory::make())) {
             $this->assertTrue(abs($addresses[0]->id - $addresses[1]->id) === 1);
         } else {
             $this->assertTrue(abs($addresses[0]->id - $addresses[1]->id) > 1);
@@ -629,7 +629,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2, count($cities));
         $this->assertSame($city1, $cities[0]->name);
         $this->assertSame($city2, $cities[1]->name);
-        if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
+        if (Util::isRunningOnPostgresql(CountryFactory::make())) {
             $this->assertTrue(abs($cities[0]->id - $cities[1]->id) === 1);
         } else {
             $this->assertTrue(abs($cities[0]->id - $cities[1]->id) > 1);
@@ -644,10 +644,10 @@ class BaseFactoryAssociationsTest extends TestCase
         $street2 = 'street2';
 
         $country = CountryFactory::make()
-            ->with('Cities', ['id' => 1, 'name' => $city1])
-            ->with('Cities', ['id' => 2, 'name' => $city2])
-            ->with('Cities.Addresses', ['id' => 1, 'street' => $street1])
-            ->with('Cities.Addresses', ['id' => 2, 'street' => $street2])
+            ->with('Cities', ['name' => $city1])
+            ->with('Cities', ['name' => $city2])
+            ->with('Cities.Addresses', ['street' => $street1])
+            ->with('Cities.Addresses', ['street' => $street2])
             ->persist();
 
         // Make sure that all was correctly persisted
@@ -658,9 +658,12 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertSame(4, count($country->cities));
         $this->assertSame(4, $this->CitiesTable->find()->count());
-        $this->assertSame($city1, $this->CitiesTable->get(1)->name);
-        $this->assertSame($city2, $this->CitiesTable->get(2)->name);
-        $this->assertSame($street1, $this->AddressesTable->get(1)->street);
-        $this->assertSame($street2, $this->AddressesTable->get(2)->street);
+
+        if (Util::isRunningOnPostgresql(CountryFactory::make())) {
+            $this->assertSame($city1, $this->CitiesTable->get(1)->name);
+            $this->assertSame($city2, $this->CitiesTable->get(2)->name);
+            $this->assertSame($street1, $this->AddressesTable->get(3)->street);
+            $this->assertSame($street2, $this->AddressesTable->get(4)->street);
+        }
     }
 }

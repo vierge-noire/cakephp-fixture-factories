@@ -19,6 +19,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
+use CakephpFixtureFactories\Util;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
@@ -149,10 +150,6 @@ abstract class BaseFactory
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
         $factory->getDataCompiler()->collectAssociationsFromDefaultTemplate();
-
-        if ($factory->isRunningOnPostgres()) {
-            $factory->getDataCompiler()->setPrimaryKeyOffset(false);
-        }
     }
 
     /**
@@ -440,17 +437,12 @@ abstract class BaseFactory
      */
     public function setPrimaryKeyOffset(int $primaryKeyOffset): self
     {
-        if ($this->isRunningOnPostgres()) {
+        if (Util::isRunningOnPostgresql($this)) {
             $driver = Postgres::class;
             throw new FixtureFactoryException("The setPrimaryKeyOffset is not available for $driver");
         }
         $this->getDataCompiler()->setPrimaryKeyOffset($primaryKeyOffset);
         return $this;
-    }
-
-    private function isRunningOnPostgres(): bool
-    {
-        return $this->getDataCompiler()->isRunningOnPostgres();
     }
 
     /**
