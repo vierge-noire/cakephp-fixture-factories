@@ -19,6 +19,7 @@ use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
+use CakephpFixtureFactories\Util;
 use InvalidArgumentException;
 
 class DataCompiler
@@ -28,6 +29,9 @@ class DataCompiler
     private $dataFromPatch = [];
     private $dataFromAssociations = [];
     private $dataFromDefaultAssociations = [];
+    private $primaryKeyOffset = true;
+
+    static private $inPersistMode = false;
 
     /**
      * @var BaseFactory
@@ -41,6 +45,7 @@ class DataCompiler
     public function __construct(BaseFactory $factory)
     {
         $this->factory = $factory;
+        $this->primaryKeyOffset = !Util::isRunningOnPostgresql($factory);
     }
 
     /**
@@ -123,7 +128,12 @@ class DataCompiler
         return $compiledTemplateData;
     }
 
-    public function compileEntity($injectedData)
+    /**
+     * @param      $injectedData
+     *
+     * @return array
+     */
+    public function compileEntity($injectedData): array
     {
         $entity = [];
         // This order is very important!!!
@@ -133,7 +143,7 @@ class DataCompiler
             ->mergeWithPatchedData($entity)
             ->mergeWithAssociatedData($entity);
 
-        return $entity;
+        return $this->setPrimaryKey($entity);
     }
 
     /**
@@ -254,18 +264,11 @@ class DataCompiler
      */
     private function getManyEntities(BaseFactory $factory): array
     {
-        $data = $factory->toArray();
-        if (isset($data[0]) && !isset($data[1])) {
-            return [
-                $factory->getEntity()->toArray()
-            ];
-        } else {
-            $result = [];
-            foreach ($factory->getEntities() as $entity) {
-                $result[] = $entity->toArray();
-            }
-            return $result;
+        $result = [];
+        foreach ($factory->getEntities() as $entity) {
+            $result[] = $entity->toArray();
         }
+        return $result;
     }
 
     /**
@@ -312,10 +315,84 @@ class DataCompiler
     }
 
     /**
+     * @param array $data
+     *
+     * @return array
+     */
+    public function setPrimaryKey(array $data): array
+    {
+        if (!$this->isInPersistMode() || !$this->primaryKeyOffset) {
+            return $data;
+        }
+        if (isset($data[0])) {
+            $data[0] = $this->setPrimaryKey($data[0]);
+        } else {
+            $data[$this->getRootTablePrimaryKey()] = $data[$this->getRootTablePrimaryKey()] ?? $this->getPrimaryKeyOffset();
+            $this->primaryKeyOffset = null;
+        }
+        return $data;
+    }
+
+    public function getPrimaryKeyOffset(): int
+    {
+        return ($this->primaryKeyOffset === true) ? $this->generateRandomPrimaryKey() : (int) $this->primaryKeyOffset;
+    }
+
+    public function getRootTablePrimaryKey(): string
+    {
+        return $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
+    }
+
+    /**
+     * Credits to Faker
+     * https://github.com/fzaninotto/Faker/blob/master/src/Faker/ORM/CakePHP/ColumnTypeGuesser.php
+     * @return int
+     */
+    public function generateRandomPrimaryKey(): int
+    {
+        switch ($this->getFactory()->getRootTableRegistry()->getSchema()->getColumnType($this->getRootTablePrimaryKey())) {
+            case 'biginteger':
+                $res = mt_rand(0, intval('9223372036854775807'));
+                break;
+            case 'integer':
+            default:
+                $res = mt_rand(0, intval('2147483647'));
+                break;
+        }
+        return $res;
+    }
+
+    /**
      * @return BaseFactory
      */
     public function getFactory(): BaseFactory
     {
         return $this->factory;
+    }
+
+    /**
+     * @param bool|int $primaryKeyOffset
+     */
+    public function setPrimaryKeyOffset($primaryKeyOffset)
+    {
+        $this->primaryKeyOffset = $primaryKeyOffset;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInPersistMode(): bool
+    {
+        return self::$inPersistMode;
+    }
+
+    public function startPersistMode()
+    {
+        self::$inPersistMode = true;
+    }
+
+    public function endPersistMode()
+    {
+        self::$inPersistMode = false;
     }
 }

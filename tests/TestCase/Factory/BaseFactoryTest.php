@@ -531,10 +531,12 @@ class BaseFactoryTest extends TestCase
         $this->assertSame($name, $article->name);
     }
 
-    public function testGetEntitiesAfterMakingOneShouldThrowException()
+    public function testGetEntitiesAfterMakingOneShouldNotThrowException()
     {
-        $this->expectException(RuntimeException::class);
-        ArticleFactory::make(['name' => 'blah'], 1)->getEntities();
+        $name = 'foo';
+        $articles = ArticleFactory::make(compact('name'))->getEntities();
+        $this->assertTrue(is_array($articles));
+        $this->assertSame($name, $articles[0]->name);
     }
 
     public function testHasAssociation()
