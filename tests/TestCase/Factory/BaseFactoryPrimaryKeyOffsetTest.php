@@ -22,7 +22,7 @@ use CakephpFixtureFactories\Test\Factory\CountryFactory;
 
 class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->skipIf(CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class);
     }
