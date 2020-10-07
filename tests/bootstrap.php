@@ -108,16 +108,19 @@ if (!getenv('DB_USER')) {
     putenv('DB_USER=root');
 }
 
-// Ensure default test connection is defined
 if (!getenv('DB_PWD')) {
     putenv('DB_PWD=root');
+}
+
+if (!getenv('DB_HOST')) {
+    putenv('DB_HOST=127.0.0.1');
 }
 
 $dbConnection = [
     'className' => 'Cake\Database\Connection',
     'driver' => getenv('DB_DRIVER'),
     'persistent' => false,
-    'host' => '127.0.0.1',
+    'host' => getenv('DB_HOST'),
     'username' => getenv('DB_USER'),
     'password' => getenv('DB_PWD'),
     'database' => 'test_fixture_factories',

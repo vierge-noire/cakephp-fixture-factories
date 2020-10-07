@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Database\Driver\Postgres;
 use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
@@ -371,7 +372,7 @@ class DataCompiler
     /**
      * @param bool|int $primaryKeyOffset
      */
-    public function setPrimaryKeyOffset(int $primaryKeyOffset): void
+    public function setPrimaryKeyOffset($primaryKeyOffset): void
     {
         $this->primaryKeyOffset = $primaryKeyOffset;
     }
@@ -392,5 +393,10 @@ class DataCompiler
     public function endPersistMode(): void
     {
         self::$inPersistMode = false;
+    }
+
+    public function isRunningOnPostgres(): bool
+    {
+        return $this->getFactory()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class;
     }
 }
