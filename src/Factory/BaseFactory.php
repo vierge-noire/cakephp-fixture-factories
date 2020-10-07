@@ -430,12 +430,19 @@ abstract class BaseFactory
 
     /**
      * Set an offset for the Ids of the entities
-     * persisted by this factory
+     * persisted by this factory. This can be an array of type
+     * [
+     *      composite_key_1 => value1,
+     *      composite_key_2 => value2,
+     *      ...
+     * ]
      * If not set, the offset is set randomly
-     * @param int $primaryKeyOffset
+     *
+     * @param int|string|array $primaryKeyOffset
+     *
      * @return self
      */
-    public function setPrimaryKeyOffset(int $primaryKeyOffset): self
+    public function setPrimaryKeyOffset($primaryKeyOffset): self
     {
         if (Util::isRunningOnPostgresql($this)) {
             $driver = Postgres::class;
