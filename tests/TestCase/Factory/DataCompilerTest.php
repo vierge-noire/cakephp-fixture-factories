@@ -20,6 +20,7 @@ use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpFixtureFactories\Util;
 use CakephpTestSuiteLight\SkipTablesTruncation;
 use TestApp\Model\Table\PremiumAuthorsTable;
 
@@ -117,11 +118,26 @@ class DataCompilerTest extends TestCase
         $this->articleDataCompiler->createPrimaryKeyOffset();
     }
 
+    public function testSetPrimaryKey()
+    {
+        $data = CountryFactory::make()->getEntity()->toArray();
+
+        $this->articleDataCompiler->startPersistMode();
+        $res = $this->articleDataCompiler->setPrimaryKey($data);
+        $this->articleDataCompiler->endPersistMode();
+
+        if (Util::isRunningOnPostgresql($this->articleDataCompiler->getFactory())) {
+            $this->assertTrue(is_null($res['id'] ?? null));
+        } else {
+            $this->assertTrue(is_int($res['id']));
+        }
+    }
+
     /**
      * If the id is set be the user, the primary key is set to this id
      * No random primary key is generated
      */
-    public function testSetPrimaryKey()
+    public function testSetPrimaryKeyWithIdSet()
     {
         $id = rand(1, 10000);
         $res = $this->articleDataCompiler->setPrimaryKey(compact('id'));
@@ -141,12 +157,16 @@ class DataCompilerTest extends TestCase
         $this->articleDataCompiler->startPersistMode();
         $res = $this->articleDataCompiler->setPrimaryKey($data);
 
-        $this->assertTrue(is_int($res[0]['id']));
-        $this->assertTrue(is_null($res[1]['id']));
+        if (Util::isRunningOnPostgresql($this->articleDataCompiler->getFactory())) {
+            $this->assertTrue(is_null($res[0]['id'] ?? null));
+        } else {
+            $this->assertTrue(is_int($res[0]['id']));   
+        }
+        $this->assertTrue(is_null($res[1]['id'] ?? null));
 
         $res = $this->articleDataCompiler->setPrimaryKey($data);
-        $this->assertTrue(is_null($res[0]['id']));
-        $this->assertTrue(is_null($res[1]['id']));
+        $this->assertTrue(is_null($res[0]['id'] ?? null));
+        $this->assertTrue(is_null($res[1]['id'] ?? null));
 
         $this->articleDataCompiler->endPersistMode();
     }
