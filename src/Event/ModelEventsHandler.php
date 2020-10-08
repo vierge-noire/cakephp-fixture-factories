@@ -83,7 +83,7 @@ class ModelEventsHandler
 
     /**
      * @param Table $table
-     * @param $listener
+     * @param mixed $listener
      * @param string $ormEvent
      */
     private function processListener(Table $table, $listener, string $ormEvent)
@@ -99,7 +99,7 @@ class ModelEventsHandler
 
     /**
      * @param Table $table
-     * @param $listener
+     * @param mixed $listener
      * @param string $ormEvent
      */
     private function processModelListener(Table $table, $listener, string $ormEvent)
@@ -114,7 +114,7 @@ class ModelEventsHandler
 
     /**
      * @param Table $table
-     * @param $listener
+     * @param mixed $listener
      * @param string $ormEvent
      */
     private function processBehaviorListener(Table $table, $listener, string $ormEvent)

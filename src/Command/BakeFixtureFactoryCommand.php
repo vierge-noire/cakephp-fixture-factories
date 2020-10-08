@@ -253,10 +253,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
     /**
      * Returns the one and many association for a given model
-     * @param string $modelName
      * @return array
      */
-    public function getAssociations()
+    public function getAssociations(): array
     {
         $associations = [
             'toOne' => [],

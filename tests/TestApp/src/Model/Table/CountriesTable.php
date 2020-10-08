@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace TestApp\Model\Table;
 
+use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;

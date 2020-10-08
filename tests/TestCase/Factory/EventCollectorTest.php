@@ -27,6 +27,7 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
@@ -114,7 +115,7 @@ class EventCollectorTest extends TestCase
     /**
      * @dataProvider provideFactories
      * @param BaseFactory $factory
-     * @throws \Exception
+     * @throws Exception
      */
     public function testTimestamp(BaseFactory $factory)
     {
@@ -131,10 +132,10 @@ class EventCollectorTest extends TestCase
 
     /**
      * @dataProvider runSeveralTimesWithOrWithoutEvents
-     * @param $applyEvent Bind the event once to the model
-     * @throws \Exception
+     * @param bool $applyEvent Bind the event once to the model
+     * @throws Exception
      */
-    public function testApplyOrIgnoreBeforeMarshalSetOnTheFly($applyEvent)
+    public function testApplyOrIgnoreBeforeMarshalSetOnTheFly(bool $applyEvent)
     {
         $name = 'Foo';
 
@@ -159,8 +160,8 @@ class EventCollectorTest extends TestCase
 
     /**
      * @dataProvider runSeveralTimesWithOrWithoutEvents
-     * @param $applyEvent Bind the event once to the model
-     * @throws \Exception
+     * @param bool $applyEvent Bind the event once to the model
+     * @throws Exception
      */
     public function testApplyOrIgnoreBeforeMarshalSetInTable($applyEvent)
     {
@@ -183,8 +184,8 @@ class EventCollectorTest extends TestCase
 
     /**
      * @dataProvider runSeveralTimesWithOrWithoutEvents
-     * @param $times
-     * @throws \Exception
+     * @param bool $times
+     * @throws Exception
      */
     public function testApplyOrIgnoreEventInBehaviors(bool $times)
     {
@@ -229,7 +230,7 @@ class EventCollectorTest extends TestCase
     /**
      * @dataProvider runSeveralTimesWithOrWithoutEvents
      * @param $times
-     * @throws \Exception
+     * @throws Exception
      */
     public function testApplyOrIgnoreEventInBehaviorsOnTheFlyWithCountries(bool $times)
     {
@@ -249,7 +250,7 @@ class EventCollectorTest extends TestCase
     /**
      * @dataProvider runSeveralTimesWithOrWithoutEvents
      * @param $times
-     * @throws \Exception
+     * @throws Exception
      */
     public function testApplyOrIgnoreEventInPluginBehaviorsOnTheFlyWithCountries(bool $times)
     {
@@ -311,7 +312,7 @@ class EventCollectorTest extends TestCase
 
     /**
      * Cities have a rule that always return false
-     * @throws \Exception
+     * @throws Exception
      */
     public function testSkipRules()
     {

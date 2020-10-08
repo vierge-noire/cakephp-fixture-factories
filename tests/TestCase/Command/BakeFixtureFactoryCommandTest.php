@@ -205,7 +205,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $this->assertInstanceOf(BaseFactory::class, $articleFactory);
 
         $article = $articleFactory->persist();
-        $this->assertEquals($title, $article->title);
+        $this->assertEquals($title, $article['title']);
     }
 
     public function testRunBakeAllInTestApp()

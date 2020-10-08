@@ -38,6 +38,6 @@ class SluggableBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options)
     {
         $this->slug($entity);
-        $entity->beforeSaveInBehaviorTriggered = true;
+        $entity['beforeSaveInBehaviorTriggered'] = true;
     }
 }

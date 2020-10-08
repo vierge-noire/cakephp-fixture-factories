@@ -30,8 +30,8 @@ class DocumentationExamplesTest extends TestCase
         $articles = ArticleFactory::make(2)->getEntities();
         $previous = '';
         foreach ($articles as $article) {
-            $this->assertNotEquals($previous, $article->title);
-            $previous = $article->title;
+            $this->assertNotEquals($previous, $article['title']);
+            $previous = $article['title'];
         }
 
         ArticleFactory::make(['title' => 'Foo'])->getEntity();
@@ -39,13 +39,13 @@ class DocumentationExamplesTest extends TestCase
         $articles = ArticleFactory::make(['title' => 'Foo'], 3)->getEntities();
         $this->assertEquals(3, count($articles));
         foreach ($articles as $article) {
-            $this->assertEquals('Foo', $article->title);
+            $this->assertEquals('Foo', $article['title']);
         }
 
         $articles = ArticleFactory::make(['title' => 'Foo'], 3)->persist();
         $this->assertEquals(3, count($articles));
         foreach ($articles as $article) {
-            $this->assertEquals('Foo', $article->title);
+            $this->assertEquals('Foo', $article['title']);
         }
     }
 
@@ -59,8 +59,8 @@ class DocumentationExamplesTest extends TestCase
         $this->assertEquals(3, count($articles));
         $previousTitle = 'Foo';
         foreach ($articles as $article) {
-            $this->assertNotEquals($previousTitle, $article->title);
-            $previousTitle = $article->title;
+            $this->assertNotEquals($previousTitle, $article['title']);
+            $previousTitle = $article['title'];
         }
     }
 
@@ -70,8 +70,8 @@ class DocumentationExamplesTest extends TestCase
         $articleFoo = $articleFactory->getEntity();
 
         $articleJobOffer = $articleFactory->setJobTitle()->getEntity();
-        $this->assertEquals('Foo', $articleFoo->title);
-        $this->assertNotEquals('Foo', $articleJobOffer->title);
+        $this->assertEquals('Foo', $articleFoo['title']);
+        $this->assertNotEquals('Foo', $articleJobOffer['title']);
     }
 
     public function testExampleChainableWithPersist()
@@ -80,24 +80,24 @@ class DocumentationExamplesTest extends TestCase
         $articleFoo = $articleFactory->persist();
 
         $articleJobOffer = $articleFactory->setJobTitle()->persist();
-        $this->assertEquals('Foo', $articleFoo->title);
-        $this->assertNotEquals('Foo', $articleJobOffer->title);
+        $this->assertEquals('Foo', $articleFoo['title']);
+        $this->assertNotEquals('Foo', $articleJobOffer['title']);
     }
 
     public function testAssociationsMultiple()
     {
         $article = ArticleFactory::make()->with('Authors', AuthorFactory::make(10))->persist();
-        $this->assertEquals(10, count($article->authors));
+        $this->assertEquals(10, count($article['authors']));
         $previous = '';
-        foreach ($article->authors as $author) {
+        foreach ($article['authors'] as $author) {
             $this->assertNotEquals($previous, $author->name);
             $previous = $author->name;
         }
 
         $article = ArticleFactory::make()->withAuthors(10)->persist();
-        $this->assertEquals(10, count($article->authors));
+        $this->assertEquals(10, count($article['authors']));
         $previous = '';
-        foreach ($article->authors as $author) {
+        foreach ($article['authors'] as $author) {
             $this->assertNotEquals($previous, $author->name);
             $previous = $author->name;
         }
@@ -110,10 +110,10 @@ class DocumentationExamplesTest extends TestCase
                 'biography' => $faker->realText()
             ];
         }, 10)->persist();
-        $this->assertEquals(10, count($article->authors));
+        $this->assertEquals(10, count($article['authors']));
         $lastName = '';
         $lastBio = '';
-        foreach ($article->authors as $author) {
+        foreach ($article['authors'] as $author) {
             $this->assertNotEquals($lastName, $author->name);
             $lastName = $author->name;
             $this->assertNotEquals($lastBio, $author->biography);
