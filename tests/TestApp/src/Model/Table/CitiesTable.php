@@ -44,7 +44,7 @@ class CitiesTable extends Table
     {
         return $validator
             ->requirePresence('country_id', 'create')
-            ->notEmptyString('country_id');
+            ->notEmpty('country_id');
     }
 
     /**
