@@ -32,7 +32,7 @@ class ArticleFactory extends BaseFactory
      * not nullable fields.
      * Use the patchData method to set the field values.
      * You may use methods of the factory here
-     * @return self
+     * @return void
      */
     protected function setDefaultTemplate()
     {
@@ -53,7 +53,7 @@ class ArticleFactory extends BaseFactory
     /**
      * It is important here to stop the propagation of the default template of the bills
      * Otherways, each bills get a new Article, which is not the one produced by the present factory
-     * @param $parameter
+     * @param mixed $parameter
      * @param int $n
      * @return ArticleFactory
      */
@@ -65,7 +65,7 @@ class ArticleFactory extends BaseFactory
     /**
      * BAD PRACTICE EXAMPLE
      * This method will lead to inconsistencies (see $this->withBills())
-     * @param $parameter
+     * @param mixed $parameter
      * @param int $n
      * @return ArticleFactory
      */

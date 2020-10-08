@@ -20,6 +20,7 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpTestSuiteLight\FixtureInjector;
 use CakephpTestSuiteLight\FixtureManager;
+use Exception;
 
 class FixtureInjectorTest extends TestCase
 {
@@ -51,7 +52,7 @@ class FixtureInjectorTest extends TestCase
      * 10 Articles found, which is the last value given to times
      * value
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function createWithOneFactoryInTheDataProvider()
     {
@@ -104,9 +105,8 @@ class FixtureInjectorTest extends TestCase
      * Since there is only one factory in this data provider,
      * the factories will always return 10
      * @dataProvider createWithOneFactoryInTheDataProvider
-     * @param $expected
      * @param ArticleFactory $factory
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCreateFactoryInTheDataProvider(ArticleFactory $factory)
     {
@@ -118,9 +118,9 @@ class FixtureInjectorTest extends TestCase
      * Since there are distinct factories in this data provider,
      * the factories will produce different set of data
      * @dataProvider createWithDifferentFactoriesInTheDataProvider
-     * @param $expected
+     * @param int $n
      * @param ArticleFactory $factory
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCreateFactoryInTheDataProvider2(int $n, ArticleFactory $factory)
     {

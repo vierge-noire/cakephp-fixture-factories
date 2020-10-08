@@ -58,7 +58,7 @@ class DataCompiler
     }
 
     /**
-     * @param BaseFactory $factory
+     * Data passed in the instantiation by callable
      * @param callable $fn
      */
     public function collectArrayFromCallable(callable $fn)
@@ -102,7 +102,7 @@ class DataCompiler
     /**
      * Scan for the data stored in the $association path provided and drop it
      * @param string $associationName
-     * @return array
+     * @return void
      */
     public function dropAssociation(string $associationName)
     {
@@ -129,7 +129,7 @@ class DataCompiler
     }
 
     /**
-     * @param      $injectedData
+     * @param array|callable      $injectedData
      *
      * @return array
      */
@@ -226,9 +226,9 @@ class DataCompiler
      * One reason can be the default template value.
      * Here the latest inserted record is taken
      *
-     * @param $compiledTemplateData
-     * @param $associationName
-     * @param $data
+     * @param array $compiledTemplateData
+     * @param string $associationName
+     * @param array $data
      */
     private function mergeWithToOne(array &$compiledTemplateData, string $associationName, array $data)
     {
@@ -240,9 +240,9 @@ class DataCompiler
     }
 
     /**
-     * @param $compiledTemplateData
-     * @param $associationName
-     * @param $data
+     * @param array $compiledTemplateData
+     * @param string $associationName
+     * @param array $data
      */
     private function mergeWithToMany(array &$compiledTemplateData, string $associationName, array $data)
     {
@@ -340,7 +340,7 @@ class DataCompiler
 
     /**
      *
-     * @return array|int
+     * @return array
      */
     public function createPrimaryKeyOffset(): array
     {
@@ -379,7 +379,6 @@ class DataCompiler
      * Credits to Faker
      * https://github.com/fzaninotto/Faker/blob/master/src/Faker/ORM/CakePHP/ColumnTypeGuesser.php
      *
-     * @param string $primaryKey
      * @param string $columnType
      * @return int|string
      */

@@ -12,6 +12,7 @@
  */
 namespace TestApp\Model\Table;
 
+use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -36,6 +37,9 @@ class CitiesTable extends Table
         parent::initialize($config);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function validationDefault(Validator $validator)
     {
         return $validator
@@ -43,9 +47,12 @@ class CitiesTable extends Table
             ->notEmptyString('country_id');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add(function ($entity, $options) {
+        return $rules->add(function ($entity, $options) {
             return false;
         }, 'someRuleToSkip');
     }

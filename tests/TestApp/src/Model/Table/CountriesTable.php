@@ -12,6 +12,7 @@
  */
 namespace TestApp\Model\Table;
 
+use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\Table;

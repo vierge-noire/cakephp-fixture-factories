@@ -110,7 +110,7 @@ class EventCollector
     }
 
     /**
-     * @param array $defaultBehaviors
+     * @return void
      */
     protected function setDefaultListeningBehaviors()
     {

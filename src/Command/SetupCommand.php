@@ -47,11 +47,15 @@ class SetupCommand extends Command
         return $parser;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function execute(Arguments $args, ConsoleIo $io)
     {
         $filePath = $this->getPhpunitFilePath($args, $io);
         $this->replaceListenersInPhpunitXmlFile($filePath, $io);
         $io->success("The listener was successfully replaced in $filePath.");
+        return 0;
     }
 
     public function getPhpunitFilePath(Arguments $args, ConsoleIo $io): string
