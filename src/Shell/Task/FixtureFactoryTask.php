@@ -154,7 +154,7 @@ class FixtureFactoryTask extends SimpleBakeTask
      * Handles dispatching to interactive, named, or all processes.
      *
      * @param string|null $model The name of the model to bake.
-     * @return int|null
+     * @return null|bool
      */
     public function main($model = null)
     {

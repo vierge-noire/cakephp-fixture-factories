@@ -115,7 +115,7 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate();
 
     /**
-     * @param array|callable|int $makeParameter
+     * @param array|callable|null|int $makeParameter
      * @param int                     $times
      * @return static
      */
@@ -130,8 +130,10 @@ abstract class BaseFactory
             $factory = self::makeFromArray($makeParameter);
         } elseif (is_callable($makeParameter)) {
             $factory = self::makeFromCallable($makeParameter);
+        } elseif ($makeParameter === false) {
+            $factory = null;
         } else {
-            throw new InvalidArgumentException("make only accepts an array, an integer or a callable as the first parameter");
+            throw new InvalidArgumentException("make only accepts null, an array or a callable as the first parameter");
         }
 
         if ($factory) {
