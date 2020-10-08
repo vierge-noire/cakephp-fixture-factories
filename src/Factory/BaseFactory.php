@@ -93,7 +93,7 @@ abstract class BaseFactory
     /**
      * BaseFactory constructor.
      */
-    protected function __construct()
+    final protected function __construct()
     {
         $this->dataCompiler = new DataCompiler($this);
         $this->associationBuilder = new AssociationBuilder($this);

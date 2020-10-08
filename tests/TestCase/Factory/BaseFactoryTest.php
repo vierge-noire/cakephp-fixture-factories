@@ -258,12 +258,12 @@ class BaseFactoryTest extends TestCase
         $n = 3;
         $m = 2;
         $articles = ArticleFactory::make(
-            function (ArticleFactory $factory, Generator $faker) use ($m) {
+            function (ArticleFactory $factory, Generator $faker) {
                 return ['title' => $faker->sentence];
             },
         $n)
         ->withAuthors(
-            function (AuthorFactory $factory, Generator $faker) use ($m) {
+            function (AuthorFactory $factory, Generator $faker) {
                 return ['name' => $faker->lastName];
             },
         $m)
@@ -601,8 +601,8 @@ class BaseFactoryTest extends TestCase
         $bill = BillFactory::make(compact('amount'))
             ->withArticle(compact('title'))
             ->persist();
-        $this->isTrue(is_int($bill->id));
-        $this->isTrue(is_int($bill->article->id));
+        $this->assertSame(true, is_int($bill->id));
+        $this->assertSame(true, is_int($bill->article->id));
         $this->assertEquals($title, $bill->article->title);
         $this->assertEquals($amount, $bill->amount);
         $this->assertEquals($bill->article_id, $bill->article->id);
@@ -636,7 +636,7 @@ class BaseFactoryTest extends TestCase
             ->withBills(compact('amount'), $n)
             ->persist();
 
-        $this->isTrue(is_int($article->id));
+        $this->assertSame(true, is_int($article->id));
         $this->equalTo($n, count($article->bills));
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
@@ -662,7 +662,7 @@ class BaseFactoryTest extends TestCase
             ->withBillsWithArticle(compact('amount'), $n)
             ->persist();
 
-        $this->isTrue(is_int($article->id));
+        $this->assertSame(true, is_int($article->id));
         $this->equalTo($n, count($article->bills));
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
@@ -689,7 +689,7 @@ class BaseFactoryTest extends TestCase
         }
     }
 
-    public function testPersistingWithAssociationWithinlugin()
+    public function testPersistingWithAssociationWithinPlugin()
     {
         $name = 'Some name';
         $amount = 10;
@@ -698,7 +698,7 @@ class BaseFactoryTest extends TestCase
             ->withBills(compact('amount'), $n)
             ->persist();
 
-        $this->isTrue(is_int($customer->id));
+        $this->assertSame(true, is_int($customer->id));
         $this->equalTo($n, count($customer->bills));
         $this->assertEquals($name, $customer->name);
         foreach ($customer->bills as $bill) {

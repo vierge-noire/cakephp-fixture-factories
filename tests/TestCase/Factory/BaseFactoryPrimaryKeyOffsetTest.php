@@ -128,6 +128,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
         $offset = rand(1, 1000000);
         $factory = CountryFactory::make($n)->setPrimaryKeyOffset($offset);
 
+        $countries = [];
         for ($i=0;$i<$m;$i++) {
             $countries = $factory->persist();
         }
@@ -148,6 +149,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
             ->with('Cities', CityFactory::make($nCitiesPerCountry)->setPrimaryKeyOffset($cityOffset))
             ->setPrimaryKeyOffset($countryOffset);
 
+        $countries = [];
         for ($i=0;$i<$iterations;$i++) {
             $countries = $factory->persist();
         }

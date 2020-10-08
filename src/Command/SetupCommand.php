@@ -80,12 +80,13 @@ class SetupCommand extends Command
     public function replaceListenersInPhpunitXmlFile(string $filePath, ConsoleIo $io)
     {
         try {
-            $string = file_get_contents($filePath);
+            $this->replaceListenerInString(
+                $filePath,
+                file_get_contents($filePath)
+            );
         } catch (\Exception $exception) {
             throw new FixtureFactoryException("$filePath could not be found.");
         }
-
-        $this->replaceListenerInString($filePath, $string);
     }
 
     protected function replaceListenerInString(string $filePath, string $string)

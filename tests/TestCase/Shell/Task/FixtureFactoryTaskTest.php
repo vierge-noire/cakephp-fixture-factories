@@ -3,22 +3,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Shell\Task;
 
 use Cake\Core\Configure;
 use CakephpFixtureFactories\Shell\Task\FixtureFactoryTask;
-use TestApp\Model\Entity\Address;
-use TestApp\Model\Entity\Article;
-use TestApp\Model\Entity\Author;
-use TestApp\Model\Entity\City;
-use TestApp\Model\Entity\Country;
-use TestApp\Test\Factory\AddressFactory;
-use TestApp\Test\Factory\ArticleFactory;
-use TestApp\Test\Factory\AuthorFactory;
-use TestApp\Test\Factory\CityFactory;
-use TestApp\Test\Factory\CountryFactory;
-use CakephpFixtureFactories\Factory\BaseFactory;
 use Cake\TestSuite\TestCase;
-use TestPlugin\Model\Entity\Bill;
-use TestPlugin\Model\Entity\Customer;
-use TestPlugin\Test\Factory\BillFactory;
-use TestPlugin\Test\Factory\CustomerFactory;
 
 /**
  * App\Shell\Task\FactoryTask Test Case
