@@ -69,6 +69,19 @@ class TestCaseWithFixtureBaking extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * In order to have phpstan analyse properly our code,
+     * we bake again all the fixtures. This way, the baked classes get
+     * analysed as well
+     */
+    public static function tearDownAfterClass(): void
+    {
+        $test = new self();
+        $test->setUp();
+        $test->bake([], ['methods' => true, 'all' => true]);
+        $test->bake([], ['plugin' => 'TestPlugin', 'all' => true, 'methods' => true,]);
+    }
+
     protected function bake(array $args = [], array $options = [], array $argNames = ['model'])
     {
         $options['force'] = $options['force'] ?? true;

@@ -17,6 +17,7 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpTestSuiteLight\FixtureInjector;
 use CakephpTestSuiteLight\FixtureManager;
 
@@ -79,12 +80,13 @@ class SetupCommand extends Command
     public function replaceListenersInPhpunitXmlFile(string $filePath, ConsoleIo $io)
     {
         try {
-            $string = file_get_contents($filePath);
+            $this->replaceListenerInString(
+                $filePath,
+                file_get_contents($filePath)
+            );
         } catch (\Exception $exception) {
             $io->abort($exception->getMessage());
         }
-
-        $this->replaceListenerInString($filePath, $string);
     }
 
     protected function replaceListenerInString(string $filePath, string $string)

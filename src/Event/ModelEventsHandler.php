@@ -53,7 +53,7 @@ class ModelEventsHandler
         'Model.afterDeleteCommit',
     ];
 
-    public function __construct(array $listeningModelEvents, array $listeningBehaviors)
+    final public function __construct(array $listeningModelEvents, array $listeningBehaviors)
     {
         $this->listeningModelEvents = $listeningModelEvents;
         $this->listeningBehaviors = $listeningBehaviors;

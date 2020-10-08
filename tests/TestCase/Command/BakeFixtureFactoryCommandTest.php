@@ -15,7 +15,6 @@ namespace CakephpFixtureFactories\Test\TestCase\Command;
 
 use Cake\Console\Exception\StopException;
 use CakephpFixtureFactories\Factory\BaseFactory;
-use CakephpFixtureFactories\Shell\Task\FixtureFactoryTask;
 use CakephpFixtureFactories\Test\TestCase\Helper\TestCaseWithFixtureBaking;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
