@@ -23,7 +23,7 @@
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
-        "phpstan/phpstan": "^0.12.0@dev",
+        "phpstan/phpstan": "^0.12.48@dev",
         "phpunit/phpunit": "^8.0",
         "vierge-noire/cakephp-test-migrator": "^2.0"
     },
