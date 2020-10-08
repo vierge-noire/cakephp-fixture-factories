@@ -38,9 +38,9 @@ use function is_callable;
 abstract class BaseFactory
 {
     /**
-     * @var Generator
+     * @var Generator|null
      */
-    static private $faker = null;
+    static private $faker;
     /**
      * @deprecated
      * @var bool
@@ -104,7 +104,7 @@ abstract class BaseFactory
     }
 
     /**
-     * Table Registry the factory is bulding entities from
+     * Table Registry the factory is building entities from
      * @return string
      */
     abstract protected function getRootTableRegistryName(): string;
@@ -115,28 +115,26 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param array|callable|int $makeParameter
+     * @param array|callable|null|int $makeParameter
      * @param int                     $times
      * @return static
      */
     public static function make($makeParameter = [], int $times = 1): BaseFactory
     {
         if (is_numeric($makeParameter)) {
-            $factory = self::makeFromArray();
+            $factory = static::makeFromArray();
             $times = $makeParameter;
         } elseif (is_null($makeParameter)) {
-            $factory = self::makeFromArray();
+            $factory = static::makeFromArray();
         } elseif (is_array($makeParameter)) {
-            $factory = self::makeFromArray($makeParameter);
+            $factory = static::makeFromArray($makeParameter);
         } elseif (is_callable($makeParameter)) {
-            $factory = self::makeFromCallable($makeParameter);
+            $factory = static::makeFromCallable($makeParameter);
         } else {
             throw new InvalidArgumentException("make only accepts an array, an integer or a callable as the first parameter");
         }
 
-        if ($factory) {
-            $factory->setUp($factory, $times);
-        }
+        $factory->setUp($factory, $times);
         return $factory;
     }
 
@@ -146,7 +144,7 @@ abstract class BaseFactory
      * @param BaseFactory $factory
      * @param int         $times
      */
-    protected function setUp(BaseFactory $factory, int $times)
+    private function setUp(BaseFactory $factory, int $times)
     {
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
@@ -165,7 +163,7 @@ abstract class BaseFactory
      */
     public static function makeWithModelEvents($makeParameter = [], $times = 1): BaseFactory
     {
-        $factory = self::make($makeParameter, $times);
+        $factory = static::make($makeParameter, $times);
         $factory->withModelEvents = true;
         return $factory;
     }
@@ -183,7 +181,7 @@ abstract class BaseFactory
 
     /**
      * @param callable $fn
-     * @return BaseFactory
+     * @return static
      */
     private static function makeFromCallable(callable $fn): BaseFactory
     {
@@ -341,7 +339,7 @@ abstract class BaseFactory
     /**
      * @param array $data
      *
-     * @return EntityInterface[]|ResultSetInterface|false
+     * @return EntityInterface[]|ResultSetInterface|false False on failure, entities list on success.
      * @throws Exception
      */
     protected function persistMany(array $data)

@@ -130,7 +130,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * List the tables
      * @return array
      */
-    public function getTableList()
+    public function getTableList(): array
     {
         $dir = new Folder($this->getModelPath());
         $tables = $dir->find('.*Table.php', true);
