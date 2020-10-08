@@ -28,7 +28,7 @@ class Util
 
     /**
      * Namespace where the factory belongs
-     * @param null $plugin
+     * @param string|null $plugin
      * @return string
      */
     static public function getFactoryNamespace($plugin = null): string

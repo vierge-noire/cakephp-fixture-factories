@@ -35,7 +35,7 @@ class SluggableBehavior extends Behavior
         $entity->set($config['slug'], Text::slug($value, $config['replacement']));
     }
 
-    public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options)
+    public function beforeSave(Event $event, Entity $entity, ArrayObject $options)
     {
         $this->slug($entity);
         $entity['beforeSaveInBehaviorTriggered'] = true;

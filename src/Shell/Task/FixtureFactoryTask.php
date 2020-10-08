@@ -124,7 +124,7 @@ class FixtureFactoryTask extends SimpleBakeTask
      * List the tables
      * @return array
      */
-    public function getTableList()
+    public function getTableList(): array
     {
         $dir = new Folder($this->getModelPath());
         $tables = $dir->find('.*Table.php', true);
@@ -154,9 +154,9 @@ class FixtureFactoryTask extends SimpleBakeTask
      * Handles dispatching to interactive, named, or all processes.
      *
      * @param string|null $model The name of the model to bake.
-     * @return null|bool
+     * @return int
      */
-    public function main($model = null)
+    public function main($model = null): int
     {
         if ($this->param('plugin')) {
             $parts = explode('/', $this->param('plugin'));
