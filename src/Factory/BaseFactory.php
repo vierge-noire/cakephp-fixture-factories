@@ -442,10 +442,6 @@ abstract class BaseFactory
      */
     public function setPrimaryKeyOffset($primaryKeyOffset): self
     {
-        if (Util::isRunningOnPostgresql($this)) {
-            $driver = Postgres::class;
-            throw new FixtureFactoryException("The setPrimaryKeyOffset is not available for $driver");
-        }
         $this->getDataCompiler()->setPrimaryKeyOffset($primaryKeyOffset);
         return $this;
     }
