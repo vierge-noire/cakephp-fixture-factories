@@ -322,7 +322,7 @@ class DataCompiler
     public function setPrimaryKey(array $data): array
     {
         // A set of primary keys is produced if in persistence mode, and if a first set was not produced yet
-        if (!$this->isInPersistMode() || !is_array($this->primaryKeyOffset) || Util::isRunningOnPostgresql($this->getFactory())) {
+        if (!$this->isInPersistMode() || !is_array($this->primaryKeyOffset)) {
             return $data;
         }
 
@@ -348,6 +348,8 @@ class DataCompiler
             throw new PersistenceException('A set of primary keys was already created');
         }
         $res = empty($this->primaryKeyOffset) ? $this->generateArrayOfRandomPrimaryKeys() : $this->primaryKeyOffset;
+
+        $this->updatePostgresSequence($res);
 
         // Set to null, this factory will never generate a primaryKeyOffset again
         $this->primaryKeyOffset = null;
@@ -420,6 +422,22 @@ class DataCompiler
             $this->primaryKeyOffset = $primaryKeyOffset;
         } else {
             throw new FixtureFactoryException("$primaryKeyOffset must be either an integer, a string or an array of format ['primaryKey1' => value, ...]");
+        }
+    }
+
+    /**
+     * @param array $primaryKeys
+     */
+    private function updatePostgresSequence(array $primaryKeys): void
+    {
+        if (Util::isRunningOnPostgresql($this->getFactory())) {
+            $tableName = $this->getFactory()->getRootTableRegistry()->getTable();
+
+            foreach ($primaryKeys as $pk => $offset) {
+                $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
+                    "SELECT setval('$tableName". "_$pk" . "_seq', $offset);"
+                );
+            }
         }
     }
 
