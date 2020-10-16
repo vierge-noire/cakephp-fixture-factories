@@ -17,4 +17,13 @@ use Cake\ORM\Entity as BaseEntity;
 
 class Bill extends BaseEntity
 {
+    protected $_accessible = [
+        'customer_id' => true,
+        'article_id' => true,
+        'amount' => true,
+        'created' => true,
+        'modified' => true,
+        'customer' => true,
+        'article' => true,
+    ];
 }

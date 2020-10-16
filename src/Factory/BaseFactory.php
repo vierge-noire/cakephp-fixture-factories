@@ -13,15 +13,12 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Factory;
 
-use Cake\Database\Driver\Postgres;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\ResultSetInterface;
 use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\Util;
 use Exception;
 use Faker\Factory;
 use Faker\Generator;
@@ -51,7 +48,8 @@ abstract class BaseFactory
      */
     protected $marshallerOptions = [
         'validate' => false,
-        'forceNew' => true
+        'forceNew' => true,
+        'accessibleFields' => ['*' => true],
     ];
     /**
      * @var array

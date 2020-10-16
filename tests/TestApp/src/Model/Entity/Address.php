@@ -1,20 +1,39 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) 2020 Juan Pablo Ramirez and Nicolas Masson
- * @link          https://webrider.de/
- * @since         1.0.0
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
- */
 namespace TestApp\Model\Entity;
 
-use Cake\ORM\Entity as BaseEntity;
+use Cake\ORM\Entity;
 
-class Address extends BaseEntity
+/**
+ * Address Entity
+ *
+ * @property int $id
+ * @property string $street
+ * @property int $city_id
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime|null $modified
+ *
+ * @property \App\Model\Entity\City $city
+ * @property \App\Model\Entity\Author[] $authors
+ */
+class Address extends Entity
 {
+    /**
+     * Fields that can be mass assigned using newEntity() or patchEntity().
+     *
+     * Note that when '*' is set to true, this allows all unspecified fields to
+     * be mass assigned. For security purposes, it is advised to set '*' to false
+     * (or remove it), and explicitly make individual fields accessible as needed.
+     *
+     * @var array
+     */
+    protected $_accessible = [
+        'street' => true,
+        'city_id' => true,
+        'created' => true,
+        'modified' => true,
+        'city' => true,
+        'authors' => true,
+    ];
 }

@@ -16,6 +16,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
+use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Util;
@@ -170,5 +171,27 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 
         $this->assertSame($offset1 ,$country->cities[0]->id);
         $this->assertSame($offset2 ,$country->cities[1]->id);
+    }
+
+    public function testSetPrimaryKeyManually()
+    {
+        $id = 2;
+        $country = CountryFactory::make()->patchData(compact('id'))->persist();
+        $this->assertSame($id, $country->id);
+
+        $id = rand(1, 100000);
+        $country = CountryFactory::make()->patchData(compact('id'))->persist();
+        $this->assertSame($id, $country->id);
+    }
+
+    public function testSetPrimaryKeyManuallyInPlugin()
+    {
+        $id = 2;
+        $bill = BillFactory::make()->patchData(compact('id'))->persist();
+        $this->assertSame($id, $bill->id);
+
+        $id = rand(1, 100000);
+        $bill = BillFactory::make()->patchData(compact('id'))->persist();
+        $this->assertSame($id, $bill->id);
     }
 }

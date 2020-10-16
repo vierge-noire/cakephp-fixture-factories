@@ -272,14 +272,17 @@ class AssociationBuilderTest extends TestCase
             'City' => [
                 'validate' => false,
                 'forceNew' => true,
+                'accessibleFields' => ['*' => true],
                 'associated' => [
                     'Country' => [
                         'validate' => false,
                         'forceNew' => true,
+                        'accessibleFields' => ['*' => true],
                         'associated' => [
                             'Cities' => [
                                 'validate' => false,
-                                'forceNew' => true
+                                'forceNew' => true,
+                                'accessibleFields' => ['*' => true],
                             ]
                         ]
                     ]
@@ -335,11 +338,13 @@ class AssociationBuilderTest extends TestCase
         $expected = [
             'Country' => [
                 'validate' => false,
-                'forceNew' => true
+                'forceNew' => true,
+                'accessibleFields' => ['*' => true],
             ],
             'Addresses' => [
                 'validate' => false,
-                'forceNew' => true
+                'forceNew' => true,
+                'accessibleFields' => ['*' => true],
             ]
         ];
         $this->assertSame($expected, $CityFactory->getAssociated());
@@ -355,18 +360,22 @@ class AssociationBuilderTest extends TestCase
             'ExclusivePremiumAuthors' => [
                 'validate' => false,
                 'forceNew' => true,
+                'accessibleFields' => ['*' => true],
                 'associated' => [
                     'Address' => [
                         'validate' => false,
                         'forceNew' => true,
+                        'accessibleFields' => ['*' => true],
                         'associated' => [
                             'City' => [
                                 'validate' => false,
                                 'forceNew' => true,
+                                'accessibleFields' => ['*' => true],
                                 'associated' => [
                                     'Country' => [
                                         'validate' => false,
-                                        'forceNew' => true
+                                        'forceNew' => true,
+                                        'accessibleFields' => ['*' => true],
                                     ]
                                 ]
                             ]
@@ -391,7 +400,8 @@ class AssociationBuilderTest extends TestCase
 
         $this->assertSame(['Cities' => [
             'validate' => false,
-            'forceNew' => true
+            'forceNew' => true,
+            'accessibleFields' => ['*' => true],
         ]], $CountryFactory->getAssociated());
 
         $country = $CountryFactory->persist();
