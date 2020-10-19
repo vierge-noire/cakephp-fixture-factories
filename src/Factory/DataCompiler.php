@@ -427,8 +427,9 @@ class DataCompiler
 
     /**
      * @param array $primaryKeys
+     * @return void
      */
-    private function updatePostgresSequence(array $primaryKeys): void
+    private function updatePostgresSequence(array $primaryKeys)
     {
         if (Util::isRunningOnPostgresql($this->getFactory())) {
             $tableName = $this->getFactory()->getRootTableRegistry()->getTable();
