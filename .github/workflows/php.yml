@@ -1,4 +1,4 @@
-name: GitHub CI
+name: Tests
 
 on:
   push:
@@ -52,6 +52,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          composer remove --dev phpstan/phpstan
           if [[ ${{ matrix.composer-type }} == 'lowest' ]]; then
             composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest
           elif [[ ${{ matrix.composer-type }} == 'stable' ]]; then
@@ -66,10 +67,3 @@ jobs:
             sudo service mysql start && mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test_fixture_factories;';
           fi
           composer run-tests-${{ matrix.db-type }} root root
-
-#      Phpstan runs on one DB engine only
-      - name: Run phpstan
-        run: |
-          if [ ${{ matrix.db-type }} == 'mysql' ]; then
-            composer run-phpstan
-          fi
