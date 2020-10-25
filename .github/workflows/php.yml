@@ -52,7 +52,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer remove --dev phpstan/phpstan
           if [[ ${{ matrix.composer-type }} == 'lowest' ]]; then
             composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest
           elif [[ ${{ matrix.composer-type }} == 'stable' ]]; then

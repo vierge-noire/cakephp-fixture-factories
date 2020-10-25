@@ -90,6 +90,14 @@ $article = ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['na
 
 The only step performed by the package's test suite is to truncate *dirty* tables before each test.
 
+## Authors
+* Juan Pablo Ramirez
+* Nicolas Masson
+
+
+## Support
+Contact us at vierge.noire.info@gmail.com for professional assistance.
+
 ## License
 
 The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
@@ -97,7 +105,3 @@ The CakePHPFixtureFactories plugin is offered under an [MIT license](https://ope
 Copyright 2020 Juan Pablo Ramirez and Nicolas Masson
 
 Licensed under The MIT License Redistributions of files must retain the above copyright notice.
-
-## Authors
-* Juan Pablo Ramirez
-* Nicolas Masson
