@@ -21,17 +21,24 @@ use CakephpFixtureFactories\Factory\BaseFactory;
 
 class Util
 {
-    static public function getFactoryNameFromModelName(string $name): string
+    /**
+     * Return the name of the factory from a model name
+     *
+     * @param string $modelName Name of the model
+     * @return string
+     */
+    public static function getFactoryNameFromModelName(string $modelName): string
     {
-        return Inflector::singularize(ucfirst($name)) . 'Factory';
+        return Inflector::singularize(ucfirst($modelName)) . 'Factory';
     }
 
     /**
      * Namespace where the factory belongs
-     * @param string|null $plugin
+     *
+     * @param string|null $plugin name of the plugin, or null if no plugin
      * @return string
      */
-    static public function getFactoryNamespace($plugin = null): string
+    public static function getFactoryNamespace($plugin = null): string
     {
         if (Configure::read('TestFixtureNamespace')) {
             return Configure::read('TestFixtureNamespace');
@@ -44,20 +51,31 @@ class Util
         }
     }
 
-    static public function getFactoryClassFromModelName(string $modelName): string
+    /**
+     * Return the class of the factory from a model name
+     *
+     * @param string $modelName Name of the model
+     * @return string
+     */
+    public static function getFactoryClassFromModelName(string $modelName): string
     {
         $cast = explode('.', $modelName);
         $plugin = null;
         if (count($cast) === 2) {
-            $plugin =  $cast[0];
+            $plugin = $cast[0];
             $modelName = $cast[1];
         } else {
             $modelName = $cast[0];
         }
+
         return self::getFactoryNamespace($plugin) . '\\' . self::getFactoryNameFromModelName($modelName);
     }
 
-    static public function isRunningOnPostgresql(BaseFactory $factory): bool
+    /**
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Instance of factory
+     * @return bool
+     */
+    public static function isRunningOnPostgresql(BaseFactory $factory): bool
     {
         return $factory->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class;
     }

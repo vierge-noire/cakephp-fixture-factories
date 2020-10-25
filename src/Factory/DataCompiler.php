@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
-use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
@@ -32,16 +31,17 @@ class DataCompiler
     private $dataFromDefaultAssociations = [];
     private $primaryKeyOffset = [];
 
-    static private $inPersistMode = false;
+    private static $inPersistMode = false;
 
     /**
-     * @var BaseFactory
+     * @var \CakephpFixtureFactories\Factory\BaseFactory
      */
     private $factory;
 
     /**
      * DataCompiler constructor.
-     * @param BaseFactory $factory
+     *
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Master factory
      */
     public function __construct(BaseFactory $factory)
     {
@@ -50,7 +50,9 @@ class DataCompiler
 
     /**
      * Data passed in the instantiation by array
-     * @param array $data
+     *
+     * @param array $data Injected data
+     * @return void
      */
     public function collectFromArray(array $data): void
     {
@@ -59,7 +61,9 @@ class DataCompiler
 
     /**
      * Data passed in the instantiation by callable
-     * @param callable $fn
+     *
+     * @param callable $fn Injected callable
+     * @return void
      */
     public function collectArrayFromCallable(callable $fn): void
     {
@@ -71,7 +75,8 @@ class DataCompiler
     }
 
     /**
-     * @param array $data
+     * @param array $data Collected data
+     * @return void
      */
     public function collectFromPatch(array $data): void
     {
@@ -79,7 +84,8 @@ class DataCompiler
     }
 
     /**
-     * @param callable $fn
+     * @param callable $fn Collected data from default template
+     * @return void
      */
     public function collectFromDefaultTemplate(callable $fn): void
     {
@@ -87,8 +93,9 @@ class DataCompiler
     }
 
     /**
-     * @param string $associationName
-     * @param BaseFactory $factory
+     * @param string $associationName Association name
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Collected factory
+     * @return void
      */
     public function collectAssociation(string $associationName, BaseFactory $factory): void
     {
@@ -101,7 +108,8 @@ class DataCompiler
 
     /**
      * Scan for the data stored in the $association path provided and drop it
-     * @param string $associationName
+     *
+     * @param string $associationName Association name
      * @return void
      */
     public function dropAssociation(string $associationName): void
@@ -112,6 +120,7 @@ class DataCompiler
 
     /**
      * Populate the factored entity
+     *
      * @return array
      */
     public function getCompiledTemplateData(): array
@@ -129,8 +138,7 @@ class DataCompiler
     }
 
     /**
-     * @param array|callable      $injectedData
-     *
+     * @param array|callable      $injectedData Data from the injection
      * @return array
      */
     public function compileEntity($injectedData): array
@@ -148,13 +156,16 @@ class DataCompiler
 
     /**
      * Step 1: merge the default template data
-     * @param array $compiledTemplateData
-     * @return $this
+     *
+     * @param array $compiledTemplateData Array of data produced by the factory
+     * @return self
      */
     private function mergeWithDefaultTemplate(array &$compiledTemplateData): self
     {
         if (!empty($compiledTemplateData)) {
-            throw new FixtureFactoryException('The initial array before merging with the default template should be empty');
+            throw new FixtureFactoryException(
+                'The initial array before merging with the default template should be empty'
+            );
         }
         $data = $this->dataFromDefaultTemplate;
         if (is_array($data)) {
@@ -162,15 +173,17 @@ class DataCompiler
         } elseif (is_callable($data)) {
             $compiledTemplateData = array_merge($compiledTemplateData, $data($this->getFactory()->getFaker()));
         }
+
         return $this;
     }
 
     /**
      * Step 2:
      * Merge with the data injected during the instantiation of the Factory
-     * @param array $compiledTemplateData
-     * @param array|callable $injectedData
-     * @return $this
+     *
+     * @param array $compiledTemplateData Array of data produced by the factory
+     * @param array|callable $injectedData Data from the instanciation
+     * @return self
      */
     private function mergeWithInjectedData(array &$compiledTemplateData, $injectedData): self
     {
@@ -183,6 +196,7 @@ class DataCompiler
         } elseif (is_array($injectedData)) {
             $compiledTemplateData = array_merge($compiledTemplateData, $injectedData);
         }
+
         return $this;
     }
 
@@ -190,18 +204,23 @@ class DataCompiler
      * Step 3:
      * Merge with the data gathered by patching
      * Do not return this, as this is the last step
-     * @param array $compiledTemplateData
+     *
+     * @param array $compiledTemplateData Array of data produced by the factory
+     * @return self
      */
     private function mergeWithPatchedData(array &$compiledTemplateData): self
     {
         $compiledTemplateData = array_merge($compiledTemplateData, $this->dataFromPatch);
+
         return $this;
     }
 
     /**
      * Step 4:
      * Merge with the data from the associations
-     * @param array $compiledTemplateData
+     *
+     * @param array $compiledTemplateData Array of data produced by the factory
+     * @return self
      */
     private function mergeWithAssociatedData(array &$compiledTemplateData): self
     {
@@ -218,6 +237,7 @@ class DataCompiler
                 $this->mergeWithToMany($compiledTemplateData, $propertyName, $data);
             }
         }
+
         return $this;
     }
 
@@ -226,25 +246,27 @@ class DataCompiler
      * One reason can be the default template value.
      * Here the latest inserted record is taken
      *
-     * @param array $compiledTemplateData
-     * @param string $associationName
-     * @param array $data
+     * @param array $compiledTemplateData Array of data produced by the factory
+     * @param string $associationName Association
+     * @param array $data Data to inject
+     * @return void
      */
-    private function mergeWithToOne(array &$compiledTemplateData, string $associationName, array $data)
+    private function mergeWithToOne(array &$compiledTemplateData, string $associationName, array $data): void
     {
-        $count                                  = count($data);
-        $associationName                        = Inflector::singularize($associationName);
-        /** @var BaseFactory $factory */
+        $count = count($data);
+        $associationName = Inflector::singularize($associationName);
+        /** @var \CakephpFixtureFactories\Factory\BaseFactory $factory */
         $factory = $data[$count - 1];
         $compiledTemplateData[$associationName] = $factory->getEntity()->toArray();
     }
 
     /**
-     * @param array $compiledTemplateData
-     * @param string $associationName
-     * @param array $data
+     * @param array $compiledTemplateData Array of data produced by the factory
+     * @param string $associationName Association
+     * @param array $data Data to inject
+     * @return void
      */
-    private function mergeWithToMany(array &$compiledTemplateData, string $associationName, array $data)
+    private function mergeWithToMany(array &$compiledTemplateData, string $associationName, array $data): void
     {
         $associationData = $compiledTemplateData[$associationName] ?? null;
         foreach ($data as $factory) {
@@ -258,8 +280,7 @@ class DataCompiler
     }
 
     /**
-     * @param BaseFactory $factory
-     *
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
      * @return array
      */
     private function getManyEntities(BaseFactory $factory): array
@@ -268,23 +289,27 @@ class DataCompiler
         foreach ($factory->getEntities() as $entity) {
             $result[] = $entity->toArray();
         }
+
         return $result;
     }
 
     /**
      * Used in the Factory make in order to distinguish default associations
      * from conscious associations
+     *
+     * @return void
      */
-    public function collectAssociationsFromDefaultTemplate()
+    public function collectAssociationsFromDefaultTemplate(): void
     {
         $this->dataFromDefaultAssociations = $this->dataFromAssociations;
-        $this->dataFromAssociations        = [];
+        $this->dataFromAssociations = [];
     }
 
     /**
      * Returns the property name of the association. This can be dot separated for deep associations
      * Throws an exception if the association name does not exist on the rootTable of the factory
-     * @param string $associationName
+     *
+     * @param string $associationName Association
      * @return string underscore_version of the input string
      * @throws \InvalidArgumentException
      */
@@ -298,12 +323,13 @@ class DataCompiler
             $result[] = $association->getProperty();
             $table = $association->getTarget();
         }
+
         return implode('.', $result);
     }
 
     /**
-     * @param string $propertyName
-     * @return bool|Association
+     * @param string $propertyName Property
+     * @return bool|\Cake\ORM\Association
      */
     public function getAssociationByPropertyName(string $propertyName)
     {
@@ -315,8 +341,7 @@ class DataCompiler
     }
 
     /**
-     * @param array $data
-     *
+     * @param array $data Set of primary keys
      * @return array
      */
     public function setPrimaryKey(array $data): array
@@ -335,11 +360,11 @@ class DataCompiler
                 $data
             );
         }
+
         return $data;
     }
 
     /**
-     *
      * @return array
      */
     public function createPrimaryKeyOffset(): array
@@ -353,11 +378,13 @@ class DataCompiler
 
         // Set to null, this factory will never generate a primaryKeyOffset again
         $this->primaryKeyOffset = null;
+
         return $res;
     }
 
     /**
      * Get the primary key, or set of composite primary keys
+     *
      * @return string|string[]
      */
     public function getRootTablePrimaryKey()
@@ -365,15 +392,19 @@ class DataCompiler
         return $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
     }
 
+    /**
+     * @return array
+     */
     public function generateArrayOfRandomPrimaryKeys(): array
     {
-        $primaryKeys = (array) $this->getRootTablePrimaryKey();
+        $primaryKeys = (array)$this->getRootTablePrimaryKey();
         $res = [];
         foreach ($primaryKeys as $pk) {
             $res[$pk] = $this->generateRandomPrimaryKey(
                 $this->getFactory()->getRootTableRegistry()->getSchema()->getColumnType($pk)
             );
         }
+
         return $res;
     }
 
@@ -381,7 +412,7 @@ class DataCompiler
      * Credits to Faker
      * https://github.com/fzaninotto/Faker/blob/master/src/Faker/ORM/CakePHP/ColumnTypeGuesser.php
      *
-     * @param string $columnType
+     * @param string $columnType Column type
      * @return int|string
      */
     public function generateRandomPrimaryKey(string $columnType)
@@ -398,11 +429,12 @@ class DataCompiler
                 $res = mt_rand(0, intval('2147483647'));
                 break;
         }
+
         return $res;
     }
 
     /**
-     * @return BaseFactory
+     * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
     public function getFactory(): BaseFactory
     {
@@ -410,23 +442,27 @@ class DataCompiler
     }
 
     /**
-     * @param int|string|array $primaryKeyOffset
+     * @param int|string|array $primaryKeyOffset Name of the primary key
+     * @return void
      */
     public function setPrimaryKeyOffset($primaryKeyOffset): void
     {
         if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
             $this->primaryKeyOffset = [
-                $this->getRootTablePrimaryKey() => $primaryKeyOffset
+                $this->getRootTablePrimaryKey() => $primaryKeyOffset,
             ];
         } elseif (is_array($primaryKeyOffset)) {
             $this->primaryKeyOffset = $primaryKeyOffset;
         } else {
-            throw new FixtureFactoryException("$primaryKeyOffset must be either an integer, a string or an array of format ['primaryKey1' => value, ...]");
+            throw new FixtureFactoryException(
+                "$primaryKeyOffset must be an integer, a string or an array of format ['primaryKey1' => value, ...]"
+            );
         }
     }
 
     /**
-     * @param array $primaryKeys
+     * @param array $primaryKeys Set of primary keys
+     * @return void
      */
     private function updatePostgresSequence(array $primaryKeys): void
     {
@@ -435,7 +471,7 @@ class DataCompiler
 
             foreach ($primaryKeys as $pk => $offset) {
                 $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
-                    "SELECT setval('$tableName". "_$pk" . "_seq', $offset);"
+                    "SELECT setval('$tableName" . "_$pk" . "_seq', $offset);"
                 );
             }
         }
@@ -449,11 +485,17 @@ class DataCompiler
         return self::$inPersistMode;
     }
 
+    /**
+     * @return void
+     */
     public function startPersistMode(): void
     {
         self::$inPersistMode = true;
     }
 
+    /**
+     * @return void
+     */
     public function endPersistMode(): void
     {
         self::$inPersistMode = false;

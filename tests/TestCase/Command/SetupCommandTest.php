@@ -86,7 +86,6 @@ class SetupCommandTest extends TestCase
         unlink(ROOT . DS . $tmpFileName);
     }
 
-
     protected function exec(array $args = [], array $options = [], array $argNames = [])
     {
         $args = new Arguments($args, $options, $argNames);

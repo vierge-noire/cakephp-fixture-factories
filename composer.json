@@ -23,6 +23,7 @@
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
+        "cakephp/cakephp-codesniffer": "^4.0",
         "phpstan/phpstan": "^0.12.48@dev",
         "phpunit/phpunit": "^8.0",
         "vierge-noire/cakephp-test-migrator": "^2.0"
@@ -45,7 +46,8 @@
         "run-tests-mysql": "bash run_tests.sh Mysql",
         "run-tests-pgsql": "bash run_tests.sh Postgres",
         "run-tests-sqlite": "bash run_tests.sh Sqlite",
-        "run-phpstan": "vendor/bin/phpstan analyse"
+        "run-phpstan": "vendor/bin/phpstan analyse",
+        "cs-check": "vendor/bin/phpcs --colors -p -s --extensions=php src/"
     },
     "config": {
         "sort-packages": true

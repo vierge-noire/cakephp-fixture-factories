@@ -31,16 +31,9 @@ use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Entity\PremiumAuthor;
-use TestApp\Model\Table\AddressesTable;
-use TestApp\Model\Table\ArticlesTable;
-use TestApp\Model\Table\AuthorsTable;
-use TestApp\Model\Table\CitiesTable;
-use TestApp\Model\Table\CountriesTable;
 use TestApp\Model\Table\PremiumAuthorsTable;
 use TestPlugin\Model\Entity\Bill;
 use TestPlugin\Model\Entity\Customer;
-use TestPlugin\Model\Table\BillsTable;
-use TestPlugin\Model\Table\CustomersTable;
 
 class BaseFactoryAssociationsTest extends TestCase
 {
@@ -135,7 +128,7 @@ class BaseFactoryAssociationsTest extends TestCase
     {
         $this->expectException(AssociationBuilderException::class);
         ArticleFactory::make()
-            ->with("Authors.Address[2]")
+            ->with('Authors.Address[2]')
             ->getEntity();
     }
 
@@ -162,7 +155,7 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->AuthorsTable->find()->count()
         );
 
-        $expectedArticles = 1 + ($nAuthors*$mArticles);
+        $expectedArticles = 1 + ($nAuthors * $mArticles);
         $this->assertSame(
             $expectedArticles,
             $this->ArticlesTable->find()->count()
@@ -380,10 +373,10 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2 * $times, $this->AddressesTable->find()->count());
         $country = $this->CountriesTable->findById($country->id)->contain('Cities.Addresses')->first();
 
-        for($i=0;$i<$times;$i++) {
+        for ($i = 0; $i < $times; $i++) {
             $this->assertEquals($street1, $country->cities[$i]->addresses[0]->street);
             $this->assertEquals($street2, $country->cities[$i]->addresses[1]->street);
-        };
+        }
     }
 
     public function testGetAssociatedFactoryWithReversedAssociation()
@@ -453,8 +446,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $countryNotExpected = 'Bar';
         CountryFactory::make(['name' => $countryExpected])
             ->with('Cities', CityFactory::make()
-                ->with('Country', ['name' => $countryNotExpected])
-            )->persist();
+                ->with('Country', ['name' => $countryNotExpected]))->persist();
 
         $this->assertSame(1, $this->CitiesTable->find()->count());
         $city = $this->CitiesTable->find()->contain('Country')->firstOrFail();
@@ -466,6 +458,7 @@ class BaseFactoryAssociationsTest extends TestCase
      * flies get $n cities assigned. We make sure that the first city
      * is correctly associated to the country
      */
+
     public function testAssignWithToManyAssociation()
     {
         $nCities = rand(3, 10);
@@ -487,6 +480,7 @@ class BaseFactoryAssociationsTest extends TestCase
     /*
      * The same as above, but with belongsToMany association
      */
+
     public function testAssignWithBelongsToManyAssociation()
     {
         $nArticles = rand(3, 10);
@@ -514,7 +508,7 @@ class BaseFactoryAssociationsTest extends TestCase
 
     public function testArticleWithPremiumAuthors()
     {
-        $nPremiumAuthors = rand(2,5);
+        $nPremiumAuthors = rand(2, 5);
         $article = ArticleFactory::make()
             ->with('ExclusivePremiumAuthors', $nPremiumAuthors)
             ->without('Authors')

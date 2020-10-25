@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase;
 
-
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -51,7 +50,7 @@ class DocumentationExamplesTest extends TestCase
 
     public function testExampleDynamicData()
     {
-        $articles = ArticleFactory::make(function(ArticleFactory $factory, Generator $faker) {
+        $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
                 'title' => $faker->text(100),
             ];
@@ -105,9 +104,9 @@ class DocumentationExamplesTest extends TestCase
 
     public function testAssociationsMultipleWithBiography()
     {
-        $article = ArticleFactory::make()->withAuthors(function(AuthorFactory $factory, Generator $faker) {
+        $article = ArticleFactory::make()->withAuthors(function (AuthorFactory $factory, Generator $faker) {
             return [
-                'biography' => $faker->realText()
+                'biography' => $faker->realText(),
             ];
         }, 10)->persist();
         $this->assertEquals(10, count($article['authors']));

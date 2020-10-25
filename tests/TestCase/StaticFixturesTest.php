@@ -15,14 +15,13 @@ namespace CakephpFixtureFactories\Test\TestCase;
 
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
-use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
 use Cake\TestSuite\TestCase;
-
+use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
 
 class StaticFixturesTest extends TestCase
 {
     protected $fixtures = [
-        ArticlesFixture::class
+        ArticlesFixture::class,
     ];
 
     public function testLoadStaticFixtures()

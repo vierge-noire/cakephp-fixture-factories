@@ -17,7 +17,6 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 
-
 class PersistingExceptionTest extends TestCase
 {
     public function testSaveWronglyBuiltEntity()

@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
@@ -32,7 +31,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $this->assertTrue(is_string($author->address->street));
         $this->assertTrue(is_string($author->address->city->name));
         $this->assertTrue(is_string($author->address->city->country->name));
-   }
+    }
 
     public function testMakeAuthorWithArticlesWithDefaultTitles()
     {
@@ -71,11 +70,11 @@ class BaseFactoryDefaultValuesTest extends TestCase
     public function testPatchDataAndCallable()
     {
         $n = 2;
-        $title = "Some title";
+        $title = 'Some title';
         $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
                 'title' => $faker->jobTitle,
-                'body' => $faker->realText(100)
+                'body' => $faker->realText(100),
             ];
         }, $n)->withTitle($title)->persist();
         foreach ($articles as $article) {
@@ -102,7 +101,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $n = 3;
         $articles = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
-                'body' => $faker->realText(100)
+                'body' => $faker->realText(100),
             ];
         }, $n)->persist();
         $firstTitle = $articles[0]->title;

@@ -27,7 +27,6 @@ use TestPlugin\Model\Table\CustomersTable;
 
 class FactoryTableRegistryTest extends TestCase
 {
-
     public function setUp(): void
     {
         TableRegistry::getTableLocator()->clear();

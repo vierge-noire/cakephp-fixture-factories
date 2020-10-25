@@ -25,7 +25,7 @@ class CustomerFactory extends BaseFactory
 
     protected function setDefaultTemplate(): void
     {
-        $this->setDefaultData(function(Generator $faker) {
+        $this->setDefaultData(function (Generator $faker) {
             return [
                 'name' => $faker->lastName,
             ];

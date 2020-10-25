@@ -16,8 +16,6 @@ namespace CakephpFixtureFactories\Event;
 
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
-use CakephpFixtureFactories\Factory\EventCollector;
-use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 
 class ModelEventsHandler
 {
@@ -32,7 +30,7 @@ class ModelEventsHandler
     private $listeningModelEvents = [];
 
     /**
-     * @var EventCollector
+     * @var \CakephpFixtureFactories\Factory\EventCollector
      */
     protected $eventCompiler;
 
@@ -53,22 +51,36 @@ class ModelEventsHandler
         'Model.afterDeleteCommit',
     ];
 
+    /**
+     * ModelEventsHandler constructor.
+     *
+     * @param array $listeningModelEvents Model events listened to from instanciation
+     * @param array $listeningBehaviors Behaviors listened to from instanciation
+     * @return void
+     */
     final public function __construct(array $listeningModelEvents, array $listeningBehaviors)
     {
         $this->listeningModelEvents = $listeningModelEvents;
         $this->listeningBehaviors = $listeningBehaviors;
     }
 
-    public static function handle(Table $table, array $listeningModelEvents = [], array $listeningBehaviors = [])
+    /**
+     * @param \Cake\ORM\Table $table Table
+     * @param array $listeningModelEvents Events listened to
+     * @param array $listeningBehaviors Behaviors listened to
+     * @return void
+     */
+    public static function handle(Table $table, array $listeningModelEvents = [], array $listeningBehaviors = []): void
     {
         $handler = new static($listeningModelEvents, $listeningBehaviors);
         $handler->ignoreModelEvents($table);
     }
 
     /**
-     * @param Table $table
+     * @param \Cake\ORM\Table $table Table
+     * @return void
      */
-    public function ignoreModelEvents(Table $table)
+    public function ignoreModelEvents(Table $table): void
     {
         foreach (self::$ormEvents as $ormEvent) {
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {
@@ -82,11 +94,12 @@ class ModelEventsHandler
     }
 
     /**
-     * @param Table $table
-     * @param mixed $listener
-     * @param string $ormEvent
+     * @param \Cake\ORM\Table $table Table
+     * @param mixed $listener Listener
+     * @param string $ormEvent Event name
+     * @return void
      */
-    private function processListener(Table $table, $listener, string $ormEvent)
+    private function processListener(Table $table, $listener, string $ormEvent): void
     {
         if ($listener instanceof Table) {
             $this->processModelListener($table, $listener, $ormEvent);
@@ -98,29 +111,32 @@ class ModelEventsHandler
     }
 
     /**
-     * @param Table $table
-     * @param mixed $listener
-     * @param string $ormEvent
+     * @param \Cake\ORM\Table $table Table
+     * @param mixed $listener Listener
+     * @param string $ormEvent Event Name
+     * @return void
      */
-    private function processModelListener(Table $table, $listener, string $ormEvent)
+    private function processModelListener(Table $table, $listener, string $ormEvent): void
     {
-        if (!in_array(
-            $ormEvent,
-            $this->getListeningModelEvents()
-        )) {
+        if (
+            !in_array(
+                $ormEvent,
+                $this->getListeningModelEvents()
+            )
+        ) {
             $table->getEventManager()->off($ormEvent, $listener);
         }
     }
 
     /**
-     * @param Table $table
-     * @param mixed $listener
-     * @param string $ormEvent
+     * @param \Cake\ORM\Table $table Table
+     * @param mixed $listener Listener
+     * @param string $ormEvent Event name
+     * @return void
      */
-    private function processBehaviorListener(Table $table, $listener, string $ormEvent)
+    private function processBehaviorListener(Table $table, $listener, string $ormEvent): void
     {
         foreach ($this->getListeningBehaviors() as $behavior) {
-
             if ($this->skipBehavior($table, $behavior)) {
                 continue;
             }
@@ -137,8 +153,9 @@ class ModelEventsHandler
     /**
      * Skip a behavior if it is in the default behavior list, and the
      * table does not have this behavior
-     * @param Table $table
-     * @param string $behavior
+     *
+     * @param \Cake\ORM\Table $table Table
+     * @param string $behavior Behavior name
      * @return bool
      */
     private function skipBehavior(Table $table, string $behavior): bool

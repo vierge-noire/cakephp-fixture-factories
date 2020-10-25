@@ -27,8 +27,8 @@ class AddressesTable extends Table
             ],
             'belongsTo' => [
                 'City' => [
-                    'className' => 'Cities'
-                ]
+                    'className' => 'Cities',
+                ],
             ],
         ]);
 

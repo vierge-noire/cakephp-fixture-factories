@@ -19,7 +19,6 @@ use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use CakephpFixtureFactories\Util;
 
 class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
@@ -34,7 +33,6 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 
     /**
      * @dataProvider dataForTestSetPrimaryKeyOffset
-     *
      * @param int $cityOffset
      */
     public function testSetPrimaryKeyOffset(int $cityOffset)
@@ -46,7 +44,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 
         $countryOffset = $cities[0]->country->id;
 
-        for ($i=0; $i<$n; $i++) {
+        for ($i = 0; $i < $n; $i++) {
             $this->assertSame($cityOffset + $i, $cities[$i]->id);
             $this->assertSame($countryOffset + $i, $cities[$i]->country->id);
         }
@@ -65,7 +63,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 
         $cityOffset = $cities[0]->id;
 
-        for ($i=0; $i<$n; $i++) {
+        for ($i = 0; $i < $n; $i++) {
             $this->assertSame($cityOffset + $i, $cities[$i]->id);
             $this->assertSame($countryOffset + $i, $cities[$i]->country->id);
         }
@@ -97,15 +95,15 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
             ->setPrimaryKeyOffset($countryOffset)
             ->persist();
 
-        $this->assertSame($countryOffset , $country->id);
+        $this->assertSame($countryOffset, $country->id);
         $this->assertSame($cityOffset + $nCities - 1, $country->cities[$nCities - 1]->id);
     }
-
 
     /**
      * Given a persisted country
      * If we create second country with the same id
      * The an exception should be thrown
+     *
      * @throws \Exception
      */
     public function testSetPrimaryKeyOffsetConflict()
@@ -125,11 +123,11 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
         $factory = CountryFactory::make($n)->setPrimaryKeyOffset($offset);
 
         $countries = [];
-        for ($i=0;$i<$m;$i++) {
+        for ($i = 0; $i < $m; $i++) {
             $countries = $factory->persist();
         }
         $lastCountryId = $countries[$n - 1]->id;
-        $expectedId = $offset + $n * $m -1;
+        $expectedId = $offset + $n * $m - 1;
         $this->assertSame($expectedId, $lastCountryId);
     }
 
@@ -146,7 +144,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
             ->setPrimaryKeyOffset($countryOffset);
 
         $countries = [];
-        for ($i=0;$i<$iterations;$i++) {
+        for ($i = 0; $i < $iterations; $i++) {
             $countries = $factory->persist();
         }
 
@@ -169,8 +167,8 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
             ->with('Cities', CityFactory::make()->setPrimaryKeyOffset($offset2))
             ->persist();
 
-        $this->assertSame($offset1 ,$country->cities[0]->id);
-        $this->assertSame($offset2 ,$country->cities[1]->id);
+        $this->assertSame($offset1, $country->cities[0]->id);
+        $this->assertSame($offset2, $country->cities[1]->id);
     }
 
     public function testSetPrimaryKeyManually()

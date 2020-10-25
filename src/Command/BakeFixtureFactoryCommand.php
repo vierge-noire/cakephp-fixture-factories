@@ -41,20 +41,30 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     private $modelName;
     /**
-     * @var Table
+     * @var \Cake\ORM\Table
      */
     private $table;
 
+    /**
+     * @return string Name of the command
+     */
     public function name(): string
     {
         return 'fixture_factory';
     }
 
+    /**
+     * @param string $modelName Name of the model
+     * @return string Name of the factory file
+     */
     public function fileName(string $modelName): string
     {
         return Util::getFactoryNameFromModelName($modelName) . '.php';
     }
 
+    /**
+     * @return string Name of the template
+     */
     public function template(): string
     {
         return 'fixture_factory';
@@ -69,7 +79,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
     }
 
     /**
-     * @return Table
+     * @return \Cake\ORM\Table
      */
     public function getTable(): Table
     {
@@ -77,8 +87,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
     }
 
     /**
-     * @param string $tableName
-     * @return $this|bool
+     * @param string    $tableName Name of the table being baked
+     * @param \Cake\Console\ConsoleIo $io Console
+     * @return $this|false
      */
     public function setTable(string $tableName, ConsoleIo $io)
     {
@@ -91,13 +102,15 @@ class BakeFixtureFactoryCommand extends BakeCommand
         } catch (\Exception $e) {
             $io->warning("The table $tableName could not be found... in " . $this->getModelPath());
             $io->abort($e->getMessage());
+
             return false;
         }
+
         return $this;
     }
 
     /**
-     * @param Arguments $arguments
+     * @param \Cake\Console\Arguments $arguments Arguments
      * @return string
      */
     public function getPath(Arguments $arguments): string
@@ -113,6 +126,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
     /**
      * Locate tables
+     *
      * @return string|string[]
      */
     public function getModelPath()
@@ -128,18 +142,22 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
     /**
      * List the tables
+     *
      * @return array
      */
     public function getTableList(): array
     {
         $dir = new Folder($this->getModelPath());
         $tables = $dir->find('.*Table.php', true);
+
         return array_map(function ($a) {
             return preg_replace('/Table.php$/', '', $a);
         }, $tables);
     }
 
     /**
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \Cake\Console\ConsoleIo $io Console
      * @return string
      */
     private function bakeAllModels(Arguments $args, ConsoleIo $io)
@@ -152,6 +170,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
                 $this->bakeFixtureFactory($table, $args, $io);
             }
         }
+
         return '';
     }
 
@@ -174,12 +193,14 @@ class BakeFixtureFactoryCommand extends BakeCommand
             $this->plugin = implode('/', array_map([$this, '_camelize'], $parts));
             if (strpos($this->plugin, '\\')) {
                 $io->out('Invalid plugin namespace separator, please use / instead of \ for plugins.');
+
                 return self::CODE_SUCCESS;
             }
         }
 
         if ($args->getOption('all')) {
             $this->bakeAllModels($args, $io);
+
             return self::CODE_SUCCESS;
         }
 
@@ -192,19 +213,28 @@ class BakeFixtureFactoryCommand extends BakeCommand
                     $io->out('- ' . $table);
                 }
             }
+
             return self::CODE_SUCCESS;
         }
 
         $this->bakeFixtureFactory($model, $args, $io);
+
         return self::CODE_SUCCESS;
     }
 
+    /**
+     * @param string    $modelName Name of the model
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \Cake\Console\ConsoleIo $io Console
+     * @return bool|int
+     */
     public function bakeFixtureFactory(string $modelName, Arguments $args, ConsoleIo $io)
     {
         $this->modelName = $modelName;
 
         if (!$this->setTable($modelName, $io)) {
             $io->abort("$modelName not found...");
+
             return self::CODE_SUCCESS;
         }
 
@@ -215,12 +245,12 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
         $path = $this->getPath($args);
         $filename = $path . $this->fileName($modelName);
+
         return $io->createFile($filename, $contents, $args->getOption('force') ?? false);
     }
 
     /**
-     * Send variables to the view
-     * @return array
+     * @inheritDoc
      */
     public function templateData(Arguments $arg): array
     {
@@ -244,7 +274,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
             $data['manyToMany'] = $associations['manyToMany'];
             $methods = array_merge(array_keys($associations['manyToMany']), $methods);
 
-            array_walk($methods, function(&$value) { $value = "with$value"; } );
+            array_walk($methods, function (&$value) {
+                $value = "with$value";
+            });
             $data['methods'] = $methods;
         }
 
@@ -253,6 +285,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
     /**
      * Returns the one and many association for a given model
+     *
      * @return array
      */
     public function getAssociations(): array
@@ -263,10 +296,10 @@ class BakeFixtureFactoryCommand extends BakeCommand
             'manyToMany' => [],
         ];
 
-        foreach($this->getTable()->associations() as $association) {
+        foreach ($this->getTable()->associations() as $association) {
             $modelName = $association->getClassName() ?? $association->getName();
             $factory = Util::getFactoryClassFromModelName($modelName);
-            switch($association->type()) {
+            switch ($association->type()) {
                 case 'oneToOne':
                 case 'manyToOne':
                     $associations['toOne'][$association->getName()] = $factory;
@@ -279,15 +312,17 @@ class BakeFixtureFactoryCommand extends BakeCommand
                     break;
             }
         }
+
         return $associations;
     }
 
     /**
-     * @param string $name
-     * @param Arguments $args
-     * @param ConsoleIo $io
+     * @param string $name Name of the factory
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \Cake\Console\ConsoleIo $io Console
+     * @return void
      */
-    public function handleFactoryWithSameName(string $name, Arguments $args, ConsoleIo $io)
+    public function handleFactoryWithSameName(string $name, Arguments $args, ConsoleIo $io): void
     {
         $factoryWithSameName = glob($this->getPath($args) . $name . '.php');
         if (!empty($factoryWithSameName)) {
@@ -326,8 +361,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
             'Fixture factory generator.'
         )
             ->addArgument('model', [
-                'help' => 'Name of the model the factory will create entities from (plural, without the `Table` suffix). '.
-                    'You can use the Foo.Bars notation to bake a factory for the model Bars located in the plugin Foo. \n
+                'help' => 'Name of the model the factory will create entities from' .
+                    '(plural, without the `Table` suffix). You can use the Foo.Bars notation ' .
+                    'to bake a factory for the model Bars located in the plugin Foo. \n
                     Factories are located in the folder test\Factory of your app, resp. plugin.',
             ])
             ->addOption('plugin', [

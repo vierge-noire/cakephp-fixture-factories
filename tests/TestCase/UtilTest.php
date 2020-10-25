@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase;
 
-
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Util;
 use CakephpTestSuiteLight\SkipTablesTruncation;

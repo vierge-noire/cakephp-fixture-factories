@@ -172,12 +172,6 @@ ini_set('session.gc_divisor', '1');
 // has been written to.
 session_id('cli');
 
-Inflector::rules('irregular', array(
-    'contacthrdata' => 'contacthrdatas',
-    'debttranche' => 'debttranches',
-    'tranche' => 'tranches',
-));
-
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
 Migrator::migrate([

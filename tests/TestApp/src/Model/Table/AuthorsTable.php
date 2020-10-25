@@ -24,14 +24,14 @@ class AuthorsTable extends Table
         $this->addAssociations([
             'belongsTo' => [
                 'Address' => [
-                    'className' => 'Addresses'
+                    'className' => 'Addresses',
                 ],
                 'BusinessAddress' => [
-                    'className' => 'Addresses'
+                    'className' => 'Addresses',
                 ],
             ],
             'belongsToMany' => [
-                'Articles'
+                'Articles',
             ],
         ]);
 

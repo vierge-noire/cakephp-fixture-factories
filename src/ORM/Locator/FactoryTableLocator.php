@@ -19,10 +19,16 @@ use CakephpFixtureFactories\Event\ModelEventsHandler;
 
 class FactoryTableLocator extends TableLocator
 {
+    /**
+     * @inheritDoc
+     */
     protected function _create(array $options): Table
     {
-        $options['CakephpFixtureFactoriesListeningModelEvents'] = $options['CakephpFixtureFactoriesListeningModelEvents'] ?? [];
-        $options['CakephpFixtureFactoriesListeningBehaviors'] = $options['CakephpFixtureFactoriesListeningBehaviors'] ?? [];
+        $options['CakephpFixtureFactoriesListeningModelEvents'] =
+            $options['CakephpFixtureFactoriesListeningModelEvents'] ?? [];
+
+        $options['CakephpFixtureFactoriesListeningBehaviors'] =
+            $options['CakephpFixtureFactoriesListeningBehaviors'] ?? [];
 
         $cloneTable = parent::_create($options);
 

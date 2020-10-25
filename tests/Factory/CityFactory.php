@@ -25,7 +25,7 @@ class CityFactory extends BaseFactory
 
     protected function setDefaultTemplate(): void
     {
-        $this->setDefaultData(function(Generator $faker) {
+        $this->setDefaultData(function (Generator $faker) {
             return [
                 'name' => $faker->city,
             ];
@@ -37,7 +37,7 @@ class CityFactory extends BaseFactory
      * @param array|callable|null|int $parameter
      * @return $this
      */
-    public function withCountry($parameter = null): self
+    public function withCountry($parameter = null)
     {
         return $this->with('Country', CountryFactory::make($parameter));
     }

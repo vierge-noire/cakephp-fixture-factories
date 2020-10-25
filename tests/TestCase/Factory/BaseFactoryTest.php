@@ -27,7 +27,6 @@ use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use Faker\Generator;
-use RuntimeException;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;
@@ -87,7 +86,7 @@ class BaseFactoryTest extends TestCase
         $entities = ArticleFactory::make(['title' => 'blah'], $n)->getEntities();
 
         $this->assertSame($n, count($entities));
-        foreach($entities as $entity) {
+        foreach ($entities as $entity) {
             $this->assertInstanceOf(EntityInterface::class, $entity);
             $this->assertInstanceOf(Article::class, $entity);
             $this->assertSame('blah', $entity->title);
@@ -97,14 +96,14 @@ class BaseFactoryTest extends TestCase
     public function testGetEntitiesWithCallbackReturningArray()
     {
         $n = 3;
-        $entities = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker){
+        $entities = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
-                'title' => $faker->word
+                'title' => $faker->word,
             ];
         }, $n)->getEntities();
 
         $this->assertSame($n, count($entities));
-        foreach($entities as $entity) {
+        foreach ($entities as $entity) {
             $this->assertInstanceOf(EntityInterface::class, $entity);
             $this->assertInstanceOf(Article::class, $entity);
         }
@@ -142,7 +141,7 @@ class BaseFactoryTest extends TestCase
         $n = 3;
         $entities = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
-                'title' => $faker->sentence
+                'title' => $faker->sentence,
             ];
         }, $n)->persist();
 
@@ -159,7 +158,7 @@ class BaseFactoryTest extends TestCase
     {
         $n = 3;
         $entities = ArticleFactory::make([
-            'title' => 'test title'
+            'title' => 'test title',
         ], $n)->persist();
 
         $this->assertSame($n, count($entities));
@@ -176,10 +175,10 @@ class BaseFactoryTest extends TestCase
         $n = 3;
         $m = 2;
         $articles = ArticleFactory::make([
-            'title' => 'test title'
+            'title' => 'test title',
         ], $n)
             ->withAuthors([
-                'name' => 'blah'
+                'name' => 'blah',
             ], $m)
             ->persist();
 
@@ -201,11 +200,11 @@ class BaseFactoryTest extends TestCase
         $n = 3;
         $m = 2;
         $articles = ArticleFactory::make([
-            'title' => 'test title'
+            'title' => 'test title',
         ], $n)
-            ->withAuthors(function (AuthorFactory $factory, Generator $faker){
+            ->withAuthors(function (AuthorFactory $factory, Generator $faker) {
                 return [
-                    'name' => $faker->lastName
+                    'name' => $faker->lastName,
                 ];
             }, $m)
             ->persist();
@@ -227,7 +226,7 @@ class BaseFactoryTest extends TestCase
     {
         $article = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) {
             return [
-                'title' => $faker->sentence
+                'title' => $faker->sentence,
             ];
         })->persist();
 
@@ -239,11 +238,12 @@ class BaseFactoryTest extends TestCase
         $city = CityFactory::make(function (CityFactory $factory, Generator $faker) {
             $factory->withCountry(function (CountryFactory $factory, Generator $faker) {
                 return [
-                    'name' => $faker->country
+                    'name' => $faker->country,
                 ];
             });
+
             return [
-                'name' => $faker->city
+                'name' => $faker->city,
             ];
         })->persist();
 
@@ -261,12 +261,14 @@ class BaseFactoryTest extends TestCase
             function (ArticleFactory $factory, Generator $faker) {
                 return ['title' => $faker->sentence];
             },
-        $n)
+            $n
+        )
         ->withAuthors(
             function (AuthorFactory $factory, Generator $faker) {
                 return ['name' => $faker->lastName];
             },
-        $m)
+            $m
+        )
         ->persist();
 
         foreach ($articles as $article) {
@@ -290,19 +292,22 @@ class BaseFactoryTest extends TestCase
                     $factory->withCity(function (CityFactory $factory, Generator $faker) {
                         $factory->withCountry(function (CountryFactory $factory, Generator $faker) {
                             return [
-                                'name' => $faker->country
+                                'name' => $faker->country,
                             ];
                         });
+
                         return [
-                            'name' => $faker->city
+                            'name' => $faker->city,
                         ];
                     });
+
                     return [
-                        'street' => $faker->streetName
+                        'street' => $faker->streetName,
                     ];
                 });
+
                 return [
-                    'name' => $faker->lastName
+                    'name' => $faker->lastName,
                 ];
             }, $m)
             ->persist();
@@ -328,12 +333,14 @@ class BaseFactoryTest extends TestCase
             ->withAddress(function (AddressFactory $factory, Generator $faker) {
                 $factory->withCity(function (CityFactory $factory, Generator $faker) {
                     $factory->withCountry(['name' => 'Wonderland']);
+
                     return [
-                        'name' => $faker->city
+                        'name' => $faker->city,
                     ];
                 });
+
                 return [
-                    'street' => $faker->streetName
+                    'street' => $faker->streetName,
                 ];
             })
             ->getEntity();
@@ -357,8 +364,8 @@ class BaseFactoryTest extends TestCase
         $factory = AuthorFactory::make([
             'name' => 'test author',
             'business_address' => [
-                'street' => 'test address'
-            ]
+                'street' => 'test address',
+            ],
         ]);
 
         $persistedEntity = $factory->persist();
@@ -383,8 +390,8 @@ class BaseFactoryTest extends TestCase
         $factory = AuthorFactory::make([
             'name' => 'test project',
             'business_address' => [
-                'name' => 'test project address'
-            ]
+                'name' => 'test project address',
+            ],
         ]);
 
         $marshalledEntity = $factory->getEntity();
@@ -410,8 +417,8 @@ class BaseFactoryTest extends TestCase
             'name' => 'test author',
             'business_address' => [
                 'street' => 'test address',
-                'city_id' => CityFactory::make()->persist()->id
-            ]
+                'city_id' => CityFactory::make()->persist()->id,
+            ],
         ])->mergeAssociated(['BusinessAddress']);
 
         $persistedEntity = $factory->persist();
@@ -437,8 +444,8 @@ class BaseFactoryTest extends TestCase
         $factory = AuthorFactory::make([
             'name' => 'test author',
             'business_address' => [
-                'street' => 'test street'
-            ]
+                'street' => 'test street',
+            ],
         ])->mergeAssociated(['BusinessAddress']);
 
         $marshalledEntity = $factory->getEntity();
@@ -454,9 +461,10 @@ class BaseFactoryTest extends TestCase
         $entity = AuthorFactory::make(function (AuthorFactory $factory, Generator $faker) {
             $factory->withAddress(function (AddressFactory $factory, Generator $faker) {
                 return [
-                    'street' => $faker->streetAddress
+                    'street' => $faker->streetAddress,
                 ];
             });
+
             return [
                 'name' => $faker->lastName,
             ];
@@ -474,8 +482,8 @@ class BaseFactoryTest extends TestCase
             return [
                 'name' => $faker->name,
                 'business_address' => [
-                    'street' => $faker->streetAddress
-                ]
+                    'street' => $faker->streetAddress,
+                ],
             ];
         })->persist();
 
@@ -488,6 +496,7 @@ class BaseFactoryTest extends TestCase
     {
         $entity = AuthorFactory::make(function (AuthorFactory $factory, Generator $faker) {
             $factory->with('Address', AddressFactory::make(['street' => $faker->streetAddress]));
+
             return ['name' => $faker->lastName];
         })->persist();
 
@@ -502,6 +511,7 @@ class BaseFactoryTest extends TestCase
         $n = 10;
         $entities = AuthorFactory::make(function (AuthorFactory $factory, Generator $faker) {
             $factory->with('Address', AddressFactory::make(['street' => $faker->streetAddress]));
+
             return ['name' => $faker->lastName];
         }, $n)->persist();
 
@@ -556,7 +566,7 @@ class BaseFactoryTest extends TestCase
     {
         $callable = function () {
             return [
-                'name' => 'blah'
+                'name' => 'blah',
             ];
         };
 
@@ -571,7 +581,7 @@ class BaseFactoryTest extends TestCase
         $article = ArticleFactory::make(function (ArticleFactory $factory, Generator $faker) use ($id) {
             return [
                 'id' => $id,
-                'name' => $faker->sentence
+                'name' => $faker->sentence,
              ];
         })->persist();
 
@@ -651,6 +661,7 @@ class BaseFactoryTest extends TestCase
      * The fixture factories stop infinite propagation
      * Bills have an article set by default in their factory
      * However, this redundant association is stopped
+     *
      * @throws \Exception
      */
     public function testPersistingWithAssociationWithDefaultAssociationUnstopped()

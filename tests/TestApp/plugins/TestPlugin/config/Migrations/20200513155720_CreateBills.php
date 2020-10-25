@@ -11,6 +11,7 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 use Migrations\AbstractMigration;
 
 class CreateBills extends AbstractMigration
@@ -20,6 +21,7 @@ class CreateBills extends AbstractMigration
      *
      * More information on this method is available here:
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
+     *
      * @return void
      */
     public function up()

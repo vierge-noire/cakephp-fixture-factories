@@ -26,13 +26,6 @@ use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use TestApp\Model\Table\AddressesTable;
-use TestApp\Model\Table\ArticlesTable;
-use TestApp\Model\Table\AuthorsTable;
-use TestApp\Model\Table\CitiesTable;
-use TestApp\Model\Table\CountriesTable;
-use TestPlugin\Model\Table\BillsTable;
-use TestPlugin\Model\Table\CustomersTable;
 
 class AssociationBuilderTest extends TestCase
 {
@@ -221,14 +214,14 @@ class AssociationBuilderTest extends TestCase
         $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $this->expectException(AssociationBuilderException::class);
-        $AssociationBuilder->getTimeBetweenBrackets("Authors[]");
+        $AssociationBuilder->getTimeBetweenBrackets('Authors[]');
     }
 
     public function testGetTimeBetweenBracketsWith2Brackets()
     {
         $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
         $this->expectException(AssociationBuilderException::class);
-        $AssociationBuilder->getTimeBetweenBrackets("Authors[1][2]");
+        $AssociationBuilder->getTimeBetweenBrackets('Authors[1][2]');
     }
 
     public function testCollectAssociatedFactory()
@@ -236,7 +229,7 @@ class AssociationBuilderTest extends TestCase
         $AssociationBuilder = new AssociationBuilder(CityFactory::make());
         $AssociationBuilder->collectAssociatedFactory('Country', CountryFactory::make());
         $expected = [
-            'Country' => CountryFactory::make()->getMarshallerOptions()
+            'Country' => CountryFactory::make()->getMarshallerOptions(),
         ];
         $this->assertSame($expected, $AssociationBuilder->getAssociated());
     }
@@ -252,8 +245,8 @@ class AssociationBuilderTest extends TestCase
             'City' => CityFactory::make()->getMarshallerOptions() + [
                 'associated' => [
                     'Country' =>  CountryFactory::make()->getMarshallerOptions(),
-                ]
-            ]
+                ],
+            ],
         ];
         $this->assertSame($expected, $AddressFactory->getAssociated());
     }
@@ -283,11 +276,11 @@ class AssociationBuilderTest extends TestCase
                                 'validate' => false,
                                 'forceNew' => true,
                                 'accessibleFields' => ['*' => true],
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $this->assertSame($expected, $AddressFactory->getAssociated());
@@ -345,7 +338,7 @@ class AssociationBuilderTest extends TestCase
                 'validate' => false,
                 'forceNew' => true,
                 'accessibleFields' => ['*' => true],
-            ]
+            ],
         ];
         $this->assertSame($expected, $CityFactory->getAssociated());
     }
@@ -376,13 +369,13 @@ class AssociationBuilderTest extends TestCase
                                         'validate' => false,
                                         'forceNew' => true,
                                         'accessibleFields' => ['*' => true],
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ], $ArticleFactory->getAssociated());
     }
 

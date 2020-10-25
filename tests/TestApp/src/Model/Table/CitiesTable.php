@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace TestApp\Model\Table;
 
-use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -28,7 +27,7 @@ class CitiesTable extends Table
         $this->addAssociations([
             'belongsTo' => [
                 'Country' => [
-                    'className' => 'Countries'
+                    'className' => 'Countries',
                 ],
             ],
         ]);
@@ -54,8 +53,8 @@ class CitiesTable extends Table
 
     /**
      * @param Event $event
-     * @param ArrayObject $data
-     * @param ArrayObject $options
+     * @param \ArrayObject $data
+     * @param \ArrayObject $options
      */
     public function beforeMarshal(Event $event, \ArrayObject $data, \ArrayObject $options)
     {

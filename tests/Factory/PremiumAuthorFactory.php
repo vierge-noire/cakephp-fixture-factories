@@ -13,11 +13,10 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\Factory;
 
-
 class PremiumAuthorFactory extends AuthorFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return "PremiumAuthors";
+        return 'PremiumAuthors';
     }
 }

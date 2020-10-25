@@ -20,7 +20,7 @@ class AuthorFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string
     {
-        return "Authors";
+        return 'Authors';
     }
 
     protected function setDefaultTemplate(): void
@@ -28,7 +28,7 @@ class AuthorFactory extends BaseFactory
         $this
             ->setDefaultData(function (Generator $faker) {
                 return [
-                    'name' => $faker->name
+                    'name' => $faker->name,
                 ];
             })
             ->withAddress();

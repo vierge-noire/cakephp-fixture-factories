@@ -24,7 +24,7 @@ class CustomersTable extends Table
         $this->addAssociations([
             'belongsTo' => [
                 'Address' => [
-                    'className' => 'Addresses'
+                    'className' => 'Addresses',
                 ],
             ],
             'hasMany' => [

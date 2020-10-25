@@ -1,4 +1,4 @@
-name: PHPStan
+name: PHPStan / Code sniffer
 
 on:
   push:
@@ -40,3 +40,6 @@ jobs:
 
       - name: Run phpstan
         run: composer run-phpstan
+
+      - name: Run phpcs
+        run: composer cs-check

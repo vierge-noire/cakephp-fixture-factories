@@ -85,6 +85,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         ];
         $this->assertEquals($expected, $associations);
     }
+
     public function testHandleAssociationsWithAuthors()
     {
         $associations = $this->FactoryCommand->setTable('Authors', $this->io)->getAssociations();
@@ -94,14 +95,14 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
                 'BusinessAddress' => 'TestApp\Test\Factory\AddressFactory',
             ],
             'oneToMany' => [],
-            'manyToMany' => ['Articles' => 'TestApp\Test\Factory\ArticleFactory']
+            'manyToMany' => ['Articles' => 'TestApp\Test\Factory\ArticleFactory'],
         ];
         $this->assertEquals($expected, $associations);
     }
 
     public function testHandleAssociationsWithAddresses()
     {
-        $associations = $this->FactoryCommand->setTable('Addresses',  $this->io)->getAssociations();
+        $associations = $this->FactoryCommand->setTable('Addresses', $this->io)->getAssociations();
         $expected = [
             'toOne' => ['City' => 'TestApp\Test\Factory\CityFactory'],
             'oneToMany' => ['Authors' => 'TestApp\Test\Factory\AuthorFactory',],
@@ -112,7 +113,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 
     public function testHandleAssociationsWithBillsWithoutPlugin()
     {
-        $associations = $this->FactoryCommand->setTable('Bills',  $this->io)->getAssociations();
+        $associations = $this->FactoryCommand->setTable('Bills', $this->io)->getAssociations();
         $expected = [
             'toOne' => [],
             'oneToMany' => [],
@@ -124,7 +125,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     public function testHandleAssociationsWithBills()
     {
         $this->FactoryCommand->plugin = $this->testPluginName;
-        $associations = $this->FactoryCommand->setTable('Bills',  $this->io)->getAssociations();
+        $associations = $this->FactoryCommand->setTable('Bills', $this->io)->getAssociations();
 
         $expected = [
             'toOne' => ['Article' => 'TestApp\Test\Factory\ArticleFactory', 'Customer' => 'TestPlugin\Test\Factory\CustomerFactory'],
@@ -137,7 +138,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     public function testBakeUnexistingTable()
     {
         $this->expectException(StopException::class);
-        $this->assertFalse($this->FactoryCommand->setTable('ignore_that',  $this->io));
+        $this->assertFalse($this->FactoryCommand->setTable('ignore_that', $this->io));
     }
 
     public function testRunBakeWithNoArguments()
@@ -186,7 +187,6 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $author = AuthorFactory::make(['name' => 'Foo'])->withAddress($address->toArray())->persist();
         $article = ArticleFactory::make(['title' => 'Foo'])->withAuthors($author->toArray())->persist();
         $address2 = AddressFactory::make(['street' => 'Foo2'])->withCity($city->toArray())->withAuthors(['name' => 'Foo2'])->persist();
-
 
         $this->assertInstanceOf(Article::class, $article);
         $this->assertInstanceOf(Author::class, $author);

@@ -13,14 +13,13 @@ declare(strict_types=1);
  */
 namespace TestApp\Model\Table;
 
-use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 class CountriesTable extends Table
 {
-    const NAME_MAX_LENGTH = 100;
+    public const NAME_MAX_LENGTH = 100;
 
     public function initialize(array $config): void
     {
@@ -47,11 +46,10 @@ class CountriesTable extends Table
         return $validator;
     }
 
-
     /**
      * @param Event $event
-     * @param ArrayObject $data
-     * @param ArrayObject $options
+     * @param \ArrayObject $data
+     * @param \ArrayObject $options
      */
     public function beforeMarshal(Event $event, \ArrayObject $data, \ArrayObject $options)
     {

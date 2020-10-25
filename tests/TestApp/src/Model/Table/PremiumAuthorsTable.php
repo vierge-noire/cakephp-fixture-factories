@@ -15,7 +15,6 @@ namespace TestApp\Model\Table;
 
 class PremiumAuthorsTable extends AuthorsTable
 {
-
     public const ASSOCIATION_ALIAS = 'special_authors';
 
     public function initialize(array $config): void

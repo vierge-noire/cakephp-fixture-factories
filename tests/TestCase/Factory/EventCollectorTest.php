@@ -27,11 +27,9 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
-use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
-use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
 class EventCollectorTest extends TestCase
@@ -75,8 +73,7 @@ class EventCollectorTest extends TestCase
     {
         Configure::write('TestFixtureGlobalBehaviors', ['Sluggable']);
 
-        $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventCollector($factoryMock, 'Foo');
+        $EventManager = new EventCollector('Foo');
 
         $this->assertSame(
             ['Sluggable', 'Timestamp'],
@@ -86,8 +83,7 @@ class EventCollectorTest extends TestCase
 
     public function testSetBehaviorEmpty()
     {
-        $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventCollector($factoryMock, 'Foo');
+        $EventManager = new EventCollector('Foo');
 
         $expected = [
             'SomeBehaviorUsedInMultipleTables',
@@ -189,8 +185,8 @@ class EventCollectorTest extends TestCase
      */
     public function testApplyOrIgnoreEventInBehaviors(bool $times)
     {
-        $title = "This Article";
-        $slug = "This-Article";
+        $title = 'This Article';
+        $slug = 'This-Article';
 
         $article = ArticleFactory::make(compact('title'))->persist();
         $this->assertEquals(null, $article->slug);
@@ -205,8 +201,7 @@ class EventCollectorTest extends TestCase
     public function testSetBehaviorOnTheFly()
     {
         $behavior = 'Foo';
-        $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventCollector($factoryMock, 'Bar');
+        $EventManager = new EventCollector('Bar');
         $EventManager->listeningToBehaviors('Foo');
 
         $expected = [
@@ -234,12 +229,11 @@ class EventCollectorTest extends TestCase
      */
     public function testApplyOrIgnoreEventInBehaviorsOnTheFlyWithCountries(bool $times)
     {
-        $name = "Some Country";
-        $slug = "Some-Country";
+        $name = 'Some Country';
+        $slug = 'Some-Country';
 
         $country = CountryFactory::make(compact('name'))->persist();
         $this->assertNull($country->slug);
-
 
         $country = CountryFactory::make(compact('name'))
             ->listeningToBehaviors('Sluggable')
@@ -312,6 +306,7 @@ class EventCollectorTest extends TestCase
 
     /**
      * Cities have a rule that always return false
+     *
      * @throws Exception
      */
     public function testSkipRules()

@@ -20,11 +20,10 @@ use Cake\ORM\Behavior;
 
 class SomePluginBehavior extends Behavior
 {
-    const BEFORE_SAVE_FIELD =  'beforeSaveWasCalledInSomePluginBehavior';
+    public const BEFORE_SAVE_FIELD =  'beforeSaveWasCalledInSomePluginBehavior';
 
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options)
     {
         $entity->set(self::BEFORE_SAVE_FIELD, true);
     }
-
 }

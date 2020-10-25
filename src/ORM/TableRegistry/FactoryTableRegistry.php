@@ -31,6 +31,7 @@ use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
  * - Speeding up the fixture data injection to the database
  *
  * Class FactoryTableRegistry
+ *
  * @package CakephpFixtureFactories\ORM\TableRegistry
  */
 class FactoryTableRegistry extends TableRegistry
@@ -52,11 +53,10 @@ class FactoryTableRegistry extends TableRegistry
      * This has been removed in CakePHP 4.1.0, and has been re-added here
      * (https://github.com/cakephp/cakephp/compare/4.0.8...4.1.0-RC1#diff-28239f653d4163b32ba7450ec45f0c3f)
      *
-     * @return LocatorInterface
+     * @return \Cake\ORM\Locator\LocatorInterface
      */
     public static function getTableLocator(): LocatorInterface
     {
-
         if (!isset(self::$_locator)) {
             self::$_locator = new static::$_defaultLocatorClass();
         }

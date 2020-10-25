@@ -24,10 +24,10 @@ class BillsTable extends Table
         $this->addAssociations([
             'belongsTo' => [
                 'Article' => [
-                    'className' => 'Articles'
+                    'className' => 'Articles',
                 ],
                 'Customer' => [
-                    'className' => 'TestPlugin.Customers'
+                    'className' => 'TestPlugin.Customers',
                 ],
             ],
         ]);

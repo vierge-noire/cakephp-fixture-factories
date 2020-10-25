@@ -13,10 +13,8 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Error;
 
-
 use Cake\Core\Exception\Exception;
 
 class PersistenceException extends Exception
 {
-
 }

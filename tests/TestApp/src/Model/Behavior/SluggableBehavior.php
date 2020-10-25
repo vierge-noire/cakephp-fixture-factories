@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace TestApp\Model\Behavior;
 
 use ArrayObject;
-use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;

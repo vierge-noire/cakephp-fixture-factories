@@ -31,6 +31,9 @@ class SetupCommand extends Command
         return 'fixture_factories_setup';
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser
     {
         $parser
@@ -47,6 +50,9 @@ class SetupCommand extends Command
         return $parser;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function execute(Arguments $args, ConsoleIo $io)
     {
         $filePath = $this->getPhpunitFilePath($args, $io);
@@ -54,11 +60,17 @@ class SetupCommand extends Command
         $io->success("The listener was successfully replaced in $filePath.");
     }
 
+    /**
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \Cake\Console\ConsoleIo $io ConsoleIo
+     * @return string
+     */
     public function getPhpunitFilePath(Arguments $args, ConsoleIo $io): string
     {
         $fileName = $args->getOption('file') ?? 'phpunit.xml.dist';
 
-        if ($plugin = $args->getOption('plugin')) {
+        $plugin = $args->getOption('plugin');
+        if ($plugin) {
             $path = ROOT . DS . 'plugins' . DS . $plugin . DS . $fileName;
         } else {
             $path = ROOT . DS . $fileName;
@@ -66,6 +78,7 @@ class SetupCommand extends Command
 
         if (!file_exists($path)) {
             $io->abort("The phpunit config file $path could not be found.");
+
             return '';
         } else {
             return $path;
@@ -74,10 +87,12 @@ class SetupCommand extends Command
 
     /**
      * Replaces the listeners and injectors in $filePath
-     * @param string $filePath
-     * @param ConsoleIo $io
+     *
+     * @param string $filePath Path to the phpunit file
+     * @param \Cake\Console\ConsoleIo $io ConsoleIo
+     * @return void
      */
-    public function replaceListenersInPhpunitXmlFile(string $filePath, ConsoleIo $io)
+    public function replaceListenersInPhpunitXmlFile(string $filePath, ConsoleIo $io): void
     {
         try {
             $this->replaceListenerInString(
@@ -89,7 +104,12 @@ class SetupCommand extends Command
         }
     }
 
-    protected function replaceListenerInString(string $filePath, string $string)
+    /**
+     * @param string $filePath Path to the phpunit file
+     * @param string $string Content of the file
+     * @return void
+     */
+    protected function replaceListenerInString(string $filePath, string $string): void
     {
         $this->existsInString(\Cake\TestSuite\Fixture\FixtureInjector::class, $string, $filePath);
         $this->existsInString(\Cake\TestSuite\Fixture\FixtureManager::class, $string, $filePath);
@@ -102,38 +122,16 @@ class SetupCommand extends Command
 
     /**
      * Ensure that a string is well found in a file
-     * @param string $search
-     * @param string $subject
-     * @param string $filePath
+     *
+     * @param string $search Needle
+     * @param string $subject Stack
+     * @param string $filePath Path to the file
+     * @return void
      */
-    protected function existsInString(string $search, string $subject, string $filePath)
+    protected function existsInString(string $search, string $subject, string $filePath): void
     {
         if (strpos($subject, $search) === false) {
             throw new FixtureFactoryException("$search could not be found in $filePath.");
         }
-    }
-
-    /**
-     * Replace the listeners using the native XML DOM tool
-     * The disadvantage is that this changes the indentation
-     * and empty lines
-     * @param string $filePath
-     * @param string $string
-     * @deprecated
-     */
-    protected function replaceListenerWithDOMDocument(string $filePath, string $string)
-    {
-        $dom = new \SimpleXMLElement($string);
-        $dom->listeners = '';
-        $listener = $dom->listeners->addChild('listener');
-        $listener->addAttribute('class', FixtureInjector::class);
-        $arguments = $listener->addChild('arguments');
-        $arguments->addChild('object')->addAttribute('class', FixtureManager::class);
-
-        $doc = new \DOMDocument();
-        $doc->preserveWhiteSpace = false;
-        $doc->formatOutput = true;
-        $doc->loadXML($dom->asXML());
-        $doc->save($filePath);
     }
 }

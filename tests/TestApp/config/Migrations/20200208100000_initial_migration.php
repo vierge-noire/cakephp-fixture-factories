@@ -11,6 +11,7 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 use Migrations\AbstractMigration;
 
 class InitialMigration extends AbstractMigration
@@ -114,11 +115,11 @@ class InitialMigration extends AbstractMigration
             ->create();
 
         $this->table('authors')
-            ->addForeignKey('address_id', 'addresses', 'id', ['delete'=>'RESTRICT', 'update'=>'CASCADE'])
+            ->addForeignKey('address_id', 'addresses', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
             ->save();
 
         $this->table('cities')
-            ->addForeignKey('country_id', 'countries', 'id', ['delete'=>'RESTRICT', 'update'=>'CASCADE'])
+            ->addForeignKey('country_id', 'countries', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
             ->save();
     }
 

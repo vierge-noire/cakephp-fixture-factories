@@ -16,8 +16,6 @@ namespace CakephpFixtureFactories\Test\TestCase\Event;
 
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Event\ModelEventsHandler;
-use TestApp\Model\Table\ArticlesTable;
-use TestApp\Model\Table\CountriesTable;
 
 class ModelEventsHandlerTest extends \Cake\TestSuite\TestCase
 {
@@ -58,6 +56,7 @@ class ModelEventsHandlerTest extends \Cake\TestSuite\TestCase
         $country = $this->Countries->newEntity(['name' => 'Foo']);
         $this->assertNull($country->beforeMarshalTriggered);
     }
+
     public function testBeforeMarshalOnTableHandledPermissive()
     {
         ModelEventsHandler::handle($this->Countries, ['Model.beforeMarshal']);

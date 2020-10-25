@@ -13,14 +13,12 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpTestSuiteLight\FixtureInjector;
 use CakephpTestSuiteLight\FixtureManager;
-use Exception;
 
 class FixtureInjectorTest extends TestCase
 {
@@ -40,6 +38,7 @@ class FixtureInjectorTest extends TestCase
      * 1. Create the config, no countries
      * 2. Run the test again, countries seeded. Remove config
      * 3. No countries left
+     *
      * @return array
      */
     public function feedRollBackAndMigrateIfRequired()
@@ -51,12 +50,14 @@ class FixtureInjectorTest extends TestCase
      * For each of the data provided, their should be
      * 10 Articles found, which is the last value given to times
      * value
+     *
      * @return array
      * @throws Exception
      */
     public function createWithOneFactoryInTheDataProvider()
     {
         $Factory = ArticleFactory::make();
+
         return [
             [$Factory],
             [$Factory->setTimes(2)],
@@ -67,6 +68,7 @@ class FixtureInjectorTest extends TestCase
     /**
      * For each test, a different factory is provided, so the expected
      * number of articles is the first parameter
+     *
      * @return array[]
      */
     public function createWithDifferentFactoriesInTheDataProvider()
@@ -89,7 +91,7 @@ class FixtureInjectorTest extends TestCase
         $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
         if ($i === 1) {
             Configure::write('TestFixtureMarkedNonMigrated', [[
-                'source' => 'Seeds'
+                'source' => 'Seeds',
             ]]);
         }
         if ($i === 1 || $i === 3) {
@@ -99,11 +101,12 @@ class FixtureInjectorTest extends TestCase
             $this->assertSame('Test Country', $CountriesTable->find()->first()->name);
             Configure::delete('TestFixtureMarkedNonMigrated');
         }
-   }
+    }
 
     /**
      * Since there is only one factory in this data provider,
      * the factories will always return 10
+     *
      * @dataProvider createWithOneFactoryInTheDataProvider
      * @param ArticleFactory $factory
      * @throws Exception
@@ -117,6 +120,7 @@ class FixtureInjectorTest extends TestCase
     /**
      * Since there are distinct factories in this data provider,
      * the factories will produce different set of data
+     *
      * @dataProvider createWithDifferentFactoriesInTheDataProvider
      * @param int $n
      * @param ArticleFactory $factory

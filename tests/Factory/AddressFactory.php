@@ -26,7 +26,7 @@ class AddressFactory extends BaseFactory
     protected function setDefaultTemplate(): void
     {
         $this
-            ->setDefaultData(function(Generator $faker) {
+            ->setDefaultData(function (Generator $faker) {
                 return [
                     'street' => $faker->streetAddress,
                 ];

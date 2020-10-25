@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
-use Cake\Datasource\ResultSetInterface;
-use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\PersistenceException;
@@ -35,14 +33,14 @@ use function is_callable;
 abstract class BaseFactory
 {
     /**
-     * @var Generator|null
+     * @var \Faker\Generator|null
      */
-    static private $faker;
+    private static $faker;
     /**
      * @deprecated
      * @var bool
      */
-    static protected $applyListenersAndBehaviors = false;
+    protected static $applyListenersAndBehaviors = false;
     /**
      * @var array
      */
@@ -57,7 +55,7 @@ abstract class BaseFactory
     protected $saveOptions = [
         'checkRules' => false,
         'atomic' => false,
-        'checkExisting' => false
+        'checkExisting' => false,
     ];
     /**
      * @var bool
@@ -75,19 +73,20 @@ abstract class BaseFactory
      * and compiles it to produce the data feeding the
      * entities of the Factory
      *
-     * @var DataCompiler
+     * @var \CakephpFixtureFactories\Factory\DataCompiler
      */
     private $dataCompiler;
     /**
      * Helper to check and build data in associations
-     * @var AssociationBuilder
+     *
+     * @var \CakephpFixtureFactories\Factory\AssociationBuilder
      */
     private $associationBuilder;
     /**
      * Handles the events at the model and behavior level
      * for the table on which the factories will be built
      *
-     * @var EventCollector
+     * @var \CakephpFixtureFactories\Factory\EventCollector
      */
     private $eventCompiler;
 
@@ -98,11 +97,12 @@ abstract class BaseFactory
     {
         $this->dataCompiler = new DataCompiler($this);
         $this->associationBuilder = new AssociationBuilder($this);
-        $this->eventCompiler = new EventCollector($this, $this->getRootTableRegistryName());
+        $this->eventCompiler = new EventCollector($this->getRootTableRegistryName());
     }
 
     /**
      * Table Registry the factory is building entities from
+     *
      * @return string
      */
     abstract protected function getRootTableRegistryName(): string;
@@ -113,8 +113,8 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param array|callable|null|int $makeParameter
-     * @param int                     $times
+     * @param array|callable|null|int $makeParameter Injected data
+     * @param int                     $times Number of entities created
      * @return static
      */
     public static function make($makeParameter = [], int $times = 1): BaseFactory
@@ -129,20 +129,25 @@ abstract class BaseFactory
         } elseif (is_callable($makeParameter)) {
             $factory = static::makeFromCallable($makeParameter);
         } else {
-            throw new InvalidArgumentException("make only accepts an array, an integer or a callable as the first parameter");
+            throw new InvalidArgumentException('
+                ::make only accepts an array, an integer or a callable as the first parameter.
+            ');
         }
 
         $factory->setUp($factory, $times);
+
         return $factory;
     }
 
     /**
      * Collect the number of entities to be created
      * Apply the default template in the factory
-     * @param BaseFactory $factory
-     * @param int         $times
+     *
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @param int         $times Number of entities created
+     * @return void
      */
-    private function setUp(BaseFactory $factory, int $times)
+    protected function setUp(BaseFactory $factory, int $times): void
     {
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
@@ -154,42 +159,46 @@ abstract class BaseFactory
      * related TableRegistry as well as in the Behaviors
      * This is vey bad practice. The main purpose of the factory is to
      * generate data as fast and transparently as possible.
+     *
      * @deprecated Use instead $this->listeningToBehaviors and $this->listeningToModelEvents
-     * @param array|callable|null|int $makeParameter
-     * @param int                     $times
+     * @param array|callable|null|int $makeParameter Injected data
+     * @param int                     $times Number of entities created
      * @return static
      */
     public static function makeWithModelEvents($makeParameter = [], $times = 1): BaseFactory
     {
         $factory = static::make($makeParameter, $times);
         $factory->withModelEvents = true;
+
         return $factory;
     }
 
     /**
-     * @param array $data
+     * @param array $data Injected data
      * @return static
      */
     private static function makeFromArray(array $data = []): BaseFactory
     {
         $factory = new static();
         $factory->getDataCompiler()->collectFromArray($data);
+
         return $factory;
     }
 
     /**
-     * @param callable $fn
+     * @param callable $fn Injected data
      * @return static
      */
     private static function makeFromCallable(callable $fn): BaseFactory
     {
         $factory = new static();
         $factory->getDataCompiler()->collectArrayFromCallable($fn);
+
         return $factory;
     }
 
     /**
-     * @return Generator
+     * @return \Faker\Generator
      */
     public function getFaker(): Generator
     {
@@ -204,7 +213,8 @@ abstract class BaseFactory
 
     /**
      * Produce one entity from the present factory
-     * @return EntityInterface
+     *
+     * @return \Cake\Datasource\EntityInterface
      */
     public function getEntity(): EntityInterface
     {
@@ -216,7 +226,8 @@ abstract class BaseFactory
 
     /**
      * Produce a set of entities from the present factory
-     * @return EntityInterface[]
+     *
+     * @return \Cake\Datasource\EntityInterface[]
      */
     public function getEntities(): array
     {
@@ -234,7 +245,7 @@ abstract class BaseFactory
         $associated = $this->getAssociationBuilder()->getAssociated();
         if (!empty($associated)) {
             return array_merge($this->marshallerOptions, [
-                'associated' => $this->getAssociationBuilder()->getAssociated()
+                'associated' => $this->getAssociationBuilder()->getAssociated(),
             ]);
         } else {
             return $this->marshallerOptions;
@@ -269,7 +280,8 @@ abstract class BaseFactory
 
     /**
      * The table on which the factories are build, the package's one
-     * @return Table
+     *
+     * @return \Cake\ORM\Table
      */
     public function getTable(): Table
     {
@@ -282,7 +294,8 @@ abstract class BaseFactory
 
     /**
      * The default table registry, the CakePHP one
-     * @return Table
+     *
+     * @return \Cake\ORM\Table
      */
     public function getRootTableRegistry(): Table
     {
@@ -290,8 +303,8 @@ abstract class BaseFactory
     }
 
     /**
-     * @return array|EntityInterface|EntityInterface[]|ResultSetInterface|false|null
-     * @throws Exception
+     * @return array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|false|null
+     * @throws \Exception
      */
     public function persist()
     {
@@ -306,21 +319,22 @@ abstract class BaseFactory
                 return $this->persistMany($data);
             }
         } catch (Exception $exception) {
-            $factory = get_class($this);
+            $factory = static::class;
             $message = $exception->getMessage();
             throw new PersistenceException("Error in Factory $factory.\n Message: $message \n");
         }
     }
 
     /**
-     * @param array $data
-     * @return EntityInterface
-     * @throws PersistenceFailedException When the entity couldn't be saved
+     * @param array $data Data to persist
+     * @return \Cake\Datasource\EntityInterface
+     * @throws \Cake\ORM\Exception\PersistenceFailedException When the entity couldn't be saved
      */
-    protected function persistOne(array $data)
+    protected function persistOne(array $data): EntityInterface
     {
         $TableRegistry = $this->getTable();
         $entity = $TableRegistry->newEntity($data, $this->getMarshallerOptions());
+
         return $TableRegistry->saveOrFail($entity, $this->getSaveOptions());
     }
 
@@ -330,37 +344,40 @@ abstract class BaseFactory
     private function getSaveOptions(): array
     {
         return array_merge($this->saveOptions, [
-            'associated' => $this->getAssociated()
+            'associated' => $this->getAssociated(),
         ]);
     }
 
     /**
-     * @param array $data
-     *
-     * @return EntityInterface[]|ResultSetInterface|false False on failure, entities list on success.
-     * @throws Exception
+     * @param array $data Data to persist
+     * @return \Cake\Datasource\EntityInterface[]|\Cake\Datasource\ResultSetInterface|false False on failure, entities list on success.
+     * @throws \Exception
      */
     protected function persistMany(array $data)
     {
         $TableRegistry = $this->getTable();
         $entities = $TableRegistry->newEntities($data, $this->getMarshallerOptions());
+
         return $TableRegistry->saveMany($entities, $this->getSaveOptions());
     }
 
     /**
      * Assigns the values of $data to the $keys of the entities generated
-     * @param array $data
+     *
+     * @param array $data Data to inject
      * @return $this
      */
-    public function patchData(array $data): self
+    public function patchData(array $data)
     {
         $this->getDataCompiler()->collectFromPatch($data);
+
         return $this;
     }
 
     /**
      * A protected class dedicated to generating / collecting data for this factory
-     * @return DataCompiler
+     *
+     * @return \CakephpFixtureFactories\Factory\DataCompiler
      */
     protected function getDataCompiler(): DataCompiler
     {
@@ -369,7 +386,8 @@ abstract class BaseFactory
 
     /**
      * A protected class dedicated to building / collecting associations for this factory
-     * @return AssociationBuilder
+     *
+     * @return \CakephpFixtureFactories\Factory\AssociationBuilder
      */
     protected function getAssociationBuilder(): AssociationBuilder
     {
@@ -379,7 +397,7 @@ abstract class BaseFactory
     /**
      * A protected class to manage the Model Events inhrent to the creation of fixtures
      *
-     * @return EventCollector
+     * @return \CakephpFixtureFactories\Factory\EventCollector
      */
     protected function getEventCompiler(): EventCollector
     {
@@ -388,6 +406,7 @@ abstract class BaseFactory
 
     /**
      * Get the amount of entities generated by the factory
+     *
      * @return int
      */
     public function getTimes(): int
@@ -397,7 +416,9 @@ abstract class BaseFactory
 
     /**
      * Set the amount of entities generated by the factory
-     * @param int $times
+     *
+     * @param int $times Number if entities created
+     * @return self
      */
     public function setTimes(int $times): self
     {
@@ -407,20 +428,24 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array|string $activeBehaviors
+     * @param array|string $activeBehaviors Behaviors listened to by the factory
+     * @return self
      */
-    public function listeningToBehaviors($activeBehaviors)
+    public function listeningToBehaviors($activeBehaviors): self
     {
         $this->getEventCompiler()->listeningToBehaviors($activeBehaviors);
+
         return $this;
     }
 
     /**
-     * @param array|string $activeModelEvents
+     * @param array|string $activeModelEvents Model events listened to by the factory
+     * @return self
      */
-    public function listeningToModelEvents($activeModelEvents)
+    public function listeningToModelEvents($activeModelEvents): self
     {
         $this->getEventCompiler()->listeningToModelEvents($activeModelEvents);
+
         return $this;
     }
 
@@ -434,24 +459,26 @@ abstract class BaseFactory
      * ]
      * If not set, the offset is set randomly
      *
-     * @param int|string|array $primaryKeyOffset
-     *
+     * @param int|string|array $primaryKeyOffset Offset
      * @return self
      */
     public function setPrimaryKeyOffset($primaryKeyOffset): self
     {
         $this->getDataCompiler()->setPrimaryKeyOffset($primaryKeyOffset);
+
         return $this;
     }
 
     /**
      * Populate the entity factored
-     * @param callable $fn
+     *
+     * @param callable $fn Callable delivering injected data
      * @return $this
      */
-    protected function setDefaultData(callable $fn): self
+    protected function setDefaultData(callable $fn)
     {
         $this->getDataCompiler()->collectFromDefaultTemplate($fn);
+
         return $this;
     }
 
@@ -459,11 +486,12 @@ abstract class BaseFactory
      * Add associated entities to the fixtures generated by the factory
      * The associated name can be of several level, dot separated
      * The data can be an array, an integer, a callable or a factory
-     * @param string $associationName
-     * @param array|int|callable|BaseFactory $data
+     *
+     * @param string $associationName Association name
+     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory $data Injected data
      * @return $this
      */
-    public function with(string $associationName, $data = []): self
+    public function with(string $associationName, $data = [])
     {
         $this->getAssociationBuilder()->getAssociation($associationName);
 
@@ -490,22 +518,24 @@ abstract class BaseFactory
 
     /**
      * Unset a previously associated factory
-     * Useful to unrule associations set in setDefaultTemplate
-     * @param string $association
+     * Useful to bypass associations set in setDefaultTemplate
+     *
+     * @param string $association Association name
      * @return $this
      */
-    public function without(string $association): self
+    public function without(string $association)
     {
         $this->getDataCompiler()->dropAssociation($association);
         $this->getAssociationBuilder()->dropAssociation($association);
+
         return $this;
     }
 
     /**
-     * @param array $data
+     * @param array $data Data to merge
      * @return $this
      */
-    public function mergeAssociated(array $data): self
+    public function mergeAssociated(array $data)
     {
         $this->getAssociationBuilder()->setAssociated(
             array_merge(
