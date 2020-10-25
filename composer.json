@@ -23,7 +23,6 @@
     },
     "require-dev": {
         "cakephp/bake": "^1.5",
-        "phpstan/phpstan": "^0.12.48@dev",
         "phpunit/phpunit": "^6.1",
         "vierge-noire/cakephp-test-migrator": "^1.0"
     },
@@ -44,8 +43,7 @@
     "scripts": {
         "run-tests-mysql": "bash run_tests.sh Mysql",
         "run-tests-pgsql": "bash run_tests.sh Postgres",
-        "run-tests-sqlite": "bash run_tests.sh Sqlite",
-        "run-phpstan": "vendor/bin/phpstan analyse"
+        "run-tests-sqlite": "bash run_tests.sh Sqlite"
     },
     "config": {
         "sort-packages": true
