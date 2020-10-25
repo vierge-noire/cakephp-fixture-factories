@@ -47,7 +47,7 @@ jobs:
           ini-values: apc.enable_cli = 1
 
       - name: Update composer
-        run: composer self-update
+        run: composer self-update --snapshot
 
       - name: Validate composer.json
         run: composer validate
