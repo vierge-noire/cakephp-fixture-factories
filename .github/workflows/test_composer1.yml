@@ -1,4 +1,4 @@
-name: Tests
+name: Tests on Composer 1
 
 on:
   push:
@@ -20,6 +20,10 @@ jobs:
         php-version: ['7.2', '7.4']
         db-type: [sqlite, mysql, pgsql]
         composer-type: [lowest, stable, dev]
+        exclude:
+          # excludes composer lowest on mysql
+          - db-type: mysql
+            composer-type: lowest
 
     name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & ${{ matrix.composer-type }}
 
@@ -45,7 +49,7 @@ jobs:
           coverage: pcov
 
       - name: Update composer
-        run: composer self-update
+        run: composer self-update --1
 
       - name: Validate composer.json
         run: composer validate
