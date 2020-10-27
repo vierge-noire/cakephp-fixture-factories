@@ -23,7 +23,7 @@ use TestApp\Model\Entity\Article;
 class DocumentationExamplesTest extends TestCase
 {
     /**
-     * @var \TestApp\Model\Table\ArticlesTable
+     * @var \Cake\ORM\Table
      */
     private $Articles;
 
