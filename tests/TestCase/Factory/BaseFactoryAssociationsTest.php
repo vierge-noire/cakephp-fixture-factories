@@ -31,48 +31,46 @@ use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Entity\PremiumAuthor;
-use TestApp\Model\Table\AddressesTable;
-use TestApp\Model\Table\ArticlesTable;
-use TestApp\Model\Table\AuthorsTable;
-use TestApp\Model\Table\CitiesTable;
-use TestApp\Model\Table\CountriesTable;
 use TestApp\Model\Table\PremiumAuthorsTable;
 use TestPlugin\Model\Entity\Bill;
 use TestPlugin\Model\Entity\Customer;
-use TestPlugin\Model\Table\BillsTable;
-use TestPlugin\Model\Table\CustomersTable;
 
 class BaseFactoryAssociationsTest extends TestCase
 {
     /**
-     * @var AuthorsTable
+     * @var \TestApp\Model\Table\AuthorsTable
      */
     private $AuthorsTable;
 
     /**
-     * @var AddressesTable
+     * @var \TestApp\Model\Table\AddressesTable
      */
     private $AddressesTable;
 
     /**
-     * @var ArticlesTable
+     * @var \TestApp\Model\Table\ArticlesTable
      */
     private $ArticlesTable;
 
     /**
-     * @var CountriesTable
+     * @var \TestApp\Model\Table\CountriesTable
      */
     private $CountriesTable;
 
     /**
-     * @var CitiesTable
+     * @var \TestApp\Model\Table\CitiesTable
      */
     private $CitiesTable;
 
     /**
-     * @var CustomersTable
+     * @var \TestPlugin\Model\Table\CustomersTable
      */
     private $CustomersTable;
+
+    /**
+     * @var \TestPlugin\Model\Table\BillsTable
+     */
+    private $BillsTable;
 
     public static function setUpBeforeClass()
     {
@@ -83,11 +81,6 @@ class BaseFactoryAssociationsTest extends TestCase
     {
         Configure::delete('TestFixtureNamespace');
     }
-
-    /**
-     * @var BillsTable
-     */
-    private $BillsTable;
 
     public function setUp()
     {
@@ -162,7 +155,7 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->AuthorsTable->find()->count()
         );
 
-        $expectedArticles = 1 + ($nAuthors*$mArticles);
+        $expectedArticles = 1 + ($nAuthors * $mArticles);
         $this->assertSame(
             $expectedArticles,
             $this->ArticlesTable->find()->count()
@@ -380,10 +373,10 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2 * $times, $this->AddressesTable->find()->count());
         $country = $this->CountriesTable->findById($country->id)->contain('Cities.Addresses')->first();
 
-        for($i=0;$i<$times;$i++) {
+        for ($i = 0; $i < $times; $i++) {
             $this->assertEquals($street1, $country->cities[$i]->addresses[0]->street);
             $this->assertEquals($street2, $country->cities[$i]->addresses[1]->street);
-        };
+        }
     }
 
     public function testGetAssociatedFactoryWithReversedAssociation()
@@ -514,7 +507,7 @@ class BaseFactoryAssociationsTest extends TestCase
 
     public function testArticleWithPremiumAuthors()
     {
-        $nPremiumAuthors = rand(2,5);
+        $nPremiumAuthors = rand(2, 5);
         $article = ArticleFactory::make()
             ->with('ExclusivePremiumAuthors', $nPremiumAuthors)
             ->without('Authors')
