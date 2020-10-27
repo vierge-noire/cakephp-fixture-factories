@@ -23,7 +23,7 @@ use TestApp\Model\Entity\Article;
 class DocumentationExamplesTest extends TestCase
 {
     /**
-     * @var \TestApp\Model\Table\AuthorsTable
+     * @var \TestApp\Model\Table\ArticlesTable
      */
     private $Articles;
 
