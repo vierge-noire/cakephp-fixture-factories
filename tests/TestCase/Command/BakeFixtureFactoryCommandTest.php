@@ -238,7 +238,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     {
         $this->bake(['Articles']);
 
-        $this->bake([], ['plugin' => 'TestPlugin', 'all' => true,]);
+        $this->bake([], ['plugin' => 'TestPlugin', 'all' => true, 'methods' => true,]);
 
         $customer = CustomerFactory::make(['name' => 'Foo'])->persist();
         unset($customer['id']);

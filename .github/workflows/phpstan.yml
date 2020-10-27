@@ -35,8 +35,11 @@ jobs:
       - name: Validate composer.json
         run: composer validate
 
-      - name: Install phpstan
+      - name: Install dependencies
         run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
+
+      - name: Bake factories to perform analysis in the following steps
+        run : vendor/bin/phpunit vendor/bin/phpunit tests/TestCase/Command/BakeFixtureFactoryCommandTest.php
 
       - name: Run phpstan
         run: composer run-phpstan
