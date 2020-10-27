@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase;
 
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -21,6 +22,42 @@ use TestApp\Model\Entity\Article;
 
 class DocumentationExamplesTest extends TestCase
 {
+    /**
+     * @var \TestApp\Model\Table\AuthorsTable
+     */
+    private $Articles;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->Articles = TableRegistry::getTableLocator()->get('Articles');
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        unset($this->Articles);
+    }
+
+    public function testArticlesFindPublished()
+    {
+        $articles = ArticleFactory::make(['published' => 1], 3)->persist();
+        ArticleFactory::make(['published' => 0], 2)->persist();
+
+        $result = $this->Articles
+            ->find('published')
+            ->find('list')
+            ->toArray();
+
+        $expected = [
+            $articles[0]->id => $articles[0]->title,
+            $articles[1]->id => $articles[1]->title,
+            $articles[2]->id => $articles[2]->title,
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+    
     public function testExampleStaticData()
     {
         $article = ArticleFactory::make()->getEntity();

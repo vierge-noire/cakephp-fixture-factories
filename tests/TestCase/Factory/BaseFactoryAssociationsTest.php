@@ -38,34 +38,39 @@ use TestPlugin\Model\Entity\Customer;
 class BaseFactoryAssociationsTest extends TestCase
 {
     /**
-     * @var AuthorsTable
+     * @var \TestApp\Model\Table\AuthorsTable
      */
     private $AuthorsTable;
 
     /**
-     * @var AddressesTable
+     * @var \TestApp\Model\Table\AddressesTable
      */
     private $AddressesTable;
 
     /**
-     * @var ArticlesTable
+     * @var \TestApp\Model\Table\ArticlesTable
      */
     private $ArticlesTable;
 
     /**
-     * @var CountriesTable
+     * @var \TestApp\Model\Table\CountriesTable
      */
     private $CountriesTable;
 
     /**
-     * @var CitiesTable
+     * @var \TestApp\Model\Table\CitiesTable
      */
     private $CitiesTable;
 
     /**
-     * @var CustomersTable
+     * @var \TestPlugin\Model\Table\CustomersTable
      */
     private $CustomersTable;
+
+    /**
+     * @var \TestPlugin\Model\Table\BillsTable
+     */
+    private $BillsTable;
 
     public static function setUpBeforeClass(): void
     {
@@ -76,11 +81,6 @@ class BaseFactoryAssociationsTest extends TestCase
     {
         Configure::delete('TestFixtureNamespace');
     }
-
-    /**
-     * @var BillsTable
-     */
-    private $BillsTable;
 
     public function setUp(): void
     {

@@ -1,8 +1,8 @@
 {
-    "name": "pakacuda/cakephp-fixture-factories",
-    "description": "An alternative to the CakePHP fixtures",
+    "name": "vierge-noire/cakephp-fixture-factories",
+    "description": "CakePHP Dynamic Fixtures",
     "type": "cakephp-plugin",
-    "keywords": ["cakephp", "test", "fixtures"],
+    "keywords": ["cakephp", "tests", "dynamic", "fixtures"],
     "authors": [
         {
             "name": "Nicolas Masson",

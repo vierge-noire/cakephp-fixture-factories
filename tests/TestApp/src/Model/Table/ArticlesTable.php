@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace TestApp\Model\Table;
 
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 
 class ArticlesTable extends Table
@@ -38,5 +39,13 @@ class ArticlesTable extends Table
             ],
         ]);
         parent::initialize($config);
+    }
+
+    public function findPublished(Query $query, array $options): Query
+    {
+        $query->where([
+            $this->aliasField('published') => 1
+        ]);
+        return $query;
     }
 }
