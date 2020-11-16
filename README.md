@@ -98,7 +98,7 @@ The only step performed by the package's test suite is to truncate *dirty* table
 ## Support
 Contact us at vierge.noire.info@gmail.com for professional assistance.
 
-You like our work? <a href='https://ko-fi.com/L3L52P9JA' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Support' />Support us!</a>
+You like our work? <a href='https://ko-fi.com/L3L52P9JA' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Support'/></a>
 
 ## License
 
