@@ -98,6 +98,8 @@ The only step performed by the package's test suite is to truncate *dirty* table
 ## Support
 Contact us at vierge.noire.info@gmail.com for professional assistance.
 
+You like our work? Support us here https://ko-fi.com/viergenoire!
+
 ## License
 
 The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
