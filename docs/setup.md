@@ -33,7 +33,7 @@ The fixtures will be created in the test database(s) as defined in your [configu
 ### Ignoring connections
 
 The package will empty the tables found in all test databases. If you wish to ignore a given connection, you may create a 
-`config/fixture_factories.php` file and provide the connections that should be ignored:
+`config/test_suite_light.php` file and provide the connections that should be ignored:
 
 ```$xslt
 <?php
