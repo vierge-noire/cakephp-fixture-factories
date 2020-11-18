@@ -39,7 +39,7 @@ The package will empty the tables found in all test databases. If you wish to ig
 <?php
 
 return [   
-    'TestFixtureIgnoredConnections' => [
+    'TestSuiteLightIgnoredConnections' => [
         'test_foo_connection_to_be_ignored',
         'test_bar_connection_to_be_ignored',
         ...
