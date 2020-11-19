@@ -16,19 +16,22 @@ by SQL queries. These are called `TableSniffers` and there are located in the `s
 If you use a different database engine, you will have to provide your own. It should extend
 the `BaseTableSniffer`.
 
-You should then map in your `config/fixture_factories.php` file the driver to
-the custom table sniffer. E.g.:
+You should then map in your `config/app.php` file the driver to
+the custom table sniffer fir each relevant connection. E.g.:
 
 ```$xslt
+In config/app.php
 <?php
-
-return [   
-    'TestFixtureTableSniffers' => [
-        '\Some\Database\Driver' => '\Custom\Table\Sniffer', 
-    ],
-];
-``` 
- 
+...
+'test' => [
+    'className' => Connection::class,
+    'driver' => Mysql::class,
+    'persistent' => false,
+    ...
+    'tableSniffer' => '\Your\Custom\Table\Sniffer'
+],
+```
+See the documentation of the [test suite light](https://github.com/vierge-noire/cakephp-test-suite-light#truncating-tables) for deeper insight.
 
 ### Disabling the truncation
 

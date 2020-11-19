@@ -121,10 +121,10 @@ $article = ArticleFactory::make()->listeningToBehaviors('Sluggable')->getEntity(
 ```
 or per default in the factory's `setDefaultTemplate` method.
 
-Additionaly, you can declare a behavior globaly. This can be useful for behaviors that impact a large amount of tables
+Additionally, you can declare a behavior globally. This can be useful for behaviors that impact a large amount of tables
 and for which not nullable fields need to be populated.
 
-You may create a `fixture_factories.php` config file in your application's `config` folder. Under the key `TestFixtureGlobalBehaviors`, you will need to define all the behaviors that will be listened to, provided that the root table itself is listening to them.
+You may save in your configuration file, under the key `TestFixtureGlobalBehaviors`, all the behaviors that will be listened to, provided that the root table itself is listening to them.
 
 ```$xslt
 'TestFixtureGlobalBehaviors' => [
