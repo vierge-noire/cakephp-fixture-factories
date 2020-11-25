@@ -17,8 +17,7 @@ If you use a different database engine, you will have to provide your own. It sh
 the `BaseTableSniffer`.
 
 You should then map in your `config/app.php` file the driver to
-the custom table sniffer fir each relevant connection. E.g.:
-
+the custom table sniffer for each relevant connection. E.g.:
 ```$xslt
 In config/app.php
 <?php
