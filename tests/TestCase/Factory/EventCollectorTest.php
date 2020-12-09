@@ -328,4 +328,22 @@ class EventCollectorTest extends TestCase
         $this->assertInstanceOf(City::class, $address->city);
         $this->assertEmpty($address->getErrors());
     }
+
+    public function testBeforeMarshalIsTriggeredInAssociationWhenDefinedInDefaultTemplate()
+    {
+        $bill = BillFactory::make()->getEntity();
+        $this->assertTrue($bill->beforeMarshalTriggeredPerDefault);
+
+        $bill = CustomerFactory::make()->withBills()->getEntity()->bills[0];
+        $this->assertTrue($bill->beforeMarshalTriggeredPerDefault);
+    }
+
+    public function testAfterSaveIsTriggeredInAssociationWhenDefinedInDefaultTemplate()
+    {
+        $bill = BillFactory::make()->persist();
+        $this->assertTrue($bill->afterSaveTriggeredPerDefault);
+
+        $bill = CustomerFactory::make()->withBills()->persist()->bills[0];
+        $this->assertTrue($bill->afterSaveTriggeredPerDefault);
+    }
 }

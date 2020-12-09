@@ -12,6 +12,9 @@
  */
 namespace TestPlugin\Model\Table;
 
+use ArrayObject;
+use Cake\Datasource\EntityInterface;
+use Cake\Event\Event;
 use Cake\ORM\Table;
 
 class BillsTable extends Table
@@ -32,5 +35,21 @@ class BillsTable extends Table
         ]);
 
         parent::initialize($config);
+    }
+
+    /**
+     * @param Event $event
+     * @param ArrayObject $data
+     * @param ArrayObject $options
+     */
+    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
+    {
+        $data['beforeMarshalTriggeredPerDefault'] = true;
+    }
+
+    public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options)
+    {
+        $entity->set('afterSaveTriggeredPerDefault', true);
+        $entity->set('created', '2010-01-01');
     }
 }

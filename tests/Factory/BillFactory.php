@@ -31,7 +31,11 @@ class BillFactory extends BaseFactory
             ];
         })
         ->withArticle()
-        ->withCustomer();
+        ->withCustomer()
+        ->listeningToModelEvents([
+            'Model.beforeMarshal',
+            'Model.afterSave',
+        ]);
     }
 
     public function withArticle($parameter = null)
