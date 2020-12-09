@@ -19,7 +19,7 @@ jobs:
       matrix:
         php-version: ['7.2', '7.4']
         db-type: [sqlite, mysql, pgsql]
-        composer-type: [lowest, stable, dev]
+        composer-type: [stable, dev]
 
     name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & ${{ matrix.composer-type }}
 
