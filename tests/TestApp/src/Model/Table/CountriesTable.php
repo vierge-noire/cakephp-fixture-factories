@@ -33,6 +33,10 @@ class CountriesTable extends Table
         $this->addAssociations([
             'hasMany' => [
                 'Cities',
+                'VirtualCities' => [
+                    'className' => 'Cities',
+                    'foreignKey' => 'city_id',
+                ],
             ],
         ]);
 

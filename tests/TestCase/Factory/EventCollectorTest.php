@@ -27,9 +27,11 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
+use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
 class EventCollectorTest extends TestCase
@@ -322,5 +324,23 @@ class EventCollectorTest extends TestCase
         $this->assertInstanceOf(Address::class, $address);
         $this->assertInstanceOf(City::class, $address->city);
         $this->assertEmpty($address->getErrors());
+    }
+
+    public function testBeforeMarshalIsTriggeredInAssociationWhenDefinedInDefaultTemplate()
+    {
+        $bill = BillFactory::make()->getEntity();
+        $this->assertTrue($bill->beforeMarshalTriggeredPerDefault);
+
+        $bill = CustomerFactory::make()->withBills()->getEntity()->bills[0];
+        $this->assertTrue($bill->beforeMarshalTriggeredPerDefault);
+    }
+
+    public function testAfterSaveIsTriggeredInAssociationWhenDefinedInDefaultTemplate()
+    {
+        $bill = BillFactory::make()->persist();
+        $this->assertTrue($bill->afterSaveTriggeredPerDefault);
+
+        $bill = CustomerFactory::make()->withBills()->persist()->bills[0];
+        $this->assertTrue($bill->afterSaveTriggeredPerDefault);
     }
 }
