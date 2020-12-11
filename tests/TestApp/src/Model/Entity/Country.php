@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TestApp\Model\Entity;
 
 use Cake\ORM\Entity;
+use CakephpFixtureFactories\Test\TestCase\Factory\BaseFactoryAssociationsTest;
 
 /**
  * Country Entity
@@ -34,4 +35,13 @@ class Country extends Entity
         'beforeMarshalTriggered' => true,
         'eventApplied' => true,
     ];
+
+    /**
+     * @see BaseFactoryAssociationsTest::testAssociationWithVirtualFieldNamedIdentically()
+     * @return false
+     */
+    protected function _getVirtualCities(): bool
+    {
+        return false;
+    }
 }

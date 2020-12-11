@@ -119,4 +119,5 @@ $country = CountryFactory::make()->with('Cities', [
 ])->persist();
 ```
 
-This an be useful if your business logic uses hard coded values, or constants.
+This an be useful if your business logic uses hard coded values, or constants.Note that when an association has the same name as a virtual field,
+the virtual field will overwrite the data prepared by the associated factory.

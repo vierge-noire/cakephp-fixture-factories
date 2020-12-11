@@ -27,6 +27,7 @@ use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use CakephpFixtureFactories\Util;
+use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
@@ -651,5 +652,33 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertSame($street1, $this->AddressesTable->get(1)->street);
             $this->assertSame($street2, $this->AddressesTable->get(2)->street);
         }
+    }
+
+    /**
+     * When an association has the same name as a virtual field,
+     * the virtual field will overwrite the data prepared by the
+     * associated factory
+     *
+     * @see Country::_getVirtualCities()
+     * @throws Exception
+     */
+    public function testAssociationWithVirtualFieldNamedIdentically()
+    {
+        $factory = CountryFactory::make()
+            ->with('Cities')
+            ->with('VirtualCities');
+
+
+        $country = $factory->getEntity();
+        $this->assertSame(true, is_string($country->cities[0]->name));
+        $this->assertSame(false, $country->virtual_cities);
+
+        $country = $factory->persist();
+        $this->assertSame(true, is_string($country->cities[0]->name));
+        $this->assertSame(false, $country->virtual_cities);
+
+        // Only the non virtual Cities will be saved
+        $this->assertSame(1, $this->CitiesTable->find()->count());
+        $this->assertSame(1, $this->CountriesTable->find()->count());
     }
 }
