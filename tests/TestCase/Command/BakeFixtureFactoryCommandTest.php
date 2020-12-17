@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Command;
 
 use Cake\Console\Exception\StopException;
+use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Test\TestCase\Helper\TestCaseWithFixtureBaking;
 use TestApp\Model\Entity\Address;
@@ -33,6 +34,7 @@ use TestPlugin\Test\Factory\CustomerFactory;
 
 /**
  * App\Shell\Task\FactoryTask Test Case
+ * @see BakeFixtureFactoryCommand
  */
 class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 {
@@ -63,13 +65,13 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 
     public function testGetTableListInApp()
     {
-        $this->assertEquals($this->appTables, $this->FactoryCommand->getTableList());
+        $this->assertEquals($this->appTables, array_values($this->FactoryCommand->getTableList($this->io)));
     }
 
     public function testGetTableListInPlugin()
     {
         $this->FactoryCommand->plugin = $this->testPluginName;
-        $this->assertEquals($this->pluginTables, $this->FactoryCommand->getTableList());
+        $this->assertEquals($this->pluginTables, array_values($this->FactoryCommand->getTableList($this->io)));
     }
 
     public function testHandleAssociationsWithArticles()
@@ -253,5 +255,31 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $this->assertInstanceOf(Article::class, $article);
         $this->assertInstanceOf(Bill::class, $bill);
         $this->assertInstanceOf(Customer::class, $customer);
+    }
+
+    public function dataForTestThisTableShouldBeBaked()
+    {
+        return [
+            ['Cities', null, true],
+            ['Cities', true, false],
+            ['Cities', 'TestPlugin', false],
+            ['Bills', null, false],
+            ['Bills', 'TestPlugin', true],
+            ['AbstractApp', null, false],
+            ['AbstractPlugin', 'TestPlugin', false],
+        ];
+    }
+
+    /**
+     * @dataProvider dataForTestThisTableShouldBeBaked
+     * @param string $model
+     * @param $plugin
+     * @param bool $expected
+     */
+    public function testThisTableShouldBeBaked(string $model, $plugin, bool $expected)
+    {
+        $this->FactoryCommand->plugin = $plugin;
+
+        $this->assertSame($expected, $this->FactoryCommand->thisTableShouldBeBaked($model, $this->io));
     }
 }
