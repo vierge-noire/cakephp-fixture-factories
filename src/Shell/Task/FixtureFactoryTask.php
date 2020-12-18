@@ -15,17 +15,16 @@ namespace CakephpFixtureFactories\Shell\Task;
 
 use Bake\Shell\Task\SimpleBakeTask;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Util;
+use ReflectionClass;
 
 /**
  * FixtureFactory code generator.
- *
- * @property \Bake\Shell\Task\BakeTemplateTask $BakeTemplate
- * @property \Bake\Shell\Task\TestTask $Test
  */
 class FixtureFactoryTask extends SimpleBakeTask
 {
@@ -128,9 +127,44 @@ class FixtureFactoryTask extends SimpleBakeTask
     {
         $dir = new Folder($this->getModelPath());
         $tables = $dir->find('.*Table.php', true);
-        return array_map(function ($a) {
+
+        $tables = array_map(function ($a) {
             return preg_replace('/Table.php$/', '', $a);
         }, $tables);
+
+        foreach ($tables as $i => $table) {
+            if (!$this->thisTableShouldBeBaked($table)) {
+                unset($tables[$i]);
+                echo "{$table} ignored";
+            }
+        }
+
+        return $tables;
+    }
+
+    /**
+     * Return false if the table is not found or is abstract, interface or trait
+     * @param string $table
+     * @return bool
+     */
+    public function thisTableShouldBeBaked(string $table): bool
+    {
+
+        $tableClassName = $this->plugin ? $this->plugin : Configure::read('App.namespace');
+        $tableClassName .= "\Model\Table\\{$table}Table";
+
+        try {
+            $class = new ReflectionClass($tableClassName);
+        } catch (\ReflectionException $e) {
+            echo $e->getMessage();
+            return false;
+        }
+
+        if ($class->isAbstract() || $class->isInterface() || $class->isTrait()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -86,13 +86,13 @@ class FixtureFactoryTaskTest extends TestCase
 
     public function testGetTableListInApp()
     {
-        $this->assertEquals($this->appTables, $this->FactoryTask->getTableList());
+        $this->assertEquals($this->appTables, array_values($this->FactoryTask->getTableList()));
     }
 
     public function testGetTableListInPlugin()
     {
         $this->FactoryTask->plugin = $this->testPluginName;
-        $this->assertEquals($this->pluginTables, $this->FactoryTask->getTableList());
+        $this->assertEquals($this->pluginTables, array_values($this->FactoryTask->getTableList()));
     }
 
     public function testHandleAssociationsWithArticles()
@@ -181,6 +181,32 @@ class FixtureFactoryTaskTest extends TestCase
     public function testRunBakeWithWrongModel()
     {
         $this->assertEquals(1, $this->FactoryTask->main('SomeModel'));
+    }
+
+    public function dataForTestThisTableShouldBeBaked()
+    {
+        return [
+            ['Cities', null, true],
+            ['Cities', true, false],
+            ['Cities', 'TestPlugin', false],
+            ['Bills', null, false],
+            ['Bills', 'TestPlugin', true],
+            ['AbstractApp', null, false],
+            ['AbstractPlugin', 'TestPlugin', false],
+        ];
+    }
+
+    /**
+     * @dataProvider dataForTestThisTableShouldBeBaked
+     * @param string $model
+     * @param $plugin
+     * @param bool $expected
+     */
+    public function testThisTableShouldBeBaked(string $model, $plugin, bool $expected)
+    {
+        $this->FactoryTask->plugin = $plugin;
+
+        $this->assertSame($expected, $this->FactoryTask->thisTableShouldBeBaked($model));
     }
 
 //    public function testRunBakeWithModel()
