@@ -11,11 +11,12 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace CakephpFixtureFactories\ORM\Locator;
+namespace CakephpFixtureFactories\ORM;
 
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\Event\ModelEventsHandler;
+use CakephpFixtureFactories\Factory\EventCollector;
 
 class FactoryTableLocator extends TableLocator
 {
@@ -24,19 +25,17 @@ class FactoryTableLocator extends TableLocator
      */
     protected function _create(array $options): Table
     {
-        $options['CakephpFixtureFactoriesListeningModelEvents'] =
-            $options['CakephpFixtureFactoriesListeningModelEvents'] ?? [];
-
-        $options['CakephpFixtureFactoriesListeningBehaviors'] =
-            $options['CakephpFixtureFactoriesListeningBehaviors'] ?? [];
-
         $cloneTable = parent::_create($options);
 
         ModelEventsHandler::handle(
             $cloneTable,
-            $options['CakephpFixtureFactoriesListeningModelEvents'],
-            $options['CakephpFixtureFactoriesListeningBehaviors']
+            $options[EventCollector::MODEL_EVENTS] ?? [],
+            $options[EventCollector::MODEL_BEHAVIORS] ?? []
         );
+
+        $cloneTable->getEventManager()->on('Model.beforeSave', function ($event, $entity, $options) use ($cloneTable) {
+            FactoryTableBeforeSave::handle($cloneTable, $entity);
+        });
 
         return $cloneTable;
     }

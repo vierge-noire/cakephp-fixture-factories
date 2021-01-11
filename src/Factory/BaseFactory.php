@@ -58,6 +58,10 @@ abstract class BaseFactory
         'checkExisting' => false,
     ];
     /**
+     * @var array Unique fields. Uniqueness applies only to persisted entities.
+     */
+    protected $uniqueProperties = [];
+    /**
      * @var bool
      */
     protected $withModelEvents = false;
@@ -274,6 +278,7 @@ abstract class BaseFactory
                 $data[] = $compiledData;
             }
         }
+        UniquenessJanitor::sanitizeEntityArray($this, $data);
 
         return $data;
     }
@@ -465,6 +470,35 @@ abstract class BaseFactory
     public function setPrimaryKeyOffset($primaryKeyOffset): self
     {
         $this->getDataCompiler()->setPrimaryKeyOffset($primaryKeyOffset);
+
+        return $this;
+    }
+
+    /**
+     * Get the fields that are declared are unique.
+     * This should include the uniqueness of the fields in your schema.
+     *
+     * @return array
+     */
+    public function getUniqueProperties(): array
+    {
+        return $this->uniqueProperties;
+    }
+
+    /**
+     * Set the unique fields of the factory.
+     * If a field is unique and explicitly modified,
+     * it's existence will be checked
+     * before persisting. If found, no new
+     * entity will be created, but instead the
+     * existing one will be considered.
+     *
+     * @param array|string|null $fields Unique fields set on the fly.
+     * @return $this
+     */
+    public function setUniqueProperties($fields)
+    {
+        $this->uniqueProperties = (array)$fields;
 
         return $this;
     }
