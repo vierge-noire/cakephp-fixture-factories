@@ -16,7 +16,7 @@
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "cakephp/cakephp": "^3.7",
         "fzaninotto/faker": "^1.9@dev",
         "vierge-noire/cakephp-test-suite-light": "^1.1"
@@ -26,7 +26,6 @@
         "josegonzalez/dotenv": "dev-master",
         "phpunit/phpunit": "^6.1",
         "vierge-noire/cakephp-test-migrator": "^1.1"
-
     },
     "autoload": {
         "psr-4": {
@@ -43,10 +42,10 @@
         }
     },
     "scripts": {
-        "run-tests-mysql": "bash run_tests.sh Mysql",
-        "run-tests-pgsql": "bash run_tests.sh Postgres",
-        "run-tests-sqlite": "bash run_tests.sh Sqlite",
-        "run-phpstan": "vendor/bin/phpstan analyse"
+        "mysql": "bash run_tests.sh Mysql",
+        "pgsql": "bash run_tests.sh Postgres",
+        "sqlite": "bash run_tests.sh Sqlite",
+        "phpstan": "vendor/bin/phpstan analyse"
     },
     "config": {
         "sort-packages": true
