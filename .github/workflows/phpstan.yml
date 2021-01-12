@@ -42,7 +42,7 @@ jobs:
         run : vendor/bin/phpunit vendor/bin/phpunit tests/TestCase/Command/BakeFixtureFactoryCommandTest.php
 
       - name: Run phpstan
-        run: composer run-phpstan
+        run: composer phpstan
 
       - name: Run phpcs
         run: composer cs-check

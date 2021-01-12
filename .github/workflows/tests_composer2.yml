@@ -1,4 +1,4 @@
-name: Tests
+name: PHP Unit Tests
 
 on:
   push:
@@ -19,7 +19,12 @@ jobs:
       matrix:
         php-version: ['7.2', '7.4']
         db-type: [sqlite, mysql, pgsql]
-        composer-type: [stable, dev]
+        composer-type: [lowest, stable, dev]
+        exclude:
+          # excludes composer lowest on mysql
+          - db-type: mysql
+            composer-type: lowest
+
 
     name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & ${{ matrix.composer-type }}
 
@@ -53,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: |
           if [[ ${{ matrix.composer-type }} == 'lowest' ]]; then
-            composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest
+            composer self-update --1 && composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest
           elif [[ ${{ matrix.composer-type }} == 'stable' ]]; then
             composer update --prefer-dist --no-progress --no-suggest --prefer-stable
           else
@@ -65,4 +70,4 @@ jobs:
           if [ ${{ matrix.db-type }} == 'mysql' ]; then
             sudo service mysql start && mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS test_fixture_factories;';
           fi
-          composer run-tests-${{ matrix.db-type }}
+          composer ${{ matrix.db-type }}
