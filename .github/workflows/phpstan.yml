@@ -42,4 +42,4 @@ jobs:
         run: composer require phpstan/phpstan "^0.12.48@dev"
 
       - name: Run phpstan
-        run: composer run-phpstan
+        run: composer phpstan
