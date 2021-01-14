@@ -15,6 +15,7 @@ namespace CakephpFixtureFactories\Test\Factory;
 
 use CakephpFixtureFactories\Factory\BaseFactory;
 use Faker\Generator;
+use TestApp\Model\Entity\Article;
 
 class ArticleFactory extends BaseFactory
 {
@@ -97,6 +98,13 @@ class ArticleFactory extends BaseFactory
     {
         return $this->patchData([
             'title' => $this->getFaker()->jobTitle,
+        ]);
+    }
+
+    public function withHiddenBiography(string $text)
+    {
+        return $this->patchData([
+            Article::HIDDEN_PARAGRAPH_PROPERTY_NAME => $text
         ]);
     }
 }
