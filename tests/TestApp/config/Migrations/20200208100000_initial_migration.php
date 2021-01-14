@@ -52,6 +52,10 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => true,
             ])
+            ->addColumn(\TestApp\Model\Entity\Article::HIDDEN_PARAGRAPH_PROPERTY_NAME, 'text', [
+                'default' => null,
+                'null' => true,
+            ])
             ->addColumn('published', 'integer', [
                 'default' => 0,
                 'null' => false,

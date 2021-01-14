@@ -236,7 +236,7 @@ class DataCompiler
         $associationName                        = Inflector::singularize($associationName);
         /** @var BaseFactory $factory */
         $factory = $data[$count - 1];
-        $compiledTemplateData[$associationName] = $factory->getEntity()->toArray();
+        $compiledTemplateData[$associationName] = $factory->getEntity()->setHidden([])->toArray();
     }
 
     /**
@@ -266,7 +266,7 @@ class DataCompiler
     {
         $result = [];
         foreach ($factory->getEntities() as $entity) {
-            $result[] = $entity->toArray();
+            $result[] = $entity->setHidden([])->toArray();
         }
         return $result;
     }

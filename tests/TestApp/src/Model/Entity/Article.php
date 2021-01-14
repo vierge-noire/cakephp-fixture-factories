@@ -20,6 +20,8 @@ use Cake\ORM\Entity;
  */
 class Article extends Entity
 {
+    public const HIDDEN_PARAGRAPH_PROPERTY_NAME = 'hidden_paragraph';
+
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -37,5 +39,9 @@ class Article extends Entity
         'modified' => true,
         'bills' => true,
         'authors' => true,
+    ];
+
+    protected $_hidden = [
+        self::HIDDEN_PARAGRAPH_PROPERTY_NAME,
     ];
 }
