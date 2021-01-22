@@ -18,6 +18,10 @@ use Faker\Generator;
 
 class CountryFactory extends BaseFactory
 {
+    protected $uniqueProperties = [
+        'unique_stamp',
+    ];
+
     protected function getRootTableRegistryName(): string
     {
         return 'Countries';
@@ -28,6 +32,7 @@ class CountryFactory extends BaseFactory
         $this->setDefaultData(function (Generator $faker) {
             return [
                 'name' => $faker->country,
+                'unique_stamp' => $faker->uuid,
             ];
         });
     }

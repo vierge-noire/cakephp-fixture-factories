@@ -16,6 +16,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
+use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -72,11 +73,6 @@ class DataCompilerTest extends TestCase
     {
         $marshallerAssociationName = $this->articleDataCompiler->getMarshallerAssociationName('ExclusivePremiumAuthors.Address');
         $this->assertSame(PremiumAuthorsTable::ASSOCIATION_ALIAS . '.address', $marshallerAssociationName);
-    }
-
-    public function testGetPrimaryKey()
-    {
-        $this->assertSame('id', $this->articleDataCompiler->getRootTablePrimaryKey());
     }
 
     public function testGenerateRandomPrimaryKeyInteger()
@@ -157,5 +153,27 @@ class DataCompilerTest extends TestCase
         $this->assertTrue(is_null($res[1]['id'] ?? null));
 
         $this->articleDataCompiler->endPersistMode();
+    }
+
+    public function dataForGetModifiedUniqueFields(): array
+    {
+        return [
+            [[], []],
+            [['id' => 'Foo',], ['id']],
+            [['id' => 'Foo', 'name' => 'Bar'], ['id']],
+            [['id' => 'Foo', 'name' => 'Bar', 'unique_stamp' => 'FooBar'], ['id', 'unique_stamp']],
+        ];
+    }
+
+    /**
+     * @dataProvider dataForGetModifiedUniqueFields
+     * @param BaseFactory $factory
+     * @param array $expected
+     */
+    public function testGetModifiedUniqueFields(array $injectedData, array $expected)
+    {
+        $dataCompiler = new DataCompiler(CountryFactory::make($injectedData));
+        $dataCompiler->compileEntity($injectedData);
+        $this->assertSame($dataCompiler->getModifiedUniqueFields(), $expected);
     }
 }

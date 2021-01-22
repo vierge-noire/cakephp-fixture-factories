@@ -41,6 +41,7 @@ class ModelEventsHandler
         'Model.beforeFind',
         'Model.buildValidator',
         'Model.buildRules',
+        'Model.beforeFind',
         'Model.beforeRules',
         'Model.afterRules',
         'Model.beforeSave',

@@ -142,7 +142,46 @@ Assuming your application namespace in `App`, factories should be placed in the 
 Or for a plugin Foo, in `Foo\Test\Factory`.
  
 You may change that by setting in your configuration the key `TestFixtureNamespace` to the desired namespace.
- 
+
+### Property uniqueness
+
+It is not rare to have to create entities associated with an entity that should remain
+constant and should not be recreated once it was already persisted. For example, if you create
+5 cities within a country, you will not want to have 5 countries created. This might 
+collide with the constrains of your schema. The same goes of course with primary keys.
+
+The fixture factories offer to define unique properties, under the protected property
+$uniqueProperties. For example given a country factory. 
+
+```$xslt
+namespace App\Test\Factory;
+... 
+class CountryFactory extends BaseFactory
+{
+    protected $uniqueProperties = [
+        'name',
+    ];
+...
+}
+```
+
+Knowing the property `name` is unique, the country factory
+will be cautious whenever the property `name` is set by the developer.
+
+Executing `CityFactory::make(5)->with('Country', ['name' => 'Foo'])->persist()` will create
+5 cities all associated to one unique country. If you perform that same operation again,
+you will have 10 cities, all associated to one single country.
+
+### Primary keys uniqueness
+
+The uniqueness of the primary keys is handled exactely the same way as described above,
+with the particularity that you do not have to define them as unique. The factory
+cannot read the uniqueness of a property in the schema, but it knows which properties
+are primary keys. Therefore, executing
+`CityFactory::make(5)->with('Country', ['myPrimaryKey' => 1])->persist()` will behave the
+same as if the primary key `myPrimaryKey` had been defined unique. In short, the factories
+do the job for you. 
+
 ### Next
  
 Let us now see [how to use them](examples.md)...
