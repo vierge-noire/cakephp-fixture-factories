@@ -18,6 +18,10 @@ use CakephpFixtureFactories\Factory\BaseFactory;
 
 class CityFactory extends BaseFactory
 {
+    protected $uniqueProperties = [
+        'virtual_unique_stamp',
+    ];
+
     protected function getRootTableRegistryName(): string
     {
         return 'Cities';
