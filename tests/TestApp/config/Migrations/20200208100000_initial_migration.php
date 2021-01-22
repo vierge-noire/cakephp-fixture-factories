@@ -100,6 +100,10 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => false,
             ])
+            ->addColumn('virtual_unique_stamp', 'string', [
+                'limit' => 128,
+                'null' => true,
+            ])
             ->addColumn('country_id', 'integer', [
                 'limit' => 11,
                 'null' => false,
@@ -114,6 +118,10 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => false,
             ])
+            ->addColumn('unique_stamp', 'string', [
+                'limit' => 128,
+                'null' => true,
+            ])
             ->addTimestamps('created', 'modified')
             ->create();
 
@@ -123,6 +131,10 @@ class InitialMigration extends AbstractMigration
 
         $this->table('cities')
             ->addForeignKey('country_id', 'countries', 'id', ['delete'=>'RESTRICT', 'update'=>'CASCADE'])
+            ->save();
+
+        $this->table('countries')
+            ->addIndex('unique_stamp', ['unique' => true])
             ->save();
     }
 

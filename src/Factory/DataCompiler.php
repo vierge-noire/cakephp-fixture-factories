@@ -25,12 +25,16 @@ use InvalidArgumentException;
 
 class DataCompiler
 {
+    public const MODIFIED_UNIQUE_PROPERTIES = '___data_compiler__modified_unique_properties';
+    public const IS_ASSOCIATED = '___data_compiler__is_associated';
+
     private $dataFromDefaultTemplate = [];
     private $dataFromInstantiation = [];
     private $dataFromPatch = [];
     private $dataFromAssociations = [];
     private $dataFromDefaultAssociations = [];
     private $primaryKeyOffset = [];
+    private $enforcedFields = [];
 
     static private $inPersistMode = false;
 
@@ -135,15 +139,19 @@ class DataCompiler
      */
     public function compileEntity($injectedData): array
     {
-        $entity = [];
+        $entityData = [];
         // This order is very important!!!
         $this
-            ->mergeWithDefaultTemplate($entity)
-            ->mergeWithInjectedData($entity, $injectedData)
-            ->mergeWithPatchedData($entity)
-            ->mergeWithAssociatedData($entity);
+            ->mergeWithDefaultTemplate($entityData)
+            ->mergeWithInjectedData($entityData, $injectedData)
+            ->mergeWithPatchedData($entityData)
+            ->mergeWithAssociatedData($entityData);
 
-        return $this->setPrimaryKey($entity);
+        if ($this->isInPersistMode() && !empty($this->getModifiedUniqueFields())) {
+            $entityData[self::MODIFIED_UNIQUE_PROPERTIES] = $this->getModifiedUniqueFields();
+        }
+
+        return $this->setPrimaryKey($entityData);
     }
 
     /**
@@ -182,19 +190,25 @@ class DataCompiler
             $compiledTemplateData = array_merge($compiledTemplateData, $array);
         } elseif (is_array($injectedData)) {
             $compiledTemplateData = array_merge($compiledTemplateData, $injectedData);
+            $this->addEnforcedFields($injectedData);
         }
         return $this;
     }
 
     /**
      * Step 3:
-     * Merge with the data gathered by patching
-     * Do not return this, as this is the last step
+     * Merge with the data gathered by patching.
+     * At this point, the developer all the data
+     * modified by the user is known ("enforced fields").
+     * This will be passed as field to the dedicated table's
+     * beforeFind in order to handle the uniqueness of its fields.
      * @param array $compiledTemplateData
      */
     private function mergeWithPatchedData(array &$compiledTemplateData)
     {
         $compiledTemplateData = array_merge($compiledTemplateData, $this->dataFromPatch);
+        $this->addEnforcedFields($this->dataFromPatch);
+
         return $this;
     }
 
@@ -236,7 +250,8 @@ class DataCompiler
         $associationName                        = Inflector::singularize($associationName);
         /** @var BaseFactory $factory */
         $factory = $data[$count - 1];
-        $compiledTemplateData[$associationName] = $factory->getEntity()->setHidden([])->toArray();
+        $compiledTemplateData[$associationName] =
+            $factory->getEntity()->setHidden([])->toArray() + ($this->isInPersistMode() ? [self::IS_ASSOCIATED => true] : []);
     }
 
     /**
@@ -266,7 +281,7 @@ class DataCompiler
     {
         $result = [];
         foreach ($factory->getEntities() as $entity) {
-            $result[] = $entity->setHidden([])->toArray();
+            $result[] = $entity->setHidden([])->toArray() + ($this->isInPersistMode() ? [self::IS_ASSOCIATED => true] : []);
         }
         return $result;
     }
@@ -357,17 +372,11 @@ class DataCompiler
     }
 
     /**
-     * Get the primary key, or set of composite primary keys
-     * @return string|string[]
+     * @return array
      */
-    public function getRootTablePrimaryKey()
-    {
-        return $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
-    }
-
     public function generateArrayOfRandomPrimaryKeys(): array
     {
-        $primaryKeys = (array) $this->getRootTablePrimaryKey();
+        $primaryKeys = (array) $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
         $res = [];
         foreach ($primaryKeys as $pk) {
             $res[$pk] = $this->generateRandomPrimaryKey(
@@ -416,7 +425,7 @@ class DataCompiler
     {
         if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
             $this->primaryKeyOffset = [
-                $this->getRootTablePrimaryKey() => $primaryKeyOffset
+                $this->getFactory()->getRootTableRegistry()->getPrimaryKey() => $primaryKeyOffset
             ];
         } elseif (is_array($primaryKeyOffset)) {
             $this->primaryKeyOffset = $primaryKeyOffset;
@@ -443,6 +452,25 @@ class DataCompiler
     }
 
     /**
+     * Fetch the fields that were intentionally modified by the developer
+     * and that are unique. These should be watched for uniqueness.
+     *
+     * @return array
+     */
+    public function getModifiedUniqueFields(): array
+    {
+        return array_values(
+            array_intersect(
+                $this->getEnforcedFields(),
+                array_merge(
+                    $this->getFactory()->getUniqueProperties(),
+                    (array)$this->getFactory()->getRootTableRegistry()->getPrimaryKey()
+                )
+            )
+        );
+    }
+
+    /**
      * @return bool
      */
     public function isInPersistMode(): bool
@@ -458,5 +486,30 @@ class DataCompiler
     public function endPersistMode()
     {
         self::$inPersistMode = false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEnforcedFields(): array
+    {
+        return $this->enforcedFields;
+    }
+
+    /**
+     * When a field is set in the factory instantiation
+     * or in a patchData, save the name of the fields that
+     * have been set by the user. This is useful for the
+     * uniqueness of the fields.
+     *
+     * @param array $fields Fields to be marked as enforced.
+     * @return void
+     */
+    public function addEnforcedFields(array $fields)
+    {
+        $this->enforcedFields = array_merge(
+            array_keys($fields),
+            $this->enforcedFields
+        );
     }
 }

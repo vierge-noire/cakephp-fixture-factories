@@ -11,12 +11,11 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace CakephpFixtureFactories\ORM\TableRegistry;
+namespace CakephpFixtureFactories\ORM;
 
 use Cake\ORM\Locator\LocatorInterface;
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\TableRegistry;
-use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 
 /**
  * Alternative TableRegistry to be used by fixture factories
