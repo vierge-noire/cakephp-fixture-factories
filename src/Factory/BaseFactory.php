@@ -222,10 +222,7 @@ abstract class BaseFactory
      */
     public function getEntity(): EntityInterface
     {
-        return $this->getTable()->newEntity(
-            $this->toArray()[0],
-            $this->getMarshallerOptions()
-        );
+        return $this->toArray()[0];
     }
 
     /**
@@ -235,10 +232,7 @@ abstract class BaseFactory
      */
     public function getEntities(): array
     {
-        return $this->getTable()->newEntities(
-            $this->toArray(),
-            $this->getMarshallerOptions()
-        );
+        return $this->toArray();
     }
 
     /**
@@ -265,22 +259,24 @@ abstract class BaseFactory
     }
 
     /**
-     * @return array
+     * Fetch data from the data compiler.
+     *
+     * @return \Cake\Datasource\EntityInterface[]
      */
     public function toArray(): array
     {
-        $data = [];
+        $entities = [];
         for ($i = 0; $i < $this->times; $i++) {
             $compiledData = $this->getDataCompiler()->getCompiledTemplateData();
-            if (isset($compiledData[0])) {
-                $data = array_merge($data, $compiledData);
+            if (is_array($compiledData)) {
+                $entities = array_merge($entities, $compiledData);
             } else {
-                $data[] = $compiledData;
+                $entities[] = $compiledData;
             }
         }
-        UniquenessJanitor::sanitizeEntityArray($this, $data);
+        UniquenessJanitor::sanitizeEntityArray($this, $entities);
 
-        return $data;
+        return $entities;
     }
 
     /**
@@ -331,16 +327,13 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array $data Data to persist
+     * @param \Cake\Datasource\EntityInterface $entity Entity to persist.
      * @return \Cake\Datasource\EntityInterface
      * @throws \Cake\ORM\Exception\PersistenceFailedException When the entity couldn't be saved
      */
-    protected function persistOne(array $data): EntityInterface
+    protected function persistOne(EntityInterface $entity): EntityInterface
     {
-        $TableRegistry = $this->getTable();
-        $entity = $TableRegistry->newEntity($data, $this->getMarshallerOptions());
-
-        return $TableRegistry->saveOrFail($entity, $this->getSaveOptions());
+        return $this->getTable()->saveOrFail($entity, $this->getSaveOptions());
     }
 
     /**
@@ -354,16 +347,14 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array $data Data to persist
+     * @param \Cake\Datasource\EntityInterface[] $entities Data to persist
      * @return \Cake\Datasource\EntityInterface[]|\Cake\Datasource\ResultSetInterface|false False on failure, entities list on success.
      * @throws \Exception
+     * @throws \Cake\ORM\Exception\PersistenceFailedException If an entity couldn't be saved.
      */
-    protected function persistMany(array $data)
+    protected function persistMany(array $entities)
     {
-        $TableRegistry = $this->getTable();
-        $entities = $TableRegistry->newEntities($data, $this->getMarshallerOptions());
-
-        return $TableRegistry->saveMany($entities, $this->getSaveOptions());
+        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
     }
 
     /**
