@@ -24,6 +24,7 @@
     "require-dev": {
         "cakephp/bake": "^1.5",
         "josegonzalez/dotenv": "dev-master",
+        "phpstan/phpstan": "0.12.x-dev",
         "phpunit/phpunit": "^6.1",
         "vierge-noire/cakephp-test-migrator": "^1.1"
     },
@@ -45,7 +46,7 @@
         "mysql": "bash run_tests.sh Mysql",
         "pgsql": "bash run_tests.sh Postgres",
         "sqlite": "bash run_tests.sh Sqlite",
-        "phpstan": "vendor/bin/phpstan analyse"
+        "phpstan": "vendor/bin/phpstan analyse --memory-limit=-1"
     },
     "config": {
         "sort-packages": true
