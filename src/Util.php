@@ -38,7 +38,7 @@ class Util
         } else {
             return (
                 $plugin ?
-                    $plugin :
+                    str_replace('/', '\\', $plugin) :
                     Configure::read('App.namespace', 'App')
                 ) . '\Test\Factory';
         }
