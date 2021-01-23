@@ -15,6 +15,8 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\UniquenessException;
 use CakephpFixtureFactories\Factory\BaseFactory;
@@ -50,8 +52,8 @@ class UniquenessJanitorTest extends TestCase
         $factoryStub->method('getUniqueProperties')->willReturn($uniqueProperties);
 
         $entities = [
-          ['property_1' => 'foo', 'property_2' => 'foo'],
-          ['property_1' => 'foo', 'property_2' => 'dah'],
+            new Entity(['property_1' => 'foo', 'property_2' => 'foo']),
+            new Entity(['property_1' => 'foo', 'property_2' => 'dah']),
         ];
 
         if ($expectException) {
@@ -87,7 +89,7 @@ class UniquenessJanitorTest extends TestCase
      * @Then the second one will be ignored.
      *
      * @dataProvider dataForSanitizeEntityArrayOnAssociation
-     * @param array $uniqueProperties
+     * @param EntityInterface[] $uniqueProperties
      * @param array $expectOutput
      */
     public function testSanitizeEntityArrayOnAssociation(array $uniqueProperties, array $expectOutput)
@@ -96,12 +98,16 @@ class UniquenessJanitorTest extends TestCase
         $factoryStub->method('getUniqueProperties')->willReturn($uniqueProperties);
 
         $associations = [
-            ['property_1' => 'foo', 'property_2' => 'foo'],
-            ['property_1' => 'foo', 'property_2' => 'dah'],
+            new Entity(['property_1' => 'foo', 'property_2' => 'foo']),
+            new Entity(['property_1' => 'foo', 'property_2' => 'dah']),
         ];
 
-        $act = UniquenessJanitor::sanitizeEntityArray($factoryStub, $associations, false);
+        $entities = UniquenessJanitor::sanitizeEntityArray($factoryStub, $associations, false);
 
-        $this->assertSame($expectOutput, $act);
+        foreach ($entities as &$entity) {
+            $entity = $entity->toArray();
+        }
+
+        $this->assertSame($expectOutput, $entities);
     }
 }
