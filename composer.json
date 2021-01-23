@@ -23,7 +23,6 @@
     },
     "require-dev": {
         "cakephp/bake": "^1.5",
-        "cakephp/cakephp-codesniffer": "^3.0",
         "josegonzalez/dotenv": "dev-master",
         "phpstan/phpstan": "0.12.x-dev",
         "phpunit/phpunit": "^6.1",
@@ -47,8 +46,7 @@
         "mysql": "bash run_tests.sh Mysql",
         "pgsql": "bash run_tests.sh Postgres",
         "sqlite": "bash run_tests.sh Sqlite",
-        "phpstan": "vendor/bin/phpstan analyse",
-        "cs-check": "vendor/bin/phpcs --colors -p -s --extensions=php src/ tests/TestApp/tests/Factory tests/TestApp/plugins/TestPlugin/tests/Factory"
+        "phpstan": "vendor/bin/phpstan analyse --memory-limit=-1"
     },
     "config": {
         "sort-packages": true
