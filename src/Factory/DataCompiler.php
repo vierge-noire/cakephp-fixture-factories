@@ -145,7 +145,7 @@ class DataCompiler
      */
     public function compileEntity($injectedData, $setPrimaryKey = false): EntityInterface
     {
-        $entity = $this->getFactory()->getTable()->newEmptyEntity();
+        $entity = $this->getFactory()->getTable()->newEntity();
 
         // This order is very important!!!
         $this
