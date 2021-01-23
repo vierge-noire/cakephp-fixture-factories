@@ -20,10 +20,11 @@ jobs:
         php-version: ['7.2', '7.4', '8.0']
         db-type: [sqlite, mysql, pgsql]
         composer-type: [lowest, stable, dev]
-#        exclude:
+        exclude:
           # excludes composer lowest on mysql
-#          - db-type: mysql
-#            composer-type: lowest
+          - db-type: mysql
+          - composer-type: lowest
+          - php-version: ['7.2', '7.4']
 
 
     name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & ${{ matrix.composer-type }}
