@@ -15,7 +15,6 @@ namespace CakephpFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\ResultSetInterface;
-use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\PersistenceException;
@@ -336,12 +335,16 @@ abstract class BaseFactory
     /**
      * @param \Cake\Datasource\EntityInterface[] $entities Data to persist
      * @return \Cake\Datasource\EntityInterface[]|\Cake\Datasource\ResultSetInterface|false False on failure, entities list on success.
-     * @throws \Exception
-     * @throws \Cake\ORM\Exception\PersistenceFailedException If an entity couldn't be saved.
+     * @throws \CakephpFixtureFactories\Error\PersistenceException
      */
     protected function persistMany(array $entities)
     {
-        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
+        $entities = $this->getTable()->saveMany($entities, $this->getSaveOptions());
+        if ($entities === false) {
+            throw new PersistenceException('Error persisting many entities in ' . self::class);
+        }
+
+        return $entities;
     }
 
     /**
