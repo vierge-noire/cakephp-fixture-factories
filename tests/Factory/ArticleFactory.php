@@ -19,6 +19,8 @@ use TestApp\Model\Entity\Article;
 
 class ArticleFactory extends BaseFactory
 {
+    public const DEFAULT_NUMBER_OF_AUTHORS = 2;
+
     /**
      * Defines the Table Registry used to generate entities with
      *
@@ -44,7 +46,7 @@ class ArticleFactory extends BaseFactory
                 'title' => $faker->text(120),
             ];
         })
-        ->withAuthors(null, 2);
+        ->withAuthors(null, self::DEFAULT_NUMBER_OF_AUTHORS);
     }
 
     public function withAuthors($parameter = null, int $n = 1): self
