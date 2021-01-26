@@ -56,10 +56,10 @@ class DataCompiler
     /**
      * Data passed in the instantiation by array
      *
-     * @param array $data Injected data
+     * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data.
      * @return void
      */
-    public function collectFromArray(array $data): void
+    public function collectFromInstantiation($data): void
     {
         $this->dataFromInstantiation = $data;
     }
@@ -147,20 +147,20 @@ class DataCompiler
     }
 
     /**
-     * @param array|callable $injectedData Data from the injection.
+     * @param array|callable|\Cake\Datasource\EntityInterface $injectedData Data from the injection.
      * @param bool $setPrimaryKey Set the primary key if this entity is alone or the first of an array.
      * @return \Cake\Datasource\EntityInterface
      */
     public function compileEntity($injectedData, $setPrimaryKey = false): EntityInterface
     {
-        $entity = $this->getFactory()->getTable()->newEmptyEntity();
+        if ($injectedData instanceof EntityInterface) {
+            $entity = $injectedData;
+        } else {
+            $entity = $this->getEntityFromDefaultTemplate();
+            $this->mergeWithInjectedData($entity, $injectedData);
+        }
 
-        // This order is very important!!!
-        $this
-            ->mergeWithDefaultTemplate($entity)
-            ->mergeWithInjectedData($entity, $injectedData)
-            ->mergeWithPatchedData($entity)
-            ->mergeWithAssociatedData($entity);
+        $this->mergeWithPatchedData($entity)->mergeWithAssociatedData($entity);
 
         if ($this->isInPersistMode() && !empty($this->getModifiedUniqueFields())) {
             $entity->set(self::MODIFIED_UNIQUE_PROPERTIES, $this->getModifiedUniqueFields());
@@ -182,7 +182,7 @@ class DataCompiler
      */
     private function patchEntity(EntityInterface $entity, array $data): EntityInterface
     {
-        return $this->getFactory()->getTable()->patchEntity(
+        return empty($data) ? $entity : $this->getFactory()->getTable()->patchEntity(
             $entity,
             $data,
             $this->getFactory()->getMarshallerOptions()
@@ -190,21 +190,18 @@ class DataCompiler
     }
 
     /**
-     * Step 1: merge the default template data
+     * Step 1: Create an entity from the default template.
      *
-     * @param \Cake\Datasource\EntityInterface $entity Entity being produced.
-     * @return self
+     * @return \Cake\Datasource\EntityInterface
      */
-    private function mergeWithDefaultTemplate(EntityInterface $entity): self
+    private function getEntityFromDefaultTemplate(): EntityInterface
     {
         $data = $this->dataFromDefaultTemplate;
         if (is_callable($data)) {
             $data = $data($this->getFactory()->getFaker());
         }
 
-        $this->patchEntity($entity, $data);
-
-        return $this;
+        return $this->getFactory()->getTable()->newEntity($data, $this->getFactory()->getMarshallerOptions());
     }
 
     /**
@@ -212,7 +209,7 @@ class DataCompiler
      * Merge with the data injected during the instantiation of the Factory
      *
      * @param \Cake\Datasource\EntityInterface $entity Entity to manipulate.
-     * @param array|callable $data Data from the instantiation.
+     * @param array|callable|\Cake\Datasource\EntityInterface $data Data from the instantiation.
      * @return self
      */
     private function mergeWithInjectedData(EntityInterface $entity, $data): self

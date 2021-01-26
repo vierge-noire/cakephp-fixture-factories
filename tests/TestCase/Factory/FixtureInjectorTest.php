@@ -35,18 +35,6 @@ class FixtureInjectorTest extends TestCase
     }
 
     /**
-     * 1. Create the config, no countries
-     * 2. Run the test again, countries seeded. Remove config
-     * 3. No countries left
-     *
-     * @return array
-     */
-    public function feedRollBackAndMigrateIfRequired()
-    {
-        return [[1], [2], [3]];
-    }
-
-    /**
      * For each of the data provided, their should be
      * 10 Articles found, which is the last value given to times
      * value
@@ -78,29 +66,6 @@ class FixtureInjectorTest extends TestCase
             [2, ArticleFactory::make(2)],
             [10, ArticleFactory::make(10)],
         ];
-    }
-
-    /**
-     * @dataProvider feedRollBackAndMigrateIfRequired
-     * @see \SeedCountries::up()
-     * @see FixtureInjector::rollbackAndMigrateIfRequired()
-     */
-    public function testRollBackAndMigrateIfRequired($i)
-    {
-        $this->markTestSkipped('The seed migrations between tests are not supported for the moment');
-        $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
-        if ($i === 1) {
-            Configure::write('TestFixtureMarkedNonMigrated', [[
-                'source' => 'Seeds',
-            ]]);
-        }
-        if ($i === 1 || $i === 3) {
-            $this->assertSame(0, $CountriesTable->find()->count());
-        } else {
-            $this->assertSame(1, $CountriesTable->find()->count());
-            $this->assertSame('Test Country', $CountriesTable->find()->first()->name);
-            Configure::delete('TestFixtureMarkedNonMigrated');
-        }
     }
 
     /**
