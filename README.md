@@ -36,6 +36,7 @@ For CakePHP 3.x:
 ```
 composer require --dev vierge-noire/cakephp-fixture-factories "^1.0"
 ```
+Note that PHP 7.0 is supported up to v1.1.x only.
 
 ## [Setup](docs/setup.md)
 
