@@ -1,4 +1,4 @@
-<a href="https://vierge-noire.github.io/" target="_blank"><img src="https://vierge-noire.github.io/images/fixture_factories.svg" alt="ff-logo" width="150"  style="display: block; margin: auto"/></a>
+<a href="https://vierge-noire.github.io/" target="_blank" style="display: block; margin: auto"><img src="https://vierge-noire.github.io/images/fixture_factories.svg" alt="ff-logo" width="150"  /></a>
 
 # CakePHP Fixture Factories
 
