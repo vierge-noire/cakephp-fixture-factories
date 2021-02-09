@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
@@ -24,12 +25,16 @@ use InvalidArgumentException;
 
 class DataCompiler
 {
+    public const MODIFIED_UNIQUE_PROPERTIES = '___data_compiler__modified_unique_properties';
+    public const IS_ASSOCIATED = '___data_compiler__is_associated';
+
     private $dataFromDefaultTemplate = [];
     private $dataFromInstantiation = [];
     private $dataFromPatch = [];
     private $dataFromAssociations = [];
     private $dataFromDefaultAssociations = [];
     private $primaryKeyOffset = [];
+    private $enforcedFields = [];
 
     private static $inPersistMode = false;
 
@@ -51,10 +56,10 @@ class DataCompiler
     /**
      * Data passed in the instantiation by array
      *
-     * @param array $data Injected data
+     * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data.
      * @return void
      */
-    public function collectFromArray(array $data): void
+    public function collectFromInstantiation($data): void
     {
         $this->dataFromInstantiation = $data;
     }
@@ -121,96 +126,123 @@ class DataCompiler
     /**
      * Populate the factored entity
      *
-     * @return array
+     * @return \Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]
      */
-    public function getCompiledTemplateData(): array
+    public function getCompiledTemplateData()
     {
+        $setPrimaryKey = $this->isInPersistMode();
+
         if (is_array($this->dataFromInstantiation) && isset($this->dataFromInstantiation[0])) {
             $compiledTemplateData = [];
             foreach ($this->dataFromInstantiation as $entity) {
-                $compiledTemplateData[] = $this->compileEntity($entity);
+                $compiledTemplateData[] = $this->compileEntity($entity, $setPrimaryKey);
+                // Only the first entity gets its primary key set.
+                $setPrimaryKey = false;
             }
         } else {
-            $compiledTemplateData = $this->compileEntity($this->dataFromInstantiation);
+            $compiledTemplateData = $this->compileEntity($this->dataFromInstantiation, $setPrimaryKey);
         }
 
         return $compiledTemplateData;
     }
 
     /**
-     * @param array|callable      $injectedData Data from the injection
-     * @return array
+     * @param array|callable|\Cake\Datasource\EntityInterface $injectedData Data from the injection.
+     * @param bool $setPrimaryKey Set the primary key if this entity is alone or the first of an array.
+     * @return \Cake\Datasource\EntityInterface
      */
-    public function compileEntity($injectedData): array
+    public function compileEntity($injectedData, $setPrimaryKey = false): EntityInterface
     {
-        $entity = [];
-        // This order is very important!!!
-        $this
-            ->mergeWithDefaultTemplate($entity)
-            ->mergeWithInjectedData($entity, $injectedData)
-            ->mergeWithPatchedData($entity)
-            ->mergeWithAssociatedData($entity);
+        if ($injectedData instanceof EntityInterface) {
+            $entity = $injectedData;
+        } else {
+            $entity = $this->getEntityFromDefaultTemplate();
+            $this->mergeWithInjectedData($entity, $injectedData);
+        }
 
-        return $this->setPrimaryKey($entity);
+        $this->mergeWithPatchedData($entity)->mergeWithAssociatedData($entity);
+
+        if ($this->isInPersistMode() && !empty($this->getModifiedUniqueFields())) {
+            $entity->set(self::MODIFIED_UNIQUE_PROPERTIES, $this->getModifiedUniqueFields());
+        }
+
+        if ($setPrimaryKey) {
+            $this->setPrimaryKey($entity);
+        }
+
+        return $entity;
     }
 
     /**
-     * Step 1: merge the default template data
+     * Helper method to patch entities with the data compiler data.
      *
-     * @param array $compiledTemplateData Array of data produced by the factory
-     * @return self
+     * @param \Cake\Datasource\EntityInterface $entity Entity to patch.
+     * @param array $data Data to patch.
+     * @return \Cake\Datasource\EntityInterface
      */
-    private function mergeWithDefaultTemplate(array &$compiledTemplateData): self
+    private function patchEntity(EntityInterface $entity, array $data): EntityInterface
     {
-        if (!empty($compiledTemplateData)) {
-            throw new FixtureFactoryException(
-                'The initial array before merging with the default template should be empty'
-            );
-        }
+        return empty($data) ? $entity : $this->getFactory()->getTable()->patchEntity(
+            $entity,
+            $data,
+            $this->getFactory()->getMarshallerOptions()
+        );
+    }
+
+    /**
+     * Step 1: Create an entity from the default template.
+     *
+     * @return \Cake\Datasource\EntityInterface
+     */
+    private function getEntityFromDefaultTemplate(): EntityInterface
+    {
         $data = $this->dataFromDefaultTemplate;
-        if (is_array($data)) {
-            $compiledTemplateData = array_merge($compiledTemplateData, $data);
-        } elseif (is_callable($data)) {
-            $compiledTemplateData = array_merge($compiledTemplateData, $data($this->getFactory()->getFaker()));
+        if (is_callable($data)) {
+            $data = $data($this->getFactory()->getFaker());
         }
 
-        return $this;
+        return $this->getFactory()->getTable()->newEntity($data, $this->getFactory()->getMarshallerOptions());
     }
 
     /**
      * Step 2:
      * Merge with the data injected during the instantiation of the Factory
      *
-     * @param array $compiledTemplateData Array of data produced by the factory
-     * @param array|callable $injectedData Data from the instanciation
+     * @param \Cake\Datasource\EntityInterface $entity Entity to manipulate.
+     * @param array|callable|\Cake\Datasource\EntityInterface $data Data from the instantiation.
      * @return self
      */
-    private function mergeWithInjectedData(array &$compiledTemplateData, $injectedData): self
+    private function mergeWithInjectedData(EntityInterface $entity, $data): self
     {
-        if (is_callable($injectedData)) {
-            $array = $injectedData(
+        if (is_callable($data)) {
+            $data = $data(
                 $this->getFactory(),
                 $this->getFactory()->getFaker()
             );
-            $compiledTemplateData = array_merge($compiledTemplateData, $array);
-        } elseif (is_array($injectedData)) {
-            $compiledTemplateData = array_merge($compiledTemplateData, $injectedData);
+        } elseif (is_array($data)) {
+            $this->addEnforcedFields($data);
         }
+
+        $this->patchEntity($entity, $data);
 
         return $this;
     }
 
     /**
      * Step 3:
-     * Merge with the data gathered by patching
-     * Do not return this, as this is the last step
+     * Merge with the data gathered by patching.
+     * At this point, the developer all the data
+     * modified by the user is known ("enforced fields").
+     * This will be passed as field to the dedicated table's
+     * beforeFind in order to handle the uniqueness of its fields.
      *
-     * @param array $compiledTemplateData Array of data produced by the factory
+     * @param \Cake\Datasource\EntityInterface $entity Entity to manipulate.
      * @return self
      */
-    private function mergeWithPatchedData(array &$compiledTemplateData): self
+    private function mergeWithPatchedData(EntityInterface $entity): self
     {
-        $compiledTemplateData = array_merge($compiledTemplateData, $this->dataFromPatch);
+        $this->patchEntity($entity, $this->dataFromPatch);
+        $this->addEnforcedFields($this->dataFromPatch);
 
         return $this;
     }
@@ -219,10 +251,10 @@ class DataCompiler
      * Step 4:
      * Merge with the data from the associations
      *
-     * @param array $compiledTemplateData Array of data produced by the factory
+     * @param \Cake\Datasource\EntityInterface $entity Entity produced by the factory.
      * @return self
      */
-    private function mergeWithAssociatedData(array &$compiledTemplateData): self
+    private function mergeWithAssociatedData(EntityInterface $entity): self
     {
         // Overwrite the default associations if these are found in the associations
         $associatedData = array_merge($this->dataFromDefaultAssociations, $this->dataFromAssociations);
@@ -232,9 +264,9 @@ class DataCompiler
             $propertyName = $this->getMarshallerAssociationName($propertyName);
             if ($association instanceof HasOne || $association instanceof BelongsTo) {
                 // toOne associated data must be singular when saved
-                $this->mergeWithToOne($compiledTemplateData, $propertyName, $data);
+                $this->mergeWithToOne($entity, $propertyName, $data);
             } else {
-                $this->mergeWithToMany($compiledTemplateData, $propertyName, $data);
+                $this->mergeWithToMany($entity, $propertyName, $data);
             }
         }
 
@@ -246,51 +278,59 @@ class DataCompiler
      * One reason can be the default template value.
      * Here the latest inserted record is taken
      *
-     * @param array $compiledTemplateData Array of data produced by the factory
+     * @param \Cake\Datasource\EntityInterface $entity Entity produced by the factory.
      * @param string $associationName Association
      * @param array $data Data to inject
      * @return void
      */
-    private function mergeWithToOne(array &$compiledTemplateData, string $associationName, array $data): void
+    private function mergeWithToOne(EntityInterface $entity, string $associationName, array $data): void
     {
         $count = count($data);
         $associationName = Inflector::singularize($associationName);
         /** @var \CakephpFixtureFactories\Factory\BaseFactory $factory */
         $factory = $data[$count - 1];
-        $compiledTemplateData[$associationName] = $factory->getEntity()->toArray();
+
+        $associatedEntity = $factory->getEntity();
+        if ($this->isInPersistMode()) {
+            $associatedEntity->set(self::IS_ASSOCIATED, true);
+        }
+
+        $entity->set($associationName, $associatedEntity);
     }
 
     /**
-     * @param array $compiledTemplateData Array of data produced by the factory
+     * @param \Cake\Datasource\EntityInterface $entity Entity produced by the factory.
      * @param string $associationName Association
      * @param array $data Data to inject
      * @return void
      */
-    private function mergeWithToMany(array &$compiledTemplateData, string $associationName, array $data): void
+    private function mergeWithToMany(EntityInterface $entity, string $associationName, array $data): void
     {
-        $associationData = $compiledTemplateData[$associationName] ?? null;
+        $associationData = $entity->get($associationName);
         foreach ($data as $factory) {
-            if ($associationData) {
-                $associationData = array_merge($associationData, $this->getManyEntities($factory));
-            } else {
+            if (empty($associationData)) {
                 $associationData = $this->getManyEntities($factory);
+            } else {
+                $associationData = array_merge($associationData, $this->getManyEntities($factory));
             }
         }
-        $compiledTemplateData[$associationName] = $associationData;
+        $entity->set($associationName, $associationData);
     }
 
     /**
      * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
-     * @return array
+     * @return \Cake\Datasource\EntityInterface[]
      */
     private function getManyEntities(BaseFactory $factory): array
     {
-        $result = [];
-        foreach ($factory->getEntities() as $entity) {
-            $result[] = $entity->toArray();
+        $entities = $factory->getEntities();
+        if ($this->isInPersistMode()) {
+            foreach ($entities as $entity) {
+                $entity->set(self::IS_ASSOCIATED, true);
+            }
         }
 
-        return $result;
+        return $entities;
     }
 
     /**
@@ -341,27 +381,23 @@ class DataCompiler
     }
 
     /**
-     * @param array $data Set of primary keys
-     * @return array
+     * @param \Cake\Datasource\EntityInterface $entity Entity to manipulate.
+     * @return \Cake\Datasource\EntityInterface
      */
-    public function setPrimaryKey(array $data): array
+    public function setPrimaryKey(EntityInterface $entity): EntityInterface
     {
         // A set of primary keys is produced if in persistence mode, and if a first set was not produced yet
         if (!$this->isInPersistMode() || !is_array($this->primaryKeyOffset)) {
-            return $data;
+            return $entity;
         }
 
-        // If we have an array of multiple entities, set only for the first one
-        if (isset($data[0])) {
-            $data[0] = $this->setPrimaryKey($data[0]);
-        } else {
-            $data = array_merge(
-                $this->createPrimaryKeyOffset(),
-                $data
-            );
+        foreach ($this->createPrimaryKeyOffset() as $pk => $value) {
+            if (!$entity->has($pk)) {
+                $entity->set($pk, $value);
+            }
         }
 
-        return $data;
+        return $entity;
     }
 
     /**
@@ -383,21 +419,11 @@ class DataCompiler
     }
 
     /**
-     * Get the primary key, or set of composite primary keys
-     *
-     * @return string|string[]
-     */
-    public function getRootTablePrimaryKey()
-    {
-        return $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
-    }
-
-    /**
      * @return array
      */
     public function generateArrayOfRandomPrimaryKeys(): array
     {
-        $primaryKeys = (array)$this->getRootTablePrimaryKey();
+        $primaryKeys = (array)$this->getFactory()->getRootTableRegistry()->getPrimaryKey();
         $res = [];
         foreach ($primaryKeys as $pk) {
             $res[$pk] = $this->generateRandomPrimaryKey(
@@ -449,7 +475,7 @@ class DataCompiler
     {
         if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
             $this->primaryKeyOffset = [
-                $this->getRootTablePrimaryKey() => $primaryKeyOffset,
+                $this->getFactory()->getRootTableRegistry()->getPrimaryKey() => $primaryKeyOffset,
             ];
         } elseif (is_array($primaryKeyOffset)) {
             $this->primaryKeyOffset = $primaryKeyOffset;
@@ -478,6 +504,25 @@ class DataCompiler
     }
 
     /**
+     * Fetch the fields that were intentionally modified by the developer
+     * and that are unique. These should be watched for uniqueness.
+     *
+     * @return array
+     */
+    public function getModifiedUniqueFields(): array
+    {
+        return array_values(
+            array_intersect(
+                $this->getEnforcedFields(),
+                array_merge(
+                    $this->getFactory()->getUniqueProperties(),
+                    (array)$this->getFactory()->getRootTableRegistry()->getPrimaryKey()
+                )
+            )
+        );
+    }
+
+    /**
      * @return bool
      */
     public function isInPersistMode(): bool
@@ -499,5 +544,30 @@ class DataCompiler
     public function endPersistMode(): void
     {
         self::$inPersistMode = false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEnforcedFields(): array
+    {
+        return $this->enforcedFields;
+    }
+
+    /**
+     * When a field is set in the factory instantiation
+     * or in a patchData, save the name of the fields that
+     * have been set by the user. This is useful for the
+     * uniqueness of the fields.
+     *
+     * @param array $fields Fields to be marked as enforced.
+     * @return void
+     */
+    public function addEnforcedFields(array $fields)
+    {
+        $this->enforcedFields = array_merge(
+            array_keys($fields),
+            $this->enforcedFields
+        );
     }
 }

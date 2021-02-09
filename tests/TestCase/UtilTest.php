@@ -55,4 +55,13 @@ class UtilTest extends TestCase
             Util::getFactoryNamespace($plugin)
         );
     }
+
+    public function testGetFactoryNamespaceWithPluginWithASlash()
+    {
+        $plugin = 'Foo/Bar';
+        $this->assertEquals(
+            'Foo\Bar\Test\Factory',
+            Util::getFactoryNamespace($plugin)
+        );
+    }
 }

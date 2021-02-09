@@ -18,11 +18,13 @@ use Bake\Utility\TemplateRenderer;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Util;
+use ReflectionClass;
 
 class BakeFixtureFactoryCommand extends BakeCommand
 {
@@ -141,18 +143,55 @@ class BakeFixtureFactoryCommand extends BakeCommand
     }
 
     /**
-     * List the tables
+     * List the tables, ignore tables that should not be baked
      *
+     * @param \Cake\Console\ConsoleIo $io Console
      * @return array
      */
-    public function getTableList(): array
+    public function getTableList(ConsoleIo $io): array
     {
         $dir = new Folder($this->getModelPath());
         $tables = $dir->find('.*Table.php', true);
 
-        return array_map(function ($a) {
+        $tables = array_map(function ($a) {
             return preg_replace('/Table.php$/', '', $a);
         }, $tables);
+
+        foreach ($tables as $i => $table) {
+            if (!$this->thisTableShouldBeBaked($table, $io)) {
+                unset($tables[$i]);
+                $io->warning("{$table} ignored");
+            }
+        }
+
+        return $tables;
+    }
+
+    /**
+     * Return false if the table is not found or is abstract, interface or trait
+     *
+     * @param string $table Table
+     * @param \Cake\Console\ConsoleIo $io Console
+     * @return bool
+     */
+    public function thisTableShouldBeBaked(string $table, ConsoleIo $io): bool
+    {
+        $tableClassName = $this->plugin ? $this->plugin : Configure::read('App.namespace');
+        $tableClassName .= "\Model\Table\\{$table}Table";
+
+        try {
+            $class = new ReflectionClass($tableClassName);
+        } catch (\ReflectionException $e) {
+            $io->error($e->getMessage());
+
+            return false;
+        }
+
+        if ($class->isAbstract() || $class->isInterface() || $class->isTrait()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -162,7 +201,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     private function bakeAllModels(Arguments $args, ConsoleIo $io)
     {
-        $tables = $this->getTableList();
+        $tables = $this->getTableList($io);
         if (empty($tables)) {
             $io->err(sprintf('No tables were found at `%s`', $this->getModelPath()));
         } else {
@@ -208,7 +247,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
             if ($loud) {
                 $io->out('Choose a table from the following, choose -a for all, or -h for help:');
             }
-            foreach ($this->getTableList() as $table) {
+            foreach ($this->getTableList($io) as $table) {
                 if ($loud) {
                     $io->out('- ' . $table);
                 }

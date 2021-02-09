@@ -15,9 +15,12 @@ namespace CakephpFixtureFactories\Test\Factory;
 
 use CakephpFixtureFactories\Factory\BaseFactory;
 use Faker\Generator;
+use TestApp\Model\Entity\Article;
 
 class ArticleFactory extends BaseFactory
 {
+    public const DEFAULT_NUMBER_OF_AUTHORS = 2;
+
     /**
      * Defines the Table Registry used to generate entities with
      *
@@ -43,7 +46,7 @@ class ArticleFactory extends BaseFactory
                 'title' => $faker->text(120),
             ];
         })
-        ->withAuthors(null, 2);
+        ->withAuthors(null, self::DEFAULT_NUMBER_OF_AUTHORS);
     }
 
     public function withAuthors($parameter = null, int $n = 1): self
@@ -97,6 +100,13 @@ class ArticleFactory extends BaseFactory
     {
         return $this->patchData([
             'title' => $this->getFaker()->jobTitle,
+        ]);
+    }
+
+    public function withHiddenBiography(string $text)
+    {
+        return $this->patchData([
+            Article::HIDDEN_PARAGRAPH_PROPERTY_NAME => $text
         ]);
     }
 }

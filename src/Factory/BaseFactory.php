@@ -58,6 +58,10 @@ abstract class BaseFactory
         'checkExisting' => false,
     ];
     /**
+     * @var array Unique fields. Uniqueness applies only to persisted entities.
+     */
+    protected $uniqueProperties = [];
+    /**
      * @var bool
      */
     protected $withModelEvents = false;
@@ -113,24 +117,24 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param array|callable|null|int $makeParameter Injected data
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $makeParameter Injected data
      * @param int                     $times Number of entities created
      * @return static
      */
     public static function make($makeParameter = [], int $times = 1): BaseFactory
     {
         if (is_numeric($makeParameter)) {
-            $factory = static::makeFromArray();
+            $factory = static::makeFromNonCallable();
             $times = $makeParameter;
         } elseif (is_null($makeParameter)) {
-            $factory = static::makeFromArray();
-        } elseif (is_array($makeParameter)) {
-            $factory = static::makeFromArray($makeParameter);
+            $factory = static::makeFromNonCallable();
+        } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface) {
+            $factory = static::makeFromNonCallable($makeParameter);
         } elseif (is_callable($makeParameter)) {
             $factory = static::makeFromCallable($makeParameter);
         } else {
             throw new InvalidArgumentException('
-                ::make only accepts an array, an integer or a callable as the first parameter.
+                ::make only accepts an array, an integer, an EntityInterface or a callable as first parameter.
             ');
         }
 
@@ -174,13 +178,13 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array $data Injected data
+     * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
      * @return static
      */
-    private static function makeFromArray(array $data = []): BaseFactory
+    private static function makeFromNonCallable($data = []): BaseFactory
     {
         $factory = new static();
-        $factory->getDataCompiler()->collectFromArray($data);
+        $factory->getDataCompiler()->collectFromInstantiation($data);
 
         return $factory;
     }
@@ -218,10 +222,7 @@ abstract class BaseFactory
      */
     public function getEntity(): EntityInterface
     {
-        return $this->getTable()->newEntity(
-            $this->toArray()[0],
-            $this->getMarshallerOptions()
-        );
+        return $this->toArray()[0];
     }
 
     /**
@@ -231,10 +232,7 @@ abstract class BaseFactory
      */
     public function getEntities(): array
     {
-        return $this->getTable()->newEntities(
-            $this->toArray(),
-            $this->getMarshallerOptions()
-        );
+        return $this->toArray();
     }
 
     /**
@@ -261,21 +259,24 @@ abstract class BaseFactory
     }
 
     /**
-     * @return array
+     * Fetch entities from the data compiler.
+     *
+     * @return \Cake\Datasource\EntityInterface[]
      */
-    public function toArray(): array
+    protected function toArray(): array
     {
-        $data = [];
+        $entities = [];
         for ($i = 0; $i < $this->times; $i++) {
             $compiledData = $this->getDataCompiler()->getCompiledTemplateData();
-            if (isset($compiledData[0])) {
-                $data = array_merge($data, $compiledData);
+            if (is_array($compiledData)) {
+                $entities = array_merge($entities, $compiledData);
             } else {
-                $data[] = $compiledData;
+                $entities[] = $compiledData;
             }
         }
+        UniquenessJanitor::sanitizeEntityArray($this, $entities);
 
-        return $data;
+        return $entities;
     }
 
     /**
@@ -309,14 +310,14 @@ abstract class BaseFactory
     public function persist()
     {
         $this->getDataCompiler()->startPersistMode();
-        $data = $this->toArray();
+        $entities = $this->toArray();
         $this->getDataCompiler()->endPersistMode();
 
         try {
-            if (count($data) === 1) {
-                return $this->persistOne($data[0]);
+            if (count($entities) === 1) {
+                return $this->persistOne($entities[0]);
             } else {
-                return $this->persistMany($data);
+                return $this->persistMany($entities);
             }
         } catch (Exception $exception) {
             $factory = static::class;
@@ -326,16 +327,13 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array $data Data to persist
+     * @param \Cake\Datasource\EntityInterface $entity Entity to persist.
      * @return \Cake\Datasource\EntityInterface
      * @throws \Cake\ORM\Exception\PersistenceFailedException When the entity couldn't be saved
      */
-    protected function persistOne(array $data): EntityInterface
+    protected function persistOne(EntityInterface $entity): EntityInterface
     {
-        $TableRegistry = $this->getTable();
-        $entity = $TableRegistry->newEntity($data, $this->getMarshallerOptions());
-
-        return $TableRegistry->saveOrFail($entity, $this->getSaveOptions());
+        return $this->getTable()->saveOrFail($entity, $this->getSaveOptions());
     }
 
     /**
@@ -349,16 +347,14 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array $data Data to persist
+     * @param \Cake\Datasource\EntityInterface[] $entities Data to persist
      * @return \Cake\Datasource\EntityInterface[]|\Cake\Datasource\ResultSetInterface|false False on failure, entities list on success.
      * @throws \Exception
+     * @throws \Cake\ORM\Exception\PersistenceFailedException If an entity couldn't be saved.
      */
-    protected function persistMany(array $data)
+    protected function persistMany(array $entities)
     {
-        $TableRegistry = $this->getTable();
-        $entities = $TableRegistry->newEntities($data, $this->getMarshallerOptions());
-
-        return $TableRegistry->saveMany($entities, $this->getSaveOptions());
+        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
     }
 
     /**
@@ -470,6 +466,35 @@ abstract class BaseFactory
     }
 
     /**
+     * Get the fields that are declared are unique.
+     * This should include the uniqueness of the fields in your schema.
+     *
+     * @return array
+     */
+    public function getUniqueProperties(): array
+    {
+        return $this->uniqueProperties;
+    }
+
+    /**
+     * Set the unique fields of the factory.
+     * If a field is unique and explicitly modified,
+     * it's existence will be checked
+     * before persisting. If found, no new
+     * entity will be created, but instead the
+     * existing one will be considered.
+     *
+     * @param array|string|null $fields Unique fields set on the fly.
+     * @return $this
+     */
+    public function setUniqueProperties($fields)
+    {
+        $this->uniqueProperties = (array)$fields;
+
+        return $this;
+    }
+
+    /**
      * Populate the entity factored
      *
      * @param callable $fn Callable delivering injected data
@@ -484,11 +509,11 @@ abstract class BaseFactory
 
     /**
      * Add associated entities to the fixtures generated by the factory
-     * The associated name can be of several level, dot separated
-     * The data can be an array, an integer, a callable or a factory
+     * The associated name can be of several depth, dot separated
+     * The data can be an array, an integer, an entity interface, a callable or a factory
      *
      * @param string $associationName Association name
-     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory $data Injected data
+     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
      * @return $this
      */
     public function with(string $associationName, $data = [])
