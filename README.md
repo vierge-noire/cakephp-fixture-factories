@@ -98,6 +98,8 @@ The only step performed by the package's test suite is to truncate *dirty* table
 
 [Here is a presentation](https://www.youtube.com/watch?v=a7EQvHkIb60&t=107m54s) held at the CakePHP online Meetup on 29th April 2020.
 
+[Here is the CakeFest 2020 presentation](https://www.youtube.com/watch?v=PNA1Ck2-nVc&t=30s)
+
 [Here is a serie of videos](https://www.youtube.com/playlist?list=PLYQ7YCTh-CYwL4pcDkzqHF8sv31cVd2or) on the present package.
 
 ## Contribute
