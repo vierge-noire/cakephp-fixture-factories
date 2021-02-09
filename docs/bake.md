@@ -1,11 +1,11 @@
 ## Bake command
 
-We recommand you to use the bake command in order create your factories.
+We recommend you to use the bake command in order create your factories.
 
 ### Load the plugin
 
 Make sure to add:
-```
+```php
 $this->addPlugin('CakephpFixtureFactories');
 ```
 
@@ -17,7 +17,7 @@ The command
 ```
 bin/cake bake fixture_factory -h
 ```
-will assist you. You have the possiblity to bake factories for all (`-a`) your models. You may also include help methods (`-m`)
+will assist you. You have the possibility to bake factories for all (`-a`) your models. You may also include help methods (`-m`)
 based on the associations defined in your models. Factories can be baked within plugin with the command `-p`.
 
 ### Next

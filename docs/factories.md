@@ -3,7 +3,7 @@
 ### What they look like
 
 A factory is a class that extends the `CakephpFixtureFactories\Factory\BaseFactory`. It should implement the following two methods:
-* `getRootTableRegistryName()`  which indicates the model that the factory will use to buld its fixtures;
+* `getRootTableRegistryName()`  which indicates the model that the factory will use to build its fixtures;
 * `setDefaultTemplate()`  which sets the default configuration of each entity created by the factory.
 
 The `Faker\Generator` is used in order to randomly populate fields, and is anytime available using `$this->getFaker()`.
@@ -13,7 +13,7 @@ The `Faker\Generator` is used in order to randomly populate fields, and is anyti
 Let us consider for example a model `Articles`, related to multiple `Authors`.
 
 This could be for example the `ArticleFactory`. Per default the fields `title` and `body` are set with `Faker` and two associated `authors` are created.
-```$xslt
+```php
 namespace App\Test\Factory;
 
 use CakephpFixtureFactories\Factory\BaseFactory;
@@ -73,8 +73,8 @@ If a field is required in the database, it will have to be populated in the `set
 
 ### Validation / Behaviors
 
-With the aim of persisting data in the database as straighforwardly as possible, all validations and rules
-are deactivated when creating CakePHP entities and persisting them to the database. Validationa nd rules may be reactivated / customized by overwriting
+With the aim of persisting data in the database as straightforwardly as possible, all validations and rules
+are deactivated when creating CakePHP entities and persisting them to the database. Validation and rules may be reactivated / customized by overwriting
 the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
  
 ### Model events and behaviors
@@ -88,11 +88,11 @@ The intention is to create fixtures as fast and transparently as possible withou
 Is is however possible to activate an event model with the method `listeningToModelEvents`.
 
 This can be made on the fly:
-```$xslt
+```php
 $article = ArticleFactory::make()->listeningToModelEvents('Model.beforeMarshal')->getEntity();
 ```
 or per default in the factory's `setDefaultTemplate` method:
-```$xslt
+```php
 protected function setDefaultTemplate()
 {
       $this->setDefaultData(function(Generator $faker) {
@@ -116,7 +116,7 @@ Note that you can provide either a single event, or an array of events. You will
 It is possible to activate the model events of a behavior in the same way with the method `listeningToBehaviors`.
 
 This can be made on the fly:
-```
+```php
 $article = ArticleFactory::make()->listeningToBehaviors('Sluggable')->getEntity();
 ```
 or per default in the factory's `setDefaultTemplate` method.
@@ -126,7 +126,7 @@ and for which not nullable fields need to be populated.
 
 You may save in your configuration file, under the key `TestFixtureGlobalBehaviors`, all the behaviors that will be listened to, provided that the root table itself is listening to them.
 
-```$xslt
+```php
 'TestFixtureGlobalBehaviors' => [
         'SomeBehaviorUsedInMultipleTables',
     ],
@@ -153,7 +153,7 @@ collide with the constrains of your schema. The same goes of course with primary
 The fixture factories offer to define unique properties, under the protected property
 $uniqueProperties. For example given a country factory. 
 
-```$xslt
+```php
 namespace App\Test\Factory;
 ... 
 class CountryFactory extends BaseFactory
