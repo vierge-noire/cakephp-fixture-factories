@@ -1,7 +1,9 @@
-<a href="https://vierge-noire.github.io/" target="_blank" style="display: block; margin: auto"><img src="https://vierge-noire.github.io/images/fixture_factories.svg" alt="ff-logo" width="150"  /></a>
-
-# CakePHP Fixture Factories
-
+<p align="center">
+    <a href="https://vierge-noire.github.io/" target="_blank"><img src="https://vierge-noire.github.io/images/fixture_factories.svg" alt="ff-logo" width="150"  /></a>
+</p>
+<h1 align="center">
+CakePHP Fixture Factories
+</h1>
 An alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application. 
 The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in CakePHP.
 
