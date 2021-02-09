@@ -13,18 +13,22 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\Factory;
 
-use Faker\Generator;
 use CakephpFixtureFactories\Factory\BaseFactory;
+use Faker\Generator;
+use TestApp\Model\Entity\Article;
 
 class ArticleFactory extends BaseFactory
 {
+    public const DEFAULT_NUMBER_OF_AUTHORS = 2;
+
     /**
      * Defines the Table Registry used to generate entities with
+     *
      * @return string
      */
     protected function getRootTableRegistryName(): string
     {
-        return "Articles";
+        return 'Articles';
     }
 
     /**
@@ -32,16 +36,17 @@ class ArticleFactory extends BaseFactory
      * not nullable fields.
      * Use the patchData method to set the field values.
      * You may use methods of the factory here
+     *
      * @return void
      */
     protected function setDefaultTemplate()
     {
-        $this->setDefaultData(function(Generator $faker) {
+        $this->setDefaultData(function (Generator $faker) {
             return [
-                'title' => $faker->text(120)
+                'title' => $faker->text(120),
             ];
         })
-        ->withAuthors(2);
+        ->withAuthors(null, self::DEFAULT_NUMBER_OF_AUTHORS);
     }
 
     public function withAuthors($parameter = null, int $n = 1): self
@@ -49,10 +54,10 @@ class ArticleFactory extends BaseFactory
         return $this->with('Authors', AuthorFactory::make($parameter, $n));
     }
 
-
     /**
      * It is important here to stop the propagation of the default template of the bills
      * Otherways, each bills get a new Article, which is not the one produced by the present factory
+     *
      * @param mixed $parameter
      * @param int $n
      * @return ArticleFactory
@@ -65,6 +70,7 @@ class ArticleFactory extends BaseFactory
     /**
      * BAD PRACTICE EXAMPLE
      * This method will lead to inconsistencies (see $this->withBills())
+     *
      * @param mixed $parameter
      * @param int $n
      * @return ArticleFactory
@@ -76,6 +82,7 @@ class ArticleFactory extends BaseFactory
 
     /**
      * Set the Article's title
+     *
      * @param string $title
      * @return ArticleFactory
      */
@@ -86,12 +93,20 @@ class ArticleFactory extends BaseFactory
 
     /**
      * Set the Article's title as a random job title
+     *
      * @return ArticleFactory
      */
     public function setJobTitle()
     {
         return $this->patchData([
             'title' => $this->getFaker()->jobTitle,
+        ]);
+    }
+
+    public function withHiddenBiography(string $text)
+    {
+        return $this->patchData([
+            Article::HIDDEN_PARAGRAPH_PROPERTY_NAME => $text
         ]);
     }
 }

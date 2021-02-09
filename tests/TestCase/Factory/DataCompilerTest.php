@@ -14,8 +14,10 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
+use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
+use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -75,11 +77,6 @@ class DataCompilerTest extends TestCase
         $this->assertSame(PremiumAuthorsTable::ASSOCIATION_ALIAS.'.address', $marshallerAssociationName);
     }
 
-    public function testGetPrimaryKey()
-    {
-        $this->assertSame('id', $this->articleDataCompiler->getRootTablePrimaryKey());
-    }
-
     public function testGenerateRandomPrimaryKeyInteger()
     {
         $this->assertTrue(is_int($this->articleDataCompiler->generateRandomPrimaryKey('integer')));
@@ -120,7 +117,7 @@ class DataCompilerTest extends TestCase
 
     public function testSetPrimaryKey()
     {
-        $data = CountryFactory::make()->getEntity()->toArray();
+        $data = CountryFactory::make()->getEntity();
 
         $this->articleDataCompiler->startPersistMode();
         $res = $this->articleDataCompiler->setPrimaryKey($data);
@@ -135,30 +132,42 @@ class DataCompilerTest extends TestCase
     public function testSetPrimaryKeyWithIdSet()
     {
         $id = rand(1, 10000);
-        $res = $this->articleDataCompiler->setPrimaryKey(compact('id'));
+        $entity = new Entity(compact('id'));
+        $res = $this->articleDataCompiler->setPrimaryKey($entity);
         $this->assertSame($id, $res['id']);
     }
 
-    /**
-     *
-     */
-    public function testSetPrimaryKeyOnArrayOfData()
+    public function testSetPrimaryKeyOnEntity()
     {
-        $data = [
-            CountryFactory::make()->getEntity()->toArray(),
-            CountryFactory::make()->getEntity()->toArray(),
-        ];
+        $countries = CountryFactory::make(2)->getEntity();
 
         $this->articleDataCompiler->startPersistMode();
-        $res = $this->articleDataCompiler->setPrimaryKey($data);
+        $res = $this->articleDataCompiler->setPrimaryKey($countries);
 
-        $this->assertTrue(is_int($res[0]['id']));
-        $this->assertTrue(is_null($res[1]['id'] ?? null));
-
-        $res = $this->articleDataCompiler->setPrimaryKey($data);
-        $this->assertTrue(is_null($res[0]['id'] ?? null));
-        $this->assertTrue(is_null($res[1]['id'] ?? null));
+        $this->assertTrue(is_int($res['id']));
 
         $this->articleDataCompiler->endPersistMode();
+    }
+
+    public function dataForGetModifiedUniqueFields(): array
+    {
+        return [
+            [[], []],
+            [['id' => 'Foo',], ['id']],
+            [['id' => 'Foo', 'name' => 'Bar'], ['id']],
+            [['id' => 'Foo', 'name' => 'Bar', 'unique_stamp' => 'FooBar'], ['id', 'unique_stamp']],
+        ];
+    }
+
+    /**
+     * @dataProvider dataForGetModifiedUniqueFields
+     * @param BaseFactory $factory
+     * @param array $expected
+     */
+    public function testGetModifiedUniqueFields(array $injectedData, array $expected)
+    {
+        $dataCompiler = new DataCompiler(CountryFactory::make($injectedData));
+        $dataCompiler->compileEntity($injectedData);
+        $this->assertSame($dataCompiler->getModifiedUniqueFields(), $expected);
     }
 }
