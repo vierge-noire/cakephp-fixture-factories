@@ -4,8 +4,7 @@
 <h1 align="center">
 CakePHP Fixture Factories
 </h1>
-An alternative approach of managing test fixtures in a CakePHP application. 
-The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in CakePHP.
+An alternative approach to create test fixtures.
 
 The CakePHP Fixture Factories plugin
 * increases the speed of your tests,
