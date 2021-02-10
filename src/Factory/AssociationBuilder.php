@@ -23,10 +23,14 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
-use CakephpFixtureFactories\Util;
+use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 
 class AssociationBuilder
 {
+    use FactoryAwareTrait {
+      getFactory as getFactoryInstance;
+    }
+
     private $associated = [];
 
     /**
@@ -179,10 +183,9 @@ class AssociationBuilder
      */
     public function getFactoryFromTableName(string $modelName, $data = []): BaseFactory
     {
-        $factoryName = Util::getFactoryClassFromModelName($modelName);
         try {
-            return $factoryName::make($data);
-        } catch (\Error $e) {
+            return $this->getFactoryInstance($modelName, $data);
+        } catch (\Throwable $e) {
             throw new AssociationBuilderException($e->getMessage());
         }
     }

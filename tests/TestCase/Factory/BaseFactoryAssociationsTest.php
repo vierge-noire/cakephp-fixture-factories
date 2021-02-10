@@ -647,7 +647,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(4, count($country->cities));
         $this->assertSame(4, $this->CitiesTable->find()->count());
 
-        if (Util::isRunningOnPostgresql(CountryFactory::make())) {
+        if (CountryFactory::make()->isRunningOnPostgresql()) {
             $this->assertSame($city1, $this->CitiesTable->get(1)->name);
             $this->assertSame($city2, $this->CitiesTable->get(2)->name);
             $this->assertSame($street1, $this->AddressesTable->get(1)->street);
