@@ -6,7 +6,6 @@ namespace CakephpFixtureFactories\Factory;
 use Cake\Core\Configure;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FactoryNotFoundException;
-use CakephpFixtureFactories\Factory\BaseFactory;
 
 trait FactoryAwareTrait
 {
@@ -15,8 +14,9 @@ trait FactoryAwareTrait
      *
      * Additionnal arguments are passed *as is* to `BaseFactory::make`
      *
-     * @param  string      $name      Factory or model name
-     * @return BaseFactory            [description]
+     * @param  string           $name          Factory or model name
+     * @param  string|array[]   ...$arguments  Additionnal arguments for `BaseFactory::make`
+     * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @see CakephpFixtureFactories\Factory\BaseFactory::make
      */
     public function getFactory(string $name, ...$arguments): BaseFactory
@@ -38,13 +38,16 @@ trait FactoryAwareTrait
      */
     public function getFactoryClassName(string $name): string
     {
+        // phpcs:disable
         @[$modelName, $plugin] = array_reverse(explode('.', $name));
+        // phpcs:enable
 
         return $this->getFactoryNamespace($plugin) . '\\' . $this->getFactoryNameFromModelName($modelName);
     }
 
     /**
      * Returns the factory file name
+     *
      * @param  string $name [description]
      * @return string       [description]
      */

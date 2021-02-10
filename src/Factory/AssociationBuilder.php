@@ -23,12 +23,11 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
-use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 
 class AssociationBuilder
 {
     use FactoryAwareTrait {
-      getFactory as getFactoryInstance;
+        getFactory as getFactoryInstance;
     }
 
     private $associated = [];
