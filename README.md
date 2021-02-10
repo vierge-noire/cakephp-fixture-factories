@@ -4,7 +4,7 @@
 <h1 align="center">
 CakePHP Fixture Factories
 </h1>
-An alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application. 
+An alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application.
 The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in CakePHP.
 
 The CakePHP Fixture Factories plugin
@@ -26,6 +26,10 @@ Or move that logic in your `UserFactory` by creating your own `withPermission` m
 `$users = UserFactory::make(3)->withPermission('some-permission')->getEntity()`.
 
 Creating or persisting test data is made ridiculously simple, and your tests get readable.
+
+Given your preferred style, you can either use static factory instance getter as above or embeds `FactoryAwareTrait` in your tests :
+
+`$users = $this->getFactory('User', 3)->withPermission('some-permission')->getEntity()`.
 
 ## Installation
 For CakePHP 4.x:
@@ -50,7 +54,7 @@ protected function bootstrapCli(): void
 }
 ```
 
-and set up the test listener in `phpunit.xml.dist` by running: 
+and set up the test listener in `phpunit.xml.dist` by running:
 ```
 bin/cake fixture_factories_setup
 ```

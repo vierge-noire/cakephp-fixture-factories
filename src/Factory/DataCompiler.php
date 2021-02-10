@@ -20,7 +20,6 @@ use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\Util;
 use InvalidArgumentException;
 
 class DataCompiler
@@ -492,7 +491,7 @@ class DataCompiler
      */
     private function updatePostgresSequence(array $primaryKeys): void
     {
-        if (Util::isRunningOnPostgresql($this->getFactory())) {
+        if ($this->getFactory()->isRunningOnPostgresql()) {
             $tableName = $this->getFactory()->getRootTableRegistry()->getTable();
 
             foreach ($primaryKeys as $pk => $offset) {
