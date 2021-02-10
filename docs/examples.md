@@ -43,7 +43,7 @@ $articles = ArticleFactory::make(3)->persist();
 ```
 
 ### Using `FactoryAwareTrait`
-All examples belows are using static getter to fetch a factory instance. As convenience and kinda syntactic sugar, you can use the `FactoryAwareTrait::getFactory` instead.
+All examples above are using static getter to fetch a factory instance. As convenience and kinda syntactic sugar, you can use the `FactoryAwareTrait::getFactory` instead.
 
 `getFactory` is more tolerant on provided name, as you can use plurals or lowercased names. All arguments passed after factory name will be cast to `BaseFactory::make`.
 
