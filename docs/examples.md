@@ -60,14 +60,14 @@ class MyTest extends TestCase
         // Static getter style
         $article = ArticleFactory::make()->getEntity();
         $article = ArticleFactory::make(['title' => 'Foo'])->getEntity();
-        $article = ArticleFactory::make(3)->getEntities();
-        $article = ArticleFactory::make(['title' => 'Foo'], 3)->getEntities();
+        $articles = ArticleFactory::make(3)->getEntities();
+        $articles = ArticleFactory::make(['title' => 'Foo'], 3)->getEntities();
 
         // Exactly the same in FactoryAwareTrait style
         $article = $this->getFactory('Article')->getEntity();
         $article = $this->getFactory('Article', ['title' => 'Foo'])->getEntity();
-        $article = $this->getFactory('Article', 3)->getEntities();
-        $article = $this->getFactory('Article', ['title' => 'Foo'], 3)->getEntities();
+        $articles = $this->getFactory('Article', 3)->getEntities();
+        $articles = $this->getFactory('Article', ['title' => 'Foo'], 3)->getEntities();
     }
 }
 ```
