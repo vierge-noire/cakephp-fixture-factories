@@ -498,9 +498,11 @@ class DataCompiler
             foreach ($primaryKeys as $pk => $offset) {
                 $seq = $this->getFactory()->getRootTableRegistry()->getConnection()->execute("
 		            SELECT pg_get_serial_sequence('$tableName','$pk')")->fetchAll()[0][0];
+		if ($seq !== NULL) {
                     $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
                         "SELECT setval('$seq', $offset);"
                 );
+		}
             }
         }
     }
