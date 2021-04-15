@@ -26,6 +26,10 @@ Or move that logic in your `UserFactory` by creating your own `withPermission` m
 
 Creating or persisting test data is made ridiculously simple, and your tests get readable.
 
+Given your preferred style, you can either use static factory instance getter as above or embeds `FactoryAwareTrait` in your tests :
+
+`$users = $this->getFactory('User', 3)->withPermission('some-permission')->getEntity()`.
+
 ## Installation
 For CakePHP 4.x:
 ```
@@ -50,7 +54,7 @@ protected function bootstrapCli(): void
 }
 ```
 
-and set up the test listener in `phpunit.xml.dist` by running: 
+and set up the test listener in `phpunit.xml.dist` by running:
 ```
 bin/cake fixture_factories_setup
 ```

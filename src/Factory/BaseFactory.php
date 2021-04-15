@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Database\Driver\Postgres;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -156,6 +157,14 @@ abstract class BaseFactory
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
         $factory->getDataCompiler()->collectAssociationsFromDefaultTemplate();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRunningOnPostgresql(): bool
+    {
+        return $this->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class;
     }
 
     /**

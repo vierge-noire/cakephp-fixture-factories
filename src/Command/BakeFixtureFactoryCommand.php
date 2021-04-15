@@ -23,11 +23,13 @@ use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
-use CakephpFixtureFactories\Util;
+use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 use ReflectionClass;
 
 class BakeFixtureFactoryCommand extends BakeCommand
 {
+    use FactoryAwareTrait;
+
     /**
      * path to Factory directory
      *
@@ -53,15 +55,6 @@ class BakeFixtureFactoryCommand extends BakeCommand
     public function name(): string
     {
         return 'fixture_factory';
-    }
-
-    /**
-     * @param string $modelName Name of the model
-     * @return string Name of the factory file
-     */
-    public function fileName(string $modelName): string
-    {
-        return Util::getFactoryNameFromModelName($modelName) . '.php';
     }
 
     /**
@@ -283,7 +276,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
         $contents = $renderer->generate($this->template());
 
         $path = $this->getPath($args);
-        $filename = $path . $this->fileName($modelName);
+        $filename = $path . $this->getFactoryFileName($modelName);
 
         return $io->createFile($filename, $contents, $args->getOption('force') ?? false);
     }
@@ -298,7 +291,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
             'modelNameSingular' => Inflector::singularize($this->modelName),
             'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
-            'namespace' => Util::getFactoryNamespace($this->plugin),
+            'namespace' => $this->getFactoryNamespace($this->plugin),
         ];
         $methods = [];
         if ($arg->getOption('methods')) {
@@ -337,7 +330,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
         foreach ($this->getTable()->associations() as $association) {
             $modelName = $association->getClassName() ?? $association->getName();
-            $factory = Util::getFactoryClassFromModelName($modelName);
+            $factory = $this->getFactoryClassName($modelName);
             switch ($association->type()) {
                 case 'oneToOne':
                 case 'manyToOne':

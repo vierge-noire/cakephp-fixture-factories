@@ -20,7 +20,6 @@ use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\Util;
 use InvalidArgumentException;
 
 class DataCompiler
@@ -445,6 +444,7 @@ class DataCompiler
     {
         switch ($columnType) {
             case 'uuid':
+            case 'string':
                 $res = $this->getFactory()->getFaker()->uuid;
                 break;
             case 'biginteger':
@@ -492,13 +492,17 @@ class DataCompiler
      */
     private function updatePostgresSequence(array $primaryKeys): void
     {
-        if (Util::isRunningOnPostgresql($this->getFactory())) {
+        if ($this->getFactory()->isRunningOnPostgresql()) {
             $tableName = $this->getFactory()->getRootTableRegistry()->getTable();
 
             foreach ($primaryKeys as $pk => $offset) {
-                $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
-                    "SELECT setval('$tableName" . "_$pk" . "_seq', $offset);"
-                );
+                $seq = $this->getFactory()->getRootTableRegistry()->getConnection()->execute("
+		            SELECT pg_get_serial_sequence('$tableName','$pk')")->fetchAll()[0][0];
+                if ($seq !== null) {
+                    $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
+                        "SELECT setval('$seq', $offset);"
+                    );
+                }
             }
         }
     }

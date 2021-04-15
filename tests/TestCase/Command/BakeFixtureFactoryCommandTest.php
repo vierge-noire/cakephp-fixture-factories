@@ -57,10 +57,10 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         'Customers',
     ];
 
-    public function testFileName()
+    public function testGetFileName()
     {
         $name = 'Model';
-        $this->assertSame('ModelFactory.php', $this->FactoryCommand->fileName($name));
+        $this->assertSame('ModelFactory.php', $this->FactoryCommand->getFactoryFileName($name));
     }
 
     public function testGetTableListInApp()
