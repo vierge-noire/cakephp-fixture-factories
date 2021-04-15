@@ -4,8 +4,7 @@
 <h1 align="center">
 CakePHP Fixture Factories
 </h1>
-An alternative approach of managing test fixtures in a [CakePHP](https://book.cakephp.org/4/en/development/testing.html) application.
-The main idea is to provide fixture factories in replacement to the fixtures you can find out of the box in CakePHP.
+An alternative approach to create test fixtures.
 
 The CakePHP Fixture Factories plugin
 * increases the speed of your tests,
@@ -41,6 +40,7 @@ For CakePHP 3.x:
 ```
 composer require --dev vierge-noire/cakephp-fixture-factories "^1.0"
 ```
+Note that PHP 7.0 is supported up to v1.1.x only.
 
 ## [Setup](docs/setup.md)
 
