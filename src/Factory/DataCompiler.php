@@ -444,6 +444,7 @@ class DataCompiler
     {
         switch ($columnType) {
             case 'uuid':
+            case 'string':
                 $res = $this->getFactory()->getFaker()->uuid;
                 break;
             case 'biginteger':
@@ -495,9 +496,13 @@ class DataCompiler
             $tableName = $this->getFactory()->getRootTableRegistry()->getTable();
 
             foreach ($primaryKeys as $pk => $offset) {
-                $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
-                    "SELECT setval('$tableName" . "_$pk" . "_seq', $offset);"
-                );
+                $seq = $this->getFactory()->getRootTableRegistry()->getConnection()->execute("
+		            SELECT pg_get_serial_sequence('$tableName','$pk')")->fetchAll()[0][0];
+                if ($seq !== null) {
+                    $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
+                        "SELECT setval('$seq', $offset);"
+                    );
+                }
             }
         }
     }
