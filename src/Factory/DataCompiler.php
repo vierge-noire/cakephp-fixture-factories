@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Database\Driver\Postgres;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
@@ -492,7 +493,7 @@ class DataCompiler
      */
     private function updatePostgresSequence(array $primaryKeys): void
     {
-        if ($this->getFactory()->isRunningOnPostgresql()) {
+        if ($this->getFactory()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
             $tableName = $this->getFactory()->getRootTableRegistry()->getTable();
 
             foreach ($primaryKeys as $pk => $offset) {

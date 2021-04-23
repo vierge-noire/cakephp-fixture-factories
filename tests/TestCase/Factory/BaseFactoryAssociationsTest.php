@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
+use Cake\Database\Driver\Postgres;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -647,7 +648,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(4, count($country->cities));
         $this->assertSame(4, $this->CitiesTable->find()->count());
 
-        if (CountryFactory::make()->isRunningOnPostgresql()) {
+        if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
             $this->assertSame($city1, $this->CitiesTable->get(1)->name);
             $this->assertSame($city2, $this->CitiesTable->get(2)->name);
             $this->assertSame($street1, $this->AddressesTable->get(1)->street);

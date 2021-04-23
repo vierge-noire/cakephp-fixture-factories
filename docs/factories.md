@@ -37,7 +37,7 @@ class ArticleFactory extends BaseFactory
      * You may use methods of the factory here
      * @return void
      */
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
           $this->setDefaultData(function(Generator $faker) {
                return [
@@ -70,6 +70,10 @@ You may add any methods related to your business model, such as `setJobTitle` to
 ### Required fields
 
 If a field is required in the database, it will have to be populated in the `setDefaultTemplate` method. You may simply set it to a fixed value, for example 1.
+
+### Locale
+
+The factories will generate data in the locale of your application, if the latter is supported by faker.
 
 ### Validation / Behaviors
 
