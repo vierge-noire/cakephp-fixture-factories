@@ -14,11 +14,10 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
-use Cake\Datasource\ResultSetInterface;
+use Cake\I18n\I18n;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\PersistenceException;
-use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
@@ -195,12 +194,21 @@ abstract class BaseFactory
     }
 
     /**
-     * @return Generator
+     * Faker's local is set as the I18n local.
+     * If not supported by Faker, take faker's default.
+     *
+     * @return \Faker\Generator
      */
     public function getFaker(): Generator
     {
         if (is_null(self::$faker)) {
-            $faker = Factory::create();
+            try {
+                $fakerLocale = I18n::getLocale();
+                $faker = Factory::create($fakerLocale);
+            } catch (\Throwable $e) {
+                $fakerLocale = Factory::DEFAULT_LOCALE;
+                $faker = Factory::create($fakerLocale);
+            }
             $faker->seed(1234);
             self::$faker = $faker;
         }
@@ -293,8 +301,8 @@ abstract class BaseFactory
     }
 
     /**
-     * @return array|EntityInterface|EntityInterface[]|ResultSetInterface|false|null
-     * @throws Exception
+     * @return array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|false|null
+     * @throws \CakephpFixtureFactories\Error\PersistenceException if the entity/entities could not be saved.
      */
     public function persist()
     {
@@ -308,7 +316,7 @@ abstract class BaseFactory
             } else {
                 return $this->persistMany($entities);
             }
-        } catch (Exception $exception) {
+        } catch (\Throwable $exception) {
             $factory = get_class($this);
             $message = $exception->getMessage();
             throw new PersistenceException("Error in Factory $factory.\n Message: $message \n");

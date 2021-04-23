@@ -37,7 +37,7 @@ class ArticleFactory extends BaseFactory
      * You may use methods of the factory here
      * @return self
      */
-    protected function setDefaultTemplate()
+    protected function setDefaultTemplate(): void
     {
           $this->setDefaultData(function(Generator $faker) {
                return [
@@ -66,6 +66,14 @@ class ArticleFactory extends BaseFactory
 }
 ```
 You may add any methods related to your business model, such as `setJobTitle` to help you build efficient and reusable factories.
+
+### Required fields
+
+If a field is required in the database, it will have to be populated in the `setDefaultTemplate` method. You may simply set it to a fixed value, for example 1.
+
+### Locale
+
+The factories will generate data in the locale of your application, if the latter is supported by faker.
 
 ### Validation / Behaviors
 With the aim of persisting data in the database as straighforwardly as possible, all behaviors (except Timestamp) and all validations
