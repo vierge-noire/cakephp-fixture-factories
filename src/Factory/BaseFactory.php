@@ -363,7 +363,8 @@ abstract class BaseFactory
      */
     protected function persistMany(array $entities)
     {
-        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions()); /** @phpstan-ignore-line */
+        /** @phpstan-ignore-next-line */
+        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
     }
 
     /**
