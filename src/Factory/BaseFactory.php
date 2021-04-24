@@ -117,7 +117,7 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $makeParameter Injected data
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface $makeParameter Injected data
      * @param int                     $times Number of entities created
      * @return static
      */
@@ -363,7 +363,7 @@ abstract class BaseFactory
      */
     protected function persistMany(array $entities)
     {
-        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
+        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions()); /** @phpstan-ignore-line */
     }
 
     /**
