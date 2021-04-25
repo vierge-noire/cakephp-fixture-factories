@@ -115,30 +115,30 @@ class PersistCommandTest extends TestCase
      */
     public function testPersistOnNFactories(string $factoryString)
     {
-        $number = 3;
+        $number = '3';
         $args = new Arguments([$factoryString], compact('number'), [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertSame($number, $this->Articles->find()->count());
+        $this->assertEquals($number, $this->Articles->find()->count());
     }
 
     public function testPersistWithMethodAndNumber()
     {
-        $number = 3;
+        $number = '3';
         $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number], [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertSame($number, $this->Articles->find()->count());
-        $this->assertSame($number, $this->Bills->find()->count());
+        $this->assertEquals($number, $this->Articles->find()->count());
+        $this->assertEquals($number, $this->Bills->find()->count());
     }
 
     public function testPersistWithMethodAndNumberDryRun()
     {
-        $number = 3;
+        $number = '3';
         $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number, 'dry-run' => true], [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);

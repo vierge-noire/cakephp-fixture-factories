@@ -46,7 +46,7 @@ class PersistCommand extends Command
         $parser
             ->setDescription('Helper to persist test fixtures on the command line')
             ->addArgument(self::ARG_NAME, [
-                'help' => 'The model to persist. Model name plural or singular, accepts plugin notation. Or fully qualified factory class.',
+                'help' => 'The model to persist, accepts plugin notation. Or provide a fully qualified factory class.',
                 'required' => true,
             ])
             ->addOption('plugin', [
@@ -133,6 +133,7 @@ class PersistCommand extends Command
         } else {
             $times = 1;
         }
+
         return $factory->setTimes($times);
     }
 
