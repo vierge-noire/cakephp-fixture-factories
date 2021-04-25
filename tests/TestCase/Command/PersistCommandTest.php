@@ -103,7 +103,7 @@ class PersistCommandTest extends TestCase
 
     public function testPersistWithMethodAndNumber()
     {
-        $number = 1;
+        $number = 3;
         $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number], ['factory']);
 
         $output = $this->command->execute($args, $this->io);
@@ -111,6 +111,18 @@ class PersistCommandTest extends TestCase
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
         $this->assertSame($number, $this->Articles->find()->count());
         $this->assertSame($number, $this->Bills->find()->count());
+    }
+
+    public function testPersistWithMethodAndNumberDryRun()
+    {
+        $number = 3;
+        $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number, 'dry-run' => true], ['factory']);
+
+        $output = $this->command->execute($args, $this->io);
+
+        $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
+        $this->assertSame(0, $this->Articles->find()->count());
+        $this->assertSame(0, $this->Bills->find()->count());
     }
 
     public function testPersistWithWrongMethod()

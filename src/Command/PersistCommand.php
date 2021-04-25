@@ -18,13 +18,11 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Datasource\ConnectionManager;
+use Cake\Datasource\EntityInterface;
 use CakephpFixtureFactories\Error\FactoryNotFoundException;
-use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
-use CakephpTestSuiteLight\FixtureInjector;
-use CakephpTestSuiteLight\FixtureManager;
 
 class PersistCommand extends Command
 {
@@ -66,8 +64,7 @@ class PersistCommand extends Command
             ->addOption('dry-run', [
                 'help' => 'Name of the phpunit config file (per default phpunit.xml.dist)',
                 'short' => 'd',
-            ])
-        ;
+            ]);
 
         return $parser;
     }
@@ -80,61 +77,62 @@ class PersistCommand extends Command
         $factory = null;
         try {
             $factory = $this->parseFactory($args);
-            $this->attachMethod($args, $factory);
+            // The following order is important, as methods may overwrite $times
+            $this->setTimes($args, $factory);
+            $this->attachMethod($args, $factory, $io);
         } catch (FactoryNotFoundException $e) {
             $io->error($e->getMessage());
             $this->abort();
         }
 
-        $connection = $args->getOption('connection') ?? 'test';
-        $this->aliasConnection($connection, $factory);
-        $this->setTimes($args, $factory);
-        $this->attachMethod($args, $factory);
-
-        try {
-            $factory->persist();
-        } catch (PersistenceException $e) {
-            $io->error($e->getMessage());
-            $this->abort();
+        if ($args->getOption('dry-run')) {
+            $this->dryRun($factory, $io);
+        } else {
+            $this->persist($factory, $args, $io);
         }
-
-        $factory = get_class($factory);
-        $io->success("{$factory} persisted on '{$connection}' connection.");
 
         return self::CODE_SUCCESS;
     }
 
     /**
-     * @param Arguments $args The command arguments
-     * @return BaseFactory
+     * @param \Cake\Console\Arguments $args The command arguments
+     * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
      */
     public function parseFactory(Arguments $args): BaseFactory
     {
         $factoryString = $args->getArgument('factory');
 
-        if (is_subclass_of($factoryString,BaseFactory::class)) {
+        if (is_subclass_of($factoryString, BaseFactory::class)) {
             return $factoryString::make();
         }
-        if ($plugin = $args->getOption('plugin')) {
+
+        $plugin = $args->getOption('plugin');
+        if (is_string($plugin)) {
             $factoryString = $plugin . '.' . $factoryString;
         }
 
         return $this->getFactory($factoryString);
     }
 
+    /**
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @return \CakephpFixtureFactories\Factory\BaseFactory
+     */
     public function setTimes(Arguments $args, BaseFactory $factory): BaseFactory
     {
         return $factory->setTimes($args->getOption('number') ?? 1);
     }
 
     /**
-     * @param Arguments $args
-     * @param BaseFactory $factory
-     * @return BaseFactory
-     * @throws FactoryNotFoundException if the method is not found in the factory
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @param \Cake\Console\ConsoleIo $io Console
+     * @return \CakephpFixtureFactories\Factory\BaseFactory
+     * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the method is not found in the factory
      */
-    public function attachMethod(Arguments $args, BaseFactory $factory): BaseFactory
+    public function attachMethod(Arguments $args, BaseFactory $factory, ConsoleIo $io): BaseFactory
     {
         $method = $args->getOption('method');
 
@@ -143,7 +141,8 @@ class PersistCommand extends Command
         }
         if (!method_exists($factory, $method)) {
             $className = get_class($factory);
-            throw new FactoryNotFoundException("The method {$method} was not found in {$className}.");
+            $io->error("The method {$method} was not found in {$className}.");
+            throw new FactoryNotFoundException();
         }
 
         return $factory->{$method}();
@@ -154,13 +153,59 @@ class PersistCommand extends Command
      * overwriting the table's default connection.
      *
      * @param string $connection Connection name
-     * @param BaseFactory $factory
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @return void
      */
-    public function aliasConnection(string $connection, BaseFactory $factory)
+    public function aliasConnection(string $connection, BaseFactory $factory): void
     {
         ConnectionManager::alias(
             $connection,
             $factory->getRootTableRegistry()->getConnection()->configName()
         );
+    }
+
+    /**
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \Cake\Console\ConsoleIo $io Console
+     * @return void
+     */
+    public function persist(BaseFactory $factory, Arguments $args, ConsoleIo $io): void
+    {
+        $connection = $args->getOption('connection') ?? 'test';
+        $this->aliasConnection($connection, $factory);
+
+        $entities = [];
+        try {
+            $entities = $factory->persist();
+        } catch (PersistenceException $e) {
+            $io->error($e->getMessage());
+            $this->abort();
+        }
+
+        $times = is_subclass_of($entities, EntityInterface::class) ? 1 : count($entities);
+        $factory = get_class($factory);
+        $io->success("{$times} {$factory} persisted on '{$connection}' connection.");
+    }
+
+    /**
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @param \Cake\Console\ConsoleIo $io Console
+     * @return void
+     */
+    public function dryRun(BaseFactory $factory, ConsoleIo $io): void
+    {
+        $entities = $factory->getEntities();
+        $times = count($entities);
+        $factory = get_class($factory);
+
+        $io->success("{$times} {$factory} generated on dry run.");
+        $eol = PHP_EOL;
+        foreach ($entities as $i => $entity) {
+            $io->hr();
+            $io->info("[$i]");
+            $output = json_encode($entity->toArray(), JSON_PRETTY_PRINT);
+            $io->info($output);
+        }
     }
 }
