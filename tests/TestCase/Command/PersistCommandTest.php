@@ -22,6 +22,7 @@ use Cake\Datasource\ModelAwareTrait;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Command\PersistCommand;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\BillFactory;
 use TestApp\Model\Table\ArticlesTable;
 use TestPlugin\Model\Table\BillsTable;
 
@@ -87,6 +88,28 @@ class PersistCommandTest extends TestCase
         $this->assertSame(1, $this->Articles->find()->count());
     }
 
+    public function dataProviderForStringPluginFactories(): array
+    {
+        return [
+            ['TestPlugin.Bills'],
+            ['TestPlugin.Bill'],
+            [BillFactory::class],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderForStringPluginFactories
+     */
+    public function testPersistOnOnePluginFactory(string $factoryString)
+    {
+        $args = new Arguments([$factoryString], [], ['factory']);
+
+        $output = $this->command->execute($args, $this->io);
+
+        $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
+        $this->assertSame(1, $this->Bills->find()->count());
+    }
+
     /**
      * @dataProvider dataProviderForStringFactories
      */
@@ -123,6 +146,15 @@ class PersistCommandTest extends TestCase
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
         $this->assertSame(0, $this->Articles->find()->count());
         $this->assertSame(0, $this->Bills->find()->count());
+    }
+
+    public function testPersistWithWrongFactory()
+    {
+        $className = 'foo';
+        $args = new Arguments([$className], [], ['factory']);
+
+        $this->expectException(StopException::class);
+        $this->command->execute($args, $this->io);
     }
 
     public function testPersistWithWrongMethod()

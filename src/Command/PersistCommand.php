@@ -44,25 +44,25 @@ class PersistCommand extends Command
         $parser
             ->setDescription('Helper to persist test fixtures on the command line')
             ->addArgument('factory', [
-                'help' => 'The factory to persist',
+                'help' => 'The factory to persist. Factory name, or fully qualified class, or plugin notation.',
                 'required' => true,
             ])
             ->addOption('plugin', [
-                'help' => 'Fetch the factory in a plugin',
+                'help' => 'Fetch the factory in a plugin.',
                 'short' => 'p',
             ])
             ->addOption('connection', [
-                'help' => 'Persist into this connection',
+                'help' => 'Persist into this connection.',
                 'short' => 'c',
                 'default' => 'test',
             ])
             ->addOption('number', [
-                'help' => 'Number of entities to persist',
+                'help' => 'Number of entities to persist.',
                 'short' => 'n',
                 'default' => 1,
             ])
             ->addOption('dry-run', [
-                'help' => 'Name of the phpunit config file (per default phpunit.xml.dist)',
+                'help' => 'Display the entities created without persisting.',
                 'short' => 'd',
             ]);
 
