@@ -80,7 +80,7 @@ class PersistCommandTest extends TestCase
      */
     public function testPersistOnOneFactory(string $factoryString)
     {
-        $args = new Arguments([$factoryString], [], ['factory']);
+        $args = new Arguments([$factoryString], [], [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);
 
@@ -102,7 +102,7 @@ class PersistCommandTest extends TestCase
      */
     public function testPersistOnOnePluginFactory(string $factoryString)
     {
-        $args = new Arguments([$factoryString], [], ['factory']);
+        $args = new Arguments([$factoryString], [], [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);
 
@@ -116,7 +116,7 @@ class PersistCommandTest extends TestCase
     public function testPersistOnNFactories(string $factoryString)
     {
         $number = 3;
-        $args = new Arguments([$factoryString], compact('number'), ['factory']);
+        $args = new Arguments([$factoryString], compact('number'), [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);
 
@@ -127,7 +127,7 @@ class PersistCommandTest extends TestCase
     public function testPersistWithMethodAndNumber()
     {
         $number = 3;
-        $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number], ['factory']);
+        $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number], [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);
 
@@ -139,7 +139,7 @@ class PersistCommandTest extends TestCase
     public function testPersistWithMethodAndNumberDryRun()
     {
         $number = 3;
-        $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number, 'dry-run' => true], ['factory']);
+        $args = new Arguments(['Article'], ['method' => 'withBills', 'number' => $number, 'dry-run' => true], [PersistCommand::ARG_NAME]);
 
         $output = $this->command->execute($args, $this->io);
 
@@ -151,7 +151,7 @@ class PersistCommandTest extends TestCase
     public function testPersistWithWrongFactory()
     {
         $className = 'foo';
-        $args = new Arguments([$className], [], ['factory']);
+        $args = new Arguments([$className], [], [PersistCommand::ARG_NAME]);
 
         $this->expectException(StopException::class);
         $this->command->execute($args, $this->io);
@@ -161,7 +161,7 @@ class PersistCommandTest extends TestCase
     {
         $className = ArticleFactory::class;
         $method = 'foo';
-        $args = new Arguments([$className], compact('method'), ['factory']);
+        $args = new Arguments([$className], compact('method'), [PersistCommand::ARG_NAME]);
 
         $this->expectException(StopException::class);
         $this->command->execute($args, $this->io);
@@ -172,11 +172,11 @@ class PersistCommandTest extends TestCase
      */
     public function testAliasedConnection()
     {
-        $output = $this->command->execute(new Arguments([ArticleFactory::class], [], ['factory']), $this->io);
+        $output = $this->command->execute(new Arguments([ArticleFactory::class], [], [PersistCommand::ARG_NAME]), $this->io);
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
         $this->assertSame('test', $this->Bills->getConnection()->configName());
 
-        $output = $this->command->execute(new Arguments([ArticleFactory::class], ['connection' => 'dummy'], ['factory']), $this->io);
+        $output = $this->command->execute(new Arguments([ArticleFactory::class], ['connection' => 'dummy'], [PersistCommand::ARG_NAME]), $this->io);
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
         $dummyKeyValue = ConnectionManager::get('test')->config()['dummy_key'];
         $this->assertSame('DummyKeyValue', $dummyKeyValue);

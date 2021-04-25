@@ -28,6 +28,8 @@ class PersistCommand extends Command
 {
     use FactoryAwareTrait;
 
+    public const ARG_NAME = 'model';
+
     /**
      * @inheritDoc
      */
@@ -43,8 +45,8 @@ class PersistCommand extends Command
     {
         $parser
             ->setDescription('Helper to persist test fixtures on the command line')
-            ->addArgument('factory', [
-                'help' => 'The factory to persist. Factory name, or fully qualified class, or plugin notation.',
+            ->addArgument(self::ARG_NAME, [
+                'help' => 'The model to persist. Model name plural or singular, accepts plugin notation. Or fully qualified factory class.',
                 'required' => true,
             ])
             ->addOption('plugin', [
@@ -56,6 +58,10 @@ class PersistCommand extends Command
                 'short' => 'c',
                 'default' => 'test',
             ])
+            ->addOption('method', [
+                'help' => 'Call this method defined in the factory class concerned.',
+                'short' => 'm',
+            ])
             ->addOption('number', [
                 'help' => 'Number of entities to persist.',
                 'short' => 'n',
@@ -64,6 +70,7 @@ class PersistCommand extends Command
             ->addOption('dry-run', [
                 'help' => 'Display the entities created without persisting.',
                 'short' => 'd',
+                'boolean' => true,
             ]);
 
         return $parser;
@@ -84,7 +91,6 @@ class PersistCommand extends Command
             $io->error($e->getMessage());
             $this->abort();
         }
-
         if ($args->getOption('dry-run')) {
             $this->dryRun($factory, $io);
         } else {
@@ -101,7 +107,7 @@ class PersistCommand extends Command
      */
     public function parseFactory(Arguments $args): BaseFactory
     {
-        $factoryString = $args->getArgument('factory');
+        $factoryString = $args->getArgument(self::ARG_NAME);
 
         if (is_subclass_of($factoryString, BaseFactory::class)) {
             return $factoryString::make();
@@ -122,7 +128,12 @@ class PersistCommand extends Command
      */
     public function setTimes(Arguments $args, BaseFactory $factory): BaseFactory
     {
-        return $factory->setTimes($args->getOption('number') ?? 1);
+        if (!empty($args->getOption('number'))) {
+            $times = (int)$args->getOption('number');
+        } else {
+            $times = 1;
+        }
+        return $factory->setTimes($times);
     }
 
     /**
