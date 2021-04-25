@@ -24,6 +24,7 @@
     "require-dev": {
         "cakephp/bake": "^2.0",
         "cakephp/cakephp-codesniffer": "^4.0",
+        "cakephp/migrations": "^3.0",
         "josegonzalez/dotenv": "dev-master",
         "phpstan/phpstan": "^0.12.48@dev",
         "phpunit/phpunit": "^8.0",
