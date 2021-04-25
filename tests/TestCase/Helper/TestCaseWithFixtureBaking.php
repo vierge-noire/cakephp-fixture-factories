@@ -46,6 +46,7 @@ class TestCaseWithFixtureBaking extends TestCase
         parent::setUp();
         $this->dropTestFactories();
         $this->io = new ConsoleIo();
+        $this->io->level(ConsoleIo::QUIET);
         $this->FactoryCommand = new BakeFixtureFactoryCommand();
     }
 
