@@ -5,4 +5,4 @@ DRIVER=$1;
 echo "Starting PHPUNIT tests"
 export DB_DRIVER=$DRIVER
 
-./vendor/bin/phpunit --stop-on-failure
+./vendor/bin/phpunit
