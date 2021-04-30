@@ -67,6 +67,10 @@ class PersistCommand extends Command
                 'short' => 'n',
                 'default' => 1,
             ])
+            ->addOption('with', [
+                'help' => 'With associated entity/entities.',
+                'short' => 'w',
+            ])
             ->addOption('dry-run', [
                 'help' => 'Display the entities created without persisting.',
                 'short' => 'd',
@@ -86,6 +90,7 @@ class PersistCommand extends Command
             $factory = $this->parseFactory($args);
             // The following order is important, as methods may overwrite $times
             $this->setTimes($args, $factory);
+            $this->with($args, $factory);
             $this->attachMethod($args, $factory, $io);
         } catch (FactoryNotFoundException $e) {
             $io->error($e->getMessage());
@@ -158,6 +163,22 @@ class PersistCommand extends Command
         }
 
         return $factory->{$method}();
+    }
+
+    /**
+     * @param \Cake\Console\Arguments $args Arguments
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @return \CakephpFixtureFactories\Factory\BaseFactory
+     */
+    public function with(Arguments $args, BaseFactory $factory)
+    {
+        $with = $args->getOption('with');
+
+        if ($with === null) {
+            return $factory;
+        }
+
+        return $factory->with($with);
     }
 
     /**

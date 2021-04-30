@@ -23,12 +23,18 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Command\PersistCommand;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
+use TestApp\Model\Table\AddressesTable;
 use TestApp\Model\Table\ArticlesTable;
+use TestApp\Model\Table\CitiesTable;
+use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Table\BillsTable;
 
 /**
  * App\Shell\Task\FactoryTask Test Case
  * @property ArticlesTable $Articles
+ * @property CountriesTable $Countries
+ * @property CitiesTable $Cities
+ * @property AddressesTable $Addresses
  * @property BillsTable $Bills
  */
 class PersistCommandTest extends TestCase
@@ -55,6 +61,9 @@ class PersistCommandTest extends TestCase
         $this->io  = new ConsoleIo();
         $this->io->level(ConsoleIo::QUIET);
         $this->loadModel('Articles');
+        $this->loadModel('Countries');
+        $this->loadModel('Cities');
+        $this->loadModel('Addresses');
         $this->loadModel('TestPlugin.Bills');
     }
 
@@ -63,6 +72,9 @@ class PersistCommandTest extends TestCase
         unset($this->command);
         unset($this->io);
         unset($this->Articles);
+        unset($this->Countries);
+        unset($this->Cities);
+        unset($this->Addresses);
         unset($this->Bills);
     }
 
@@ -134,6 +146,20 @@ class PersistCommandTest extends TestCase
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
         $this->assertEquals($number, $this->Articles->find()->count());
         $this->assertEquals($number, $this->Bills->find()->count());
+    }
+
+    public function testPersistWithAssociation()
+    {
+        $numberOfCities = 3;
+        $numberOfAddresses = 4;
+        $args = new Arguments(['Country'], ['with' => "Cities[$numberOfCities].Addresses[$numberOfAddresses]"], [PersistCommand::ARG_NAME]);
+
+        $output = $this->command->execute($args, $this->io);
+
+        $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
+        $this->assertEquals(1, $this->Countries->find()->count());
+        $this->assertEquals($numberOfCities, $this->Cities->find()->count());
+        $this->assertEquals($numberOfCities * $numberOfAddresses, $this->Addresses->find()->count());
     }
 
     public function testPersistWithMethodAndNumberDryRun()
