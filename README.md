@@ -99,6 +99,7 @@ bin/cake fixture_factories_persist Authors -n 5 -m withThreeIrishAuthors
 ```
 The option `--dry-run` or `-d` will display the output without persisting.
 The option `-c` will persist in the connection provided (default is `test`).
+The option `-w` will create associated fixtures.
 
 The `fixture_factories_persist` command is featured on CakePHP 4 only (open to contribution for CakePHP 3).
 
