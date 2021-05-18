@@ -16,6 +16,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\Exception\StopException;
+use Cake\TestSuite\ConsoleIntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Command\SetupCommand;
 
@@ -24,6 +25,8 @@ use CakephpFixtureFactories\Command\SetupCommand;
  */
 class SetupCommandTest extends TestCase
 {
+    use ConsoleIntegrationTestTrait;
+
     /**
      * @var string
      */
