@@ -151,6 +151,8 @@ $dbConnection = [
 
 ConnectionManager::setConfig('default', $dbConnection);
 ConnectionManager::setConfig('test', $dbConnection);
+$dbConnection['dummy_key'] = 'DummyKeyValue';
+ConnectionManager::setConfig('dummy', $dbConnection);
 
 Configure::write('Session', [
     'defaults' => 'php',
