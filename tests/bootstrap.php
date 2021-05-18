@@ -114,15 +114,16 @@ if (!getenv('DB_DRIVER')) {
     putenv('DB_DRIVER=Sqlite');
 }
 $driver =  getenv('DB_DRIVER');
+$testDir = ROOT . DS . 'tests' . DS;
 
-if (!file_exists(ROOT . DS . '.env')) {
-    @copy(".env.$driver", ROOT . DS . '.env');
+if (!file_exists("$testDir.env")) {
+    @copy("$testDir.env.$driver", "$testDir.env");
 }
 
 /**
  * Read .env file(s).
  */
-$loadEnv(ROOT . DS . '.env');
+$loadEnv("$testDir.env");
 
 // Re-read the driver
 $driver =  getenv('DB_DRIVER');
