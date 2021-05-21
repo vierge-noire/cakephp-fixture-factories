@@ -4,7 +4,7 @@ tmp/
 composer.lock
 **/test_fixture_factories
 .phpunit.result.cache
-.env
+tests/.env
 
 # These factories are baked by TestFixtureFactoryTaskTest
 /tests/TestApp/tests/Factory/*
