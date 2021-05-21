@@ -683,4 +683,28 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(1, $this->CitiesTable->find()->count());
         $this->assertSame(1, $this->CountriesTable->find()->count());
     }
+
+    /**
+     * Reproduce the issue reported here: https://github.com/vierge-noire/cakephp-fixture-factories/issues/84
+     */
+    public function testReproduceIssue84()
+    {
+        $articles = ArticleFactory::make(2)
+            ->with('Authors[5]', ['biography' => 'Foo'])
+            ->with('Bills')
+            ->persist();
+
+        $this->assertSame(2, count($articles));
+        foreach ($articles as $article) {
+            $this->assertSame(5, count($article->authors));
+            foreach ($article->authors as $author) {
+                $this->assertSame('Foo', $author->biography);
+            }
+            $this->assertSame(1, count($article->bills));
+        }
+
+        $this->assertSame(2, $this->ArticlesTable->find()->count());
+        $this->assertSame(10, $this->AuthorsTable->find()->count());
+        $this->assertSame(2, $this->BillsTable->find()->count());
+    }
 }
