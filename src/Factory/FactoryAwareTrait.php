@@ -1,6 +1,17 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) 2020 Juan Pablo Ramirez and Nicolas Masson
+ * @link          https://webrider.de/
+ * @since         2.3.0
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
+
 namespace CakephpFixtureFactories\Factory;
 
 use Cake\Core\Configure;
@@ -15,7 +26,7 @@ trait FactoryAwareTrait
      * Additionnal arguments are passed *as is* to `BaseFactory::make`
      *
      * @param  string           $name          Factory or model name
-     * @param  string|array[]   ...$arguments  Additionnal arguments for `BaseFactory::make`
+     * @param  string|array[]   ...$arguments  Additional arguments for `BaseFactory::make`
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
      * @see \CakephpFixtureFactories\Factory\BaseFactory::make

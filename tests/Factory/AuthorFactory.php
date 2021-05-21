@@ -43,4 +43,9 @@ class AuthorFactory extends BaseFactory
     {
         return $this->with('Address', AddressFactory::make($parameter));
     }
+
+    public function fromCountry(string $name)
+    {
+        return $this->with('Address.City.Country', CountryFactory::make(compact('name')));
+    }
 }
