@@ -18,7 +18,7 @@ You will never have to create, maintain or declare any test fixtures again.
 
 you need to create three users belonging to a group of users with a certain permission `some-permission`? Once your `UserFactory`, `GroupFactory` and `PermissionFactory` are baked, you can create your users by calling:
 
-`$user = UserFactory::make(3)->with('Groups.Permissions', ['name' => 'some-permission'])->getEntity()`.
+`$users = UserFactory::make(3)->with('Groups.Permissions', ['name' => 'some-permission'])->getEntity()`.
 
 Or move that logic in your `UserFactory` by creating your own `withPermission` method, and call
 
