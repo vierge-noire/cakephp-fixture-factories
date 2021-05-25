@@ -25,6 +25,7 @@ class ArticlesTable extends Table
         $this->addAssociations([
             'hasMany' => [
                 'TestPlugin.Bills',
+                'ArticlesAuthors',
             ],
             'belongsToMany' => [
                 'Authors',
