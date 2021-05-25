@@ -45,6 +45,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 
     public $appTables = [
         'Addresses',
+        'ArticlesAuthors',
         'Articles',
         'Authors',
         'Cities',
@@ -79,7 +80,10 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $associations = $this->FactoryCommand->setTable('Articles', $this->io)->getAssociations();
         $expected = [
             'toOne' => [],
-            'oneToMany' => ['Bills' => 'TestPlugin\Test\Factory\BillFactory'],
+            'oneToMany' => [
+                'Bills' => 'TestPlugin\Test\Factory\BillFactory',
+                'ArticlesAuthors' => 'TestApp\Test\Factory\ArticlesAuthorFactory'
+            ],
             'manyToMany' => [
                 'Authors' => 'TestApp\Test\Factory\AuthorFactory',
                 'ExclusivePremiumAuthors' => 'TestApp\Test\Factory\PremiumAuthorFactory',
