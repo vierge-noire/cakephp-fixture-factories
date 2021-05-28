@@ -15,6 +15,7 @@ namespace CakephpFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\I18n\I18n;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\PersistenceException;
@@ -556,5 +557,25 @@ abstract class BaseFactory
         );
 
         return $this;
+    }
+
+    /**
+     * Query the factory's related table without before find.
+     *
+     * @return \Cake\ORM\Query
+     */
+    public static function find(): Query
+    {
+        return self::make()->getTable()->find();
+    }
+
+    /**
+     * Count the factory's related table entries without before find.
+     *
+     * @return int
+     */
+    public static function count(): int
+    {
+        return self::find()->count();
     }
 }
