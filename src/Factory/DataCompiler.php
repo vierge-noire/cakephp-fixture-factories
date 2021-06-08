@@ -146,7 +146,7 @@ class DataCompiler
      * @param bool $setPrimaryKey Set the primary key if this entity is alone or the first of an array.
      * @return \Cake\Datasource\EntityInterface
      */
-    public function compileEntity($injectedData, $setPrimaryKey = false): EntityInterface
+    public function compileEntity($injectedData = [], bool $setPrimaryKey = false): EntityInterface
     {
         if ($injectedData instanceof EntityInterface) {
             $entity = $injectedData;
@@ -280,7 +280,6 @@ class DataCompiler
     private function mergeWithToOne(EntityInterface $entity, string $associationName, array $data)
     {
         $count                                  = count($data);
-        $associationName                        = Inflector::singularize($associationName);
         /** @var BaseFactory $factory */
         $factory = $data[$count - 1];
 
@@ -348,7 +347,7 @@ class DataCompiler
         $result = [];
         $cast = explode('.', $associationName);
         $table = $this->getFactory()->getRootTableRegistry();
-        foreach ($cast as $i => $ass) {
+        foreach ($cast as $ass) {
             $association = $table->getAssociation($ass);
             $result[] = $association->getProperty();
             $table = $association->getTarget();
