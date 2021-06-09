@@ -562,11 +562,13 @@ abstract class BaseFactory
     /**
      * Query the factory's related table without before find.
      *
-     * @return \Cake\ORM\Query
+     * @param string $type the type of query to perform
+     * @param array $options An array that will be passed to Query::applyOptions()
+     * @return \Cake\ORM\Query The query builder
      */
-    public static function find(): Query
+    public static function find(string $type = 'all', array $options = []): Query
     {
-        return self::make()->getTable()->find();
+        return self::make()->getTable()->find($type, $options);
     }
 
     /**
