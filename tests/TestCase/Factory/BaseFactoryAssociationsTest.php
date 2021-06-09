@@ -27,7 +27,6 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
-use CakephpFixtureFactories\Util;
 use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
@@ -705,5 +704,54 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(2, $this->ArticlesTable->find()->count());
         $this->assertSame(10, $this->AuthorsTable->find()->count());
         $this->assertSame(2, $this->BillsTable->find()->count());
+    }
+
+    /**
+     * Reproduce the issue reported here: https://github.com/vierge-noire/cakephp-fixture-factories/issues/84
+     */
+    public function testReproduceIssue84WithArticlesAuthors()
+    {
+        $articles = ArticleFactory::make(2)
+            ->with('ArticlesAuthors[5].Authors', ['biography' => 'Foo'])
+            ->with('Bills')
+            ->without('Authors') // do not create the default authors
+            ->persist();
+
+        $this->assertSame(2, count($articles));
+        foreach ($articles as $article) {
+            $this->assertSame(5, count($article->articles_authors));
+            foreach ($article->articles_authors as $aa) {
+                $this->assertSame('Foo', $aa->author->biography);
+            }
+            $this->assertSame(1, count($article->bills));
+        }
+
+        $this->assertSame(2, $this->ArticlesTable->find()->count());
+        $this->assertSame(10, $this->AuthorsTable->find()->count());
+        $this->assertSame(2, $this->BillsTable->find()->count());
+    }
+
+    public function testCompileEntityForToOneAssociation()
+    {
+        $this->CitiesTable->addAssociations([
+            'belongsTo' => [
+                'Countries'
+            ],
+        ]);
+        $name = 'FooCountry';
+        $factories = [
+            CityFactory::makeWithModelEvents()->with('Country', compact('name')),
+            CityFactory::makeWithModelEvents()->with('Countries', compact('name')),
+            CityFactory::makeWithModelEvents()->with('Country')->with('Countries', compact('name')),
+            CityFactory::makeWithModelEvents()->with('Country', ['name' => 'Foo'])->with('Countries', compact('name')),
+        ];
+
+        foreach ($factories as $factory) {
+            $entity = $factory->getEntity();
+            $this->assertSame($name, $entity->country->name);
+            $this->assertSame(null, $entity->countries);
+        }
+
+        TableRegistry::getTableLocator()->clear();
     }
 }

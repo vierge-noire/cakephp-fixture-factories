@@ -31,6 +31,7 @@ class FixtureFactoryTaskTest extends TestCase
 
     public $appTables = [
         'Addresses',
+        'ArticlesAuthors',
         'Articles',
         'Authors',
         'Cities',
@@ -101,7 +102,8 @@ class FixtureFactoryTaskTest extends TestCase
         $expected = [
             'toOne' => [],
             'oneToMany' => [
-                'Bills' => 'TestPlugin\Test\Factory\BillFactory'
+                'Bills' => 'TestPlugin\Test\Factory\BillFactory',
+                'ArticlesAuthors' => 'TestApp\Test\Factory\ArticlesAuthorFactory',
             ],
             'manyToMany' => [
                 'Authors' => 'TestApp\Test\Factory\AuthorFactory',
