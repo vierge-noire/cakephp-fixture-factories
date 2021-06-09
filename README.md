@@ -82,7 +82,7 @@ You may continue using them along with the Fixture Factories, these will work ju
 
 ## [Creating Test Fixtures](docs/examples.md)
 
-In this section, we'll see how to create test fixtures.
+In this section, we will see how to create test fixtures.
 
 #### Example:
 Persisting five articles having each three different authors, each with different addresses, in different cities, but all located in Kenya:
@@ -102,6 +102,18 @@ The option `-c` will persist in the connection provided (default is `test`).
 The option `-w` will create associated fixtures.
 
 The `fixture_factories_persist` command is featured on CakePHP 4 only (open to contribution for CakePHP 3).
+
+#### Scenarios:
+
+You can create scenarios that will persist a multitude of test fixtures. This can be useful to seed your
+test database with a reusable set of data. 
+
+Use the `CakephpFixtureFactories\Scenario\ScenarioAwareTrait`
+in your test and load your scenario with the `loadFixtureScenario()` method. You can either provide the
+fully qualified name of the scenario class, or place your scenarios under the `App\Test\Scenario` namespace.
+
+Scenarios should implement the `CakephpFixtureFactories\Scenario\FixtureScenarioInterface` class.
+[This test](tests/TestCase/Scenario/FixtureScenarioTest.php) provides an example on how to use scenarios.
 
 ## Querying the database
 
