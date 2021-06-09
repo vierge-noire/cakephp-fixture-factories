@@ -53,7 +53,7 @@ class BaseFactoryStaticFinderTest extends TestCase
         ArticleFactory::make(2)->unpublished()->persist();
         $this->assertSame([], $this->Articles->find()->toArray());
         $this->assertSame($n, ArticleFactory::find()->count());
-        $this->assertSame(0, ArticleFactory::find()->find('published')->count());
+        $this->assertSame(0, ArticleFactory::find('published')->count());
         $this->assertSame($n, ArticleFactory::count());
     }
 }
