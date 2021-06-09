@@ -52,6 +52,28 @@ Here is a quick example, detailed in this section:
 $article = ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])->persist();
 ```
 
+#### On the command line:
+Factories can also conveniently populate your database in order to test your application on the browser.
+The following command will persist 5 articles, each with 3 irish authors, considering that the `ArticleFactory` class features
+a `withThreeIrishAuthors()` method:
+```$xslt
+bin/cake fixture_factories_persist Authors -n 5 -m withThreeIrishAuthors
+```
+The option `--dry-run` or `-d` will display the output without persisting.
+The option `-c` will persist in the connection provided (default is `test`).
+The option `-w` will create associated fixtures.
+
+The `fixture_factories_persist` command is featured on CakePHP 4 only (open to contribution for CakePHP 3).
+
+#### Scenarios:
+
+You can create scenarios that will persist a multitude of test fixtures. Use the `CakephpFixtureFactories\Scenario\ScenarioAwareTrait`
+in your test and load your scenario with the `loadFixtureScenario()` method. You can either provide the
+fully qualified name of the scenario class, or place your scenarios under the `App\Test\Scenario` namespace.
+
+Scenarios should implement the `CakephpFixtureFactories\Scenario\FixtureScenarioInterface` class.
+[This test](tests/TestCase/Scenario/FixtureScenarioTest.php) provides an example on how to use scenarios.
+
 ## [Test Lifecycle](docs/lifecycle.md)
 
 The only step performed by the package's test suite is to truncate *dirty* tables before each test.
