@@ -105,7 +105,10 @@ The `fixture_factories_persist` command is featured on CakePHP 4 only (open to c
 
 #### Scenarios:
 
-You can create scenarios that will persist a multitude of test fixtures. Use the `CakephpFixtureFactories\Scenario\ScenarioAwareTrait`
+You can create scenarios that will persist a multitude of test fixtures. This can be useful to seed your
+test database with a reusable set of data. 
+
+Use the `CakephpFixtureFactories\Scenario\ScenarioAwareTrait`
 in your test and load your scenario with the `loadFixtureScenario()` method. You can either provide the
 fully qualified name of the scenario class, or place your scenarios under the `App\Test\Scenario` namespace.
 

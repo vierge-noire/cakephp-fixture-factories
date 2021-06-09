@@ -13,18 +13,16 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\Scenario;
 
-
 use CakephpFixtureFactories\Scenario\FixtureScenarioInterface;
-use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
 
-class FiveAustralianAuthorsScenario implements FixtureScenarioInterface
+class TenAustralianAuthorsScenario implements FixtureScenarioInterface
 {
-    const COUNTRY_NAME = 'Australia';
-
-    const N = 5;
+    use ScenarioAwareTrait;
 
     public function load()
     {
-        AuthorFactory::make(self::N)->fromCountry(self::COUNTRY_NAME)->persist();
+        $this->loadFixtureScenario(FiveAustralianAuthorsScenario::class);
+        $this->loadFixtureScenario(FiveAustralianAuthorsScenario::class);
     }
 }

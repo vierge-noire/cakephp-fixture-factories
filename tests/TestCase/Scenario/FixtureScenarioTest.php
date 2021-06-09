@@ -22,6 +22,7 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\FixtureScenarioException;
 use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
 use CakephpFixtureFactories\Test\Scenario\FiveAustralianAuthorsScenario;
+use CakephpFixtureFactories\Test\Scenario\TenAustralianAuthorsScenario;
 
 class FixtureScenarioTest extends TestCase
 {
@@ -57,29 +58,34 @@ class FixtureScenarioTest extends TestCase
     public function scenarioNames(): array
     {
         return [
-            ['FiveAustralianAuthors'],
-            [FiveAustralianAuthorsScenario::class],
+            ['FiveAustralianAuthors', FiveAustralianAuthorsScenario::N],
+            [FiveAustralianAuthorsScenario::class, FiveAustralianAuthorsScenario::N],
+            ['TenAustralianAuthors', 2*FiveAustralianAuthorsScenario::N],
+            [TenAustralianAuthorsScenario::class, 2*FiveAustralianAuthorsScenario::N],
         ];
     }
 
     /**
      * @dataProvider scenarioNames
      */
-    public function testLoadScenario($scenario)
+    public function testLoadScenario($scenario, int $expectedAuthors)
     {
         $this->loadFixtureScenario($scenario);
-
-        $australianAuthors = $this->AuthorsTable->find()
-            ->innerJoinWith('Address.City.Country', function (Query $q) {
-                return $q->where(['Country.name' => FiveAustralianAuthorsScenario::COUNTRY_NAME]);
-            })
-            ->count();
-        $this->assertSame(FiveAustralianAuthorsScenario::N, $australianAuthors);
+        $this->assertSame($expectedAuthors, $this->countAustralianAuthors());
     }
 
     public function testLoadScenarioException()
     {
         $this->expectException(FixtureScenarioException::class);
         $this->loadFixtureScenario(self::class);
+    }
+
+    private function countAustralianAuthors(): int
+    {
+        return $this->AuthorsTable->find()
+            ->innerJoinWith('Address.City.Country', function (Query $q) {
+                return $q->where(['Country.name' => FiveAustralianAuthorsScenario::COUNTRY_NAME]);
+            })
+            ->count();
     }
 }
