@@ -65,6 +65,15 @@ The option `-w` will create associated fixtures.
 
 The `fixture_factories_persist` command is featured on CakePHP 4 only (open to contribution for CakePHP 3).
 
+#### Scenarios:
+
+You can create scenarios that will persist a multitude of test fixtures. Use the `CakephpFixtureFactories\Scenario\ScenarioAwareTrait`
+in your test and load your scenario with the `loadFixtureScenario()` method. You can either provide the
+fully qualified name of the scenario class, or place your scenarios under the `App\Test\Scenario` namespace.
+
+Scenarios should implement the `CakephpFixtureFactories\Scenario\FixtureScenarioInterface` class.
+[This test](tests/TestCase/Scenario/FixtureScenarioTest.php) provides an example on how to use scenarios.
+
 ## Querying the database
 
 Because the fixture factories are closely related to the database, the package provide two methods to conveniently
