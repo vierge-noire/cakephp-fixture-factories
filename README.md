@@ -52,9 +52,36 @@ Here is a quick example, detailed in this section:
 $article = ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])->persist();
 ```
 
+#### On the command line:
+Factories can also conveniently populate your database in order to test your application on the browser.
+The following command will persist 5 articles, each with 3 irish authors, considering that the `ArticleFactory` class features
+a `withThreeIrishAuthors()` method:
+```$xslt
+bin/cake fixture_factories_persist Authors -n 5 -m withThreeIrishAuthors
+```
+The option `--dry-run` or `-d` will display the output without persisting.
+The option `-c` will persist in the connection provided (default is `test`).
+The option `-w` will create associated fixtures.
+
+The `fixture_factories_persist` command is featured on CakePHP 4 only (open to contribution for CakePHP 3).
+
+## Querying the database
+
+Because the fixture factories are closely related to the database, the package provide two methods to conveniently
+query the database. Note that both methods will by-pass the `beforeFind` event, facilitating the inspection of your
+test database.
+
+#### ArticleFactory::find()
+This method will return a query on the table related to the given factory.
+
+#### ArticleFactory::count()
+This method will return the number of entries in the table of the given factory.
+
 ## [Test Lifecycle](docs/lifecycle.md)
 
-The only step performed by the package's test suite is to truncate *dirty* tables before each test.
+The only step performed by the package's test suite is to truncate *dirty* tables before each test. More documentation
+on the management of the test database may be found
+[in the cakephp test suite light documentation](https://github.com/vierge-noire/cakephp-test-suite-light).
 
 ## License
 
