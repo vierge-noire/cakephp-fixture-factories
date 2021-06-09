@@ -87,7 +87,7 @@ trait FactoryAwareTrait
      */
     public function getFactoryNamespace(?string $plugin = null): string
     {
-        if (Configure::read('TestFixtureNamespace')) {
+        if (Configure::check('TestFixtureNamespace')) {
             return Configure::read('TestFixtureNamespace');
         } else {
             return (

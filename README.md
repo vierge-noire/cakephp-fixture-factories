@@ -74,9 +74,23 @@ fully qualified name of the scenario class, or place your scenarios under the `A
 Scenarios should implement the `CakephpFixtureFactories\Scenario\FixtureScenarioInterface` class.
 [This test](tests/TestCase/Scenario/FixtureScenarioTest.php) provides an example on how to use scenarios.
 
+## Querying the database
+
+Because the fixture factories are closely related to the database, the package provide two methods to conveniently
+query the database. Note that both methods will by-pass the `beforeFind` event, facilitating the inspection of your
+test database.
+
+#### ArticleFactory::find()
+This method will return a query on the table related to the given factory.
+
+#### ArticleFactory::count()
+This method will return the number of entries in the table of the given factory.
+
 ## [Test Lifecycle](docs/lifecycle.md)
 
-The only step performed by the package's test suite is to truncate *dirty* tables before each test.
+The only step performed by the package's test suite is to truncate *dirty* tables before each test. More documentation
+on the management of the test database may be found
+[in the cakephp test suite light documentation](https://github.com/vierge-noire/cakephp-test-suite-light).
 
 ## License
 

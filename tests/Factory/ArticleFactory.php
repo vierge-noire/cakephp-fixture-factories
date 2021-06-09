@@ -109,4 +109,14 @@ class ArticleFactory extends BaseFactory
             Article::HIDDEN_PARAGRAPH_PROPERTY_NAME => $text
         ]);
     }
+
+    public function published()
+    {
+        return $this->patchData(['published' => true]);
+    }
+
+    public function unpublished()
+    {
+        return $this->patchData(['published' => false]);
+    }
 }
