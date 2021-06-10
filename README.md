@@ -117,12 +117,12 @@ Scenarios should implement the `CakephpFixtureFactories\Scenario\FixtureScenario
 
 ## Querying the database
 
-Because the fixture factories are closely related to the database, the package provide two methods to conveniently
-query the database. Note that both methods will by-pass the `beforeFind` event, facilitating the inspection of your
+Because the fixture factories are closely related to the database, the package provides two methods to conveniently
+run queries. Both methods will by-pass the `beforeFind` event, enabling the direct inspection of your
 test database.
 
 #### ArticleFactory::find()
-This method will return a query on the table related to the given factory.
+This method will return a query on the table related to the given factory. It takes as input the same parameters as the classic table `find()` method.
 
 #### ArticleFactory::count()
 This method will return the number of entries in the table of the given factory.
