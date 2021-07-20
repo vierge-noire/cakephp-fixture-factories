@@ -32,4 +32,4 @@ Between each test, the package will truncate all the test tables that have been 
 
 ### Next
 
-Learn how migrations can be used for maintaining your test DB: [Migrations](migrator.md)
+Learn how migrations can be used for maintaining your test DB: [Migrations](https://github.com/vierge-noire/cakephp-test-migrator)
