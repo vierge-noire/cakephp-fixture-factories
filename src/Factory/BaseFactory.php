@@ -13,11 +13,13 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Core\Exception\CakeException;
 use Cake\Datasource\EntityInterface;
 use Cake\I18n\I18n;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
 use Faker\Factory;
 use Faker\Generator;
@@ -602,5 +604,48 @@ abstract class BaseFactory
     public static function count(): int
     {
         return self::find()->count();
+    }
+
+    /**
+     * This will first query the DB for entities with the existing data passed as parameter.
+     * If found, no new entity is created, but instead the found entity is returned.
+     *
+     *
+     * You may pass an array of data, an entity, a factory, or an array of those.
+     *
+     * @param array|array[]|BaseFactory|BaseFactory[]|EntityInterface|EntityInterface[] $data Data for the generated factories
+     * @return static
+     */
+    public static function findOrMake($data): self
+    {
+        $fetchEntity = function ($data) {
+            if ($data instanceof EntityInterface) {
+                $data = $data->toArray();
+            } elseif ($data instanceof BaseFactory) {
+                $data = $data->getEntity()->toArray();
+            }
+            try {
+                $entity = static::find()->where($data)->first();
+                if (!is_null($entity)) {
+                    $data = $entity;
+                }
+            } catch (InvalidArgumentException $e) {
+                $msg = $e->getMessage();
+                $msg .= ' --- Ensure that the data passed to findOrMake() is an array of string and integers';
+                throw new FixtureFactoryException($msg);
+            }
+
+            return $data;
+        };
+
+        if (is_array($data) && isset($data[0])) {
+            foreach ($data as $i => $subData) {
+                $data[$i] = $fetchEntity($subData);
+            }
+        } else {
+            $data = $fetchEntity($data);
+        }
+
+        return self::make($data);
     }
 }

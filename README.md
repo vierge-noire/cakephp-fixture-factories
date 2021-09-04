@@ -127,6 +127,10 @@ This method will return a query on the table related to the given factory. It ta
 #### ArticleFactory::count()
 This method will return the number of entries in the table of the given factory.
 
+#### ArticleFactory::findOrMake()
+This method will check before creating an entity, if an entity with the data provided already exists. If found,
+this will be returned. You may pass an array of data, an entity, a factory, or an array of those.
+
 ## [Test Lifecycle](docs/lifecycle.md)
 
 The only step performed by the package's test suite is to truncate *dirty* tables before each test. More documentation
