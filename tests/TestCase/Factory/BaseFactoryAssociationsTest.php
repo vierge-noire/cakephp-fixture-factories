@@ -647,12 +647,10 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(4, count($country->cities));
         $this->assertSame(4, $this->CitiesTable->find()->count());
 
-        if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
-            $this->assertSame($city1, $this->CitiesTable->get(1)->name);
-            $this->assertSame($city2, $this->CitiesTable->get(2)->name);
-            $this->assertSame($street1, $this->AddressesTable->get(1)->street);
-            $this->assertSame($street2, $this->AddressesTable->get(2)->street);
-        }
+        $this->assertSame($city1, $this->CitiesTable->get(1)->name);
+        $this->assertSame($city2, $this->CitiesTable->get(2)->name);
+        $this->assertSame($street1, $this->AddressesTable->get(1)->street);
+        $this->assertSame($street2, $this->AddressesTable->get(2)->street);
     }
 
     /**
