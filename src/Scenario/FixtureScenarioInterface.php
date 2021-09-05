@@ -19,7 +19,8 @@ interface FixtureScenarioInterface
     /**
      * Create your bunch of test fixtures in this method.
      *
-     * @return void
+     * @param mixed ...$args Arguments passed to the scenario.
+     * @return mixed
      */
-    public function load();
+    public function load(...$args);
 }

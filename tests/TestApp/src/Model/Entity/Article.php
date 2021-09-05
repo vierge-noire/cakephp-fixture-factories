@@ -15,8 +15,8 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
- * @property \App\Model\Entity\Bill[] $bills
- * @property \App\Model\Entity\Author[] $authors
+ * @property \TestPlugin\Model\Entity\Bill[] $bills
+ * @property \TestApp\Model\Entity\Author[] $authors
  */
 class Article extends Entity
 {
