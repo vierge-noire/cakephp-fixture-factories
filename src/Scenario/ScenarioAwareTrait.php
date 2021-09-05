@@ -25,9 +25,10 @@ trait ScenarioAwareTrait
      * Load a given fixture scenario
      *
      * @param string $scenario Name of the scenario or fully qualified class.
-     * @return void
+     * @param mixed ...$args Arguments passed to the scenario
+     * @return mixed
      */
-    public function loadFixtureScenario(string $scenario): void
+    public function loadFixtureScenario(string $scenario, ...$args)
     {
         if (!class_exists($scenario)) {
             // phpcs:disable
@@ -44,6 +45,7 @@ trait ScenarioAwareTrait
 
         /** @var \CakephpFixtureFactories\Scenario\FixtureScenarioInterface $scenario */
         $scenario = new $scenario();
-        $scenario->load();
+
+        return $scenario->load(...$args);
     }
 }

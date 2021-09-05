@@ -14,7 +14,7 @@ use CakephpFixtureFactories\Test\TestCase\Factory\BaseFactoryAssociationsTest;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
- * @property \App\Model\Entity\City[] $cities
+ * @property \TestApp\Model\Entity\City[] $cities
  */
 class Country extends Entity
 {

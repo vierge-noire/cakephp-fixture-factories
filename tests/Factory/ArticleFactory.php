@@ -17,6 +17,13 @@ use CakephpFixtureFactories\Factory\BaseFactory;
 use Faker\Generator;
 use TestApp\Model\Entity\Article;
 
+/**
+ * Class ArticleFactory
+ *
+ * @method \TestApp\Model\Entity\Article getEntity()
+ * @method \TestApp\Model\Entity\Article[] getEntities()
+ * @method \TestApp\Model\Entity\Article|\TestApp\Model\Entity\Article[] persist()
+ */
 class ArticleFactory extends BaseFactory
 {
     public const DEFAULT_NUMBER_OF_AUTHORS = 2;

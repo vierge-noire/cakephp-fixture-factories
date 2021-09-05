@@ -16,15 +16,18 @@ namespace CakephpFixtureFactories\Test\Scenario;
 
 use CakephpFixtureFactories\Scenario\FixtureScenarioInterface;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use TestApp\Model\Entity\Author;
 
-class FiveAustralianAuthorsScenario implements FixtureScenarioInterface
+class NAustralianAuthorsScenario implements FixtureScenarioInterface
 {
     const COUNTRY_NAME = 'Australia';
 
-    const N = 5;
-
-    public function load()
+    /**
+     * @param int $n the number of authors
+     * @return Author|Author[]
+     */
+    public function load($n = 1, ...$args)
     {
-        AuthorFactory::make(self::N)->fromCountry(self::COUNTRY_NAME)->persist();
+        return AuthorFactory::make($n)->fromCountry(self::COUNTRY_NAME)->persist();
     }
 }
