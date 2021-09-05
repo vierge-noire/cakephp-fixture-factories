@@ -38,41 +38,6 @@ use TestPlugin\Model\Entity\Customer;
 
 class BaseFactoryAssociationsTest extends TestCase
 {
-    /**
-     * @var \TestApp\Model\Table\AuthorsTable
-     */
-    private $AuthorsTable;
-
-    /**
-     * @var \TestApp\Model\Table\AddressesTable
-     */
-    private $AddressesTable;
-
-    /**
-     * @var \TestApp\Model\Table\ArticlesTable
-     */
-    private $ArticlesTable;
-
-    /**
-     * @var \TestApp\Model\Table\CountriesTable
-     */
-    private $CountriesTable;
-
-    /**
-     * @var \TestApp\Model\Table\CitiesTable
-     */
-    private $CitiesTable;
-
-    /**
-     * @var \TestPlugin\Model\Table\CustomersTable
-     */
-    private $CustomersTable;
-
-    /**
-     * @var \TestPlugin\Model\Table\BillsTable
-     */
-    private $BillsTable;
-
     public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
@@ -81,33 +46,6 @@ class BaseFactoryAssociationsTest extends TestCase
     public static function tearDownAfterClass(): void
     {
         Configure::delete('TestFixtureNamespace');
-    }
-
-    public function setUp(): void
-    {
-        $this->AuthorsTable     = TableRegistry::getTableLocator()->get('Authors');
-        $this->AddressesTable   = TableRegistry::getTableLocator()->get('Addresses');
-        $this->ArticlesTable    = TableRegistry::getTableLocator()->get('Articles');
-        $this->CountriesTable   = TableRegistry::getTableLocator()->get('Countries');
-        $this->CitiesTable      = TableRegistry::getTableLocator()->get('Cities');
-        $this->BillsTable       = TableRegistry::getTableLocator()->get('TestPlugin.Bills');
-        $this->CustomersTable   = TableRegistry::getTableLocator()->get('TestPlugin.Customers');
-
-        parent::setUp();
-    }
-
-    public function tearDown(): void
-    {
-        Configure::delete('TestFixtureNamespace');
-        unset($this->AuthorsTable);
-        unset($this->AddressesTable);
-        unset($this->ArticlesTable);
-        unset($this->CountriesTable);
-        unset($this->CitiesTable);
-        unset($this->BillsTable);
-        unset($this->CustomersTable);
-
-        parent::tearDown();
     }
 
     public function testWithMultipleAssociations()
@@ -122,7 +60,7 @@ class BaseFactoryAssociationsTest extends TestCase
         foreach ($article->authors as $author) {
             $this->assertSame($street, $author->address->street);
         }
-        $this->assertSame($n, $this->AuthorsTable->find()->count());
+        $this->assertSame($n, AuthorFactory::count());
     }
 
     public function testWithMultipleHasOneExeption()
@@ -153,13 +91,13 @@ class BaseFactoryAssociationsTest extends TestCase
         $expectedAuthors = $nAuthors * ($mArticles * 2 + 1);
         $this->assertSame(
             $expectedAuthors,
-            $this->AuthorsTable->find()->count()
+            AuthorFactory::count()
         );
 
         $expectedArticles = 1 + ($nAuthors * $mArticles);
         $this->assertSame(
             $expectedArticles,
-            $this->ArticlesTable->find()->count()
+            ArticleFactory::count()
         );
     }
 
@@ -172,11 +110,11 @@ class BaseFactoryAssociationsTest extends TestCase
             ['name' => $name2],
         ])->persist();
 
-        $this->assertSame(2, $this->CountriesTable->find()->count());
+        $this->assertSame(2, CountryFactory::count());
         $this->assertSame($name1, $countries[0]->name);
         $this->assertSame($name2, $countries[1]->name);
-        $this->assertSame($name1, $this->CountriesTable->get($countries[0]->id)->name);
-        $this->assertSame($name2, $this->CountriesTable->get($countries[1]->id)->name);
+        $this->assertSame($name1, CountryFactory::get($countries[0]->id)->name);
+        $this->assertSame($name2, CountryFactory::get($countries[1]->id)->name);
     }
 
     public function testSaveMultipleInArrayWithTimes()
@@ -189,16 +127,16 @@ class BaseFactoryAssociationsTest extends TestCase
             ['name' => $name2],
         ], $times)->persist();
 
-        $this->assertSame($times * 2, $this->CountriesTable->find()->count());
+        $this->assertSame($times * 2, CountryFactory::count());
 
         $this->assertSame($name1, $countries[0]->name);
         $this->assertSame($name2, $countries[1]->name);
         $this->assertSame($name1, $countries[2]->name);
         $this->assertSame($name2, $countries[3]->name);
-        $this->assertSame($name1, $this->CountriesTable->get($countries[0]->id)->name);
-        $this->assertSame($name2, $this->CountriesTable->get($countries[1]->id)->name);
-        $this->assertSame($name1, $this->CountriesTable->get($countries[2]->id)->name);
-        $this->assertSame($name2, $this->CountriesTable->get($countries[3]->id)->name);
+        $this->assertSame($name1, CountryFactory::get($countries[0]->id)->name);
+        $this->assertSame($name2, CountryFactory::get($countries[1]->id)->name);
+        $this->assertSame($name1, CountryFactory::get($countries[2]->id)->name);
+        $this->assertSame($name2, CountryFactory::get($countries[3]->id)->name);
     }
 
     public function testSaveMultipleHasManyAssociation()
@@ -211,11 +149,11 @@ class BaseFactoryAssociationsTest extends TestCase
                 ['amount' => $amount2],
             ])->persist();
 
-        $this->assertSame(2, $this->BillsTable->find()->count());
+        $this->assertSame(2, BillFactory::count());
         $this->assertEquals($amount1, $customer->bills[0]->amount);
         $this->assertEquals($amount2, $customer->bills[1]->amount);
 
-        $customer = $this->CustomersTable->findById($customer->id)->contain('Bills')->firstOrFail();
+        $customer = CustomerFactory::find()->where(['id' => $customer->id])->contain('Bills')->firstOrFail();
         $this->assertEquals($amount1, $customer->bills[0]->amount);
         $this->assertEquals($amount2, $customer->bills[1]->amount);
     }
@@ -231,13 +169,13 @@ class BaseFactoryAssociationsTest extends TestCase
                 ['amount' => $amount2],
             ], $times)->persist();
 
-        $this->assertSame(2 * $times, $this->BillsTable->find()->count());
+        $this->assertSame(2 * $times, BillFactory::count());
         $this->assertEquals($amount1, $customer->bills[0]->amount);
         $this->assertEquals($amount2, $customer->bills[1]->amount);
         $this->assertEquals($amount1, $customer->bills[2]->amount);
         $this->assertEquals($amount2, $customer->bills[3]->amount);
 
-        $bills = $this->BillsTable->find()->toArray();
+        $bills = BillFactory::find()->toArray();
         $this->assertEquals($amount1, $bills[0]->amount);
         $this->assertEquals($amount2, $bills[1]->amount);
         $this->assertEquals($amount1, $bills[2]->amount);
@@ -253,11 +191,11 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertInstanceOf(Address::class, $author->business_address);
 
-        $author = $this->AuthorsTable->findById($author->id)->contain('BusinessAddress')->firstOrFail();
+        $author = AuthorFactory::find()->where(['Authors.id' => $author->id])->contain('BusinessAddress')->firstOrFail();
         $this->assertSame($street, $author->business_address->street);
 
         // There should now be two addresses in the DB
-        $this->assertSame(2, $this->AddressesTable->find()->count());
+        $this->assertSame(2, AddressFactory::count());
     }
 
     public function testGetAssociatedFactoryWithMultipleDepth()
@@ -270,11 +208,11 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertInstanceOf(Country::class, $author->business_address->city->country);
 
-        $author = $this->AuthorsTable->findById($author->id)->contain(['BusinessAddress.City.Country'])->firstOrFail();
+        $author = AuthorFactory::find()->where(['Authors.id' => $author->id])->contain(['BusinessAddress.City.Country'])->firstOrFail();
         $this->assertSame($country, $author->business_address->city->country->name);
 
         // There should now be two addresses in the DB
-        $this->assertSame(2, $this->AddressesTable->find()->count());
+        $this->assertSame(2, AddressFactory::count());
     }
 
     public function testGetAssociatedFactoryWithMultipleDepthWithFactory()
@@ -288,7 +226,7 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertInstanceOf(City::class, $author->business_address->city);
 
-        $author = $this->AuthorsTable->findById($author->id)->contain(['BusinessAddress.City'])->firstOrFail();
+        $author = AuthorFactory::find()->where(['Authors.id' => $author->id])->contain(['BusinessAddress.City'])->firstOrFail();
         $this->assertSame($city, $author->business_address->city->name);
     }
 
@@ -305,13 +243,13 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertInstanceOf(Country::class, $authors[$i]->business_address->city->country);
         }
 
-        $authors = $this->AuthorsTable->find()->contain($path);
+        $authors = AuthorFactory::find()->contain($path);
         foreach ($authors as $author) {
             $this->assertSame($country, $author->business_address->city->country->name);
         }
 
         // There should now be $n * 2 addresses in the DB
-        $this->assertSame(2 * $n, $this->AddressesTable->find()->count());
+        $this->assertSame(2 * $n, AddressFactory::count());
     }
 
     public function testGetAssociatedFactoryWithMultipleDepthInPlugin()
@@ -322,10 +260,10 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertInstanceOf(Customer::class, $article->bills[0]->customer);
 
-        $this->assertSame(1, $this->ArticlesTable->find()->count());
-        $this->assertSame(1, $this->CustomersTable->find()->count());
+        $this->assertSame(1, ArticleFactory::count());
+        $this->assertSame(1, CustomerFactory::count());
 
-        $article = $this->ArticlesTable->findById($article->id)->contain($path)->firstOrFail();
+        $article = ArticleFactory::find()->where(['id' => $article->id])->contain($path)->firstOrFail();
         $this->assertSame($name, $article->bills[0]->customer->name);
     }
 
@@ -336,7 +274,7 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertInstanceOf(Bill::class, $article->bills[0]);
 
-        $bills = $this->BillsTable->find();
+        $bills = BillFactory::find();
         $this->assertSame($n, $bills->count());
     }
 
@@ -350,12 +288,12 @@ class BaseFactoryAssociationsTest extends TestCase
 
         $this->assertSame(
             $n,
-            $this->BillsTable->find()->count()
+            BillFactory::count()
         );
 
         $this->assertSame(
             $n,
-            $this->CustomersTable->find()->count()
+            CustomerFactory::count()
         );
     }
 
@@ -371,8 +309,8 @@ class BaseFactoryAssociationsTest extends TestCase
             ['street' => $street2],
         ])->persist();
 
-        $this->assertSame(2 * $times, $this->AddressesTable->find()->count());
-        $country = $this->CountriesTable->findById($country->id)->contain('Cities.Addresses')->first();
+        $this->assertSame(2 * $times, AddressFactory::count());
+        $country = CountryFactory::find()->where(['id' => $country->id])->contain('Cities.Addresses')->first();
 
         for ($i = 0; $i < $times; $i++) {
             $this->assertEquals($street1, $country->cities[$i]->addresses[0]->street);
@@ -388,8 +326,7 @@ class BaseFactoryAssociationsTest extends TestCase
             ->with('Articles.Authors', ['name' => $name2])
             ->persist();
 
-        $authors = $this->ArticlesTable
-            ->find()
+        $authors = ArticleFactory::find()
             ->contain('Authors', function ($q) {
                 return $q->order('Authors.name');
             })
@@ -408,21 +345,12 @@ class BaseFactoryAssociationsTest extends TestCase
             ->persist();
 
         $this->assertNull($author->business_address);
-        $this->assertNull($this->AuthorsTable->findById($author->id)->contain('BusinessAddress')->firstOrFail()->business_address);
+        $this->assertNull(AuthorFactory::find()->where(['Authors.id' => $author->id])->contain('BusinessAddress')->firstOrFail()->business_address);
 
         // There should be only one address, city and country in the DB
-        $this->assertSame(
-            1,
-            $this->AddressesTable->find()->count()
-        );
-        $this->assertSame(
-            1,
-            $this->CitiesTable->find()->count()
-        );
-        $this->assertSame(
-            1,
-            $this->CountriesTable->find()->count()
-        );
+        $this->assertSame(1, AddressFactory::count());
+        $this->assertSame(1, CityFactory::count());
+        $this->assertSame(1, CountryFactory::count());
     }
 
     public function testSaveMultiplesToOneAssociationShouldSaveOnlyOne()
@@ -434,11 +362,11 @@ class BaseFactoryAssociationsTest extends TestCase
             ['name' => 'Foo4'],
         ])->persist();
 
-        $city = $this->CitiesTable->get($city->id, ['contain' => 'Country']);
+        $city = CityFactory::get($city->id, ['contain' => 'Country']);
 
         $this->assertSame('Foo1', $city->country->name);
-        $this->assertSame(1, $this->CountriesTable->find()->count());
-        $this->assertSame(1, $this->CitiesTable->find()->count());
+        $this->assertSame(1, CountryFactory::count());
+        $this->assertSame(1, CityFactory::count());
     }
 
     public function testAssignWithoutToManyAssociation()
@@ -449,8 +377,8 @@ class BaseFactoryAssociationsTest extends TestCase
             ->with('Cities', CityFactory::make()
                 ->with('Country', ['name' => $countryNotExpected]))->persist();
 
-        $this->assertSame(1, $this->CitiesTable->find()->count());
-        $city = $this->CitiesTable->find()->contain('Country')->firstOrFail();
+        $this->assertSame(1, CityFactory::count());
+        $city = CityFactory::find()->contain('Country')->firstOrFail();
         $this->assertSame($countryExpected, $city->country->name);
     }
 
@@ -467,8 +395,8 @@ class BaseFactoryAssociationsTest extends TestCase
             ->with('Country', CountryFactory::make()->with('Cities', $nCities))
             ->persist();
 
-        $citiesAssociatedToCountry = $this->CountriesTable
-            ->findById($city->country_id)
+        $citiesAssociatedToCountry = CountryFactory::find()
+            ->where(['id' => $city->country_id])
             ->contain(['Cities'])
             ->firstOrFail()
             ->cities;
@@ -490,15 +418,13 @@ class BaseFactoryAssociationsTest extends TestCase
             ->with('Authors', AuthorFactory::make(['name' => 'Foo'])->with('Articles', $nArticles))
             ->persist();
 
-        $authorsAssociatedToArticle = $this->AuthorsTable
-            ->find()
+        $authorsAssociatedToArticle = AuthorFactory::find()
             ->matching('Articles', function ($q) use ($article) {
                 return $q->where(['Articles.id' => $article->id]);
             })
             ->contain('Articles');
 
-        $articlesAssociatedToAuthor = $this->ArticlesTable
-            ->find()
+        $articlesAssociatedToAuthor = ArticleFactory::find()
             ->matching('Authors', function ($q) use ($authorName) {
                 return $q->where(['Authors.name' => $authorName]);
             });
@@ -521,7 +447,7 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertInstanceOf(PremiumAuthor::class, $author);
             $this->assertIsInt($author->id);
         }
-        $this->assertSame($nPremiumAuthors, $this->AuthorsTable->find()->count());
+        $this->assertSame($nPremiumAuthors, AuthorFactory::count());
     }
 
     public function testCountryWith2CitiesEachOfThemWith2DifferentAddresses()
@@ -533,8 +459,7 @@ class BaseFactoryAssociationsTest extends TestCase
             ['street' => $street2],
         ])->persist();
 
-        $country = $this->CountriesTable
-            ->find()
+        $country = CountryFactory::find()
             ->contain('Cities.Addresses')
             ->firstOrFail();
 
@@ -557,10 +482,9 @@ class BaseFactoryAssociationsTest extends TestCase
         ])->with('City', CityFactory::make(['country_id' => $country->id])->without('Country'))
         ->persist();
 
-        $country = $this->CountriesTable
-            ->get($country->id, [
-                'contain' => 'Cities.Addresses',
-            ]);
+        $country = CountryFactory::get($country->id, [
+            'contain' => 'Cities.Addresses',
+        ]);
 
         $this->checkCountryWithTwoCitiesEachWithOneAddress($country, $street1, $street2);
     }
@@ -588,7 +512,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->checkCountryWithTwoCitiesEachWithOneAddress($country, $street1, $street2);
 
         // Make sure that all was correctly persisted
-        $addresses = $this->AddressesTable->find()
+        $addresses = AddressFactory::find()
             ->innerJoinWith('City.Country', function (Query $q) use ($country) {
                 return $q->where(['Country.id' => $country->id]);
             })
@@ -613,7 +537,7 @@ class BaseFactoryAssociationsTest extends TestCase
             ->persist();
 
         // Make sure that all was correctly persisted
-        $cities = $this->CitiesTable->find()
+        $cities = CityFactory::find()
             ->where(['country_id' => $country->id])
             ->orderAsc('name')
             ->toArray();
@@ -639,19 +563,18 @@ class BaseFactoryAssociationsTest extends TestCase
             ->persist();
 
         // Make sure that all was correctly persisted
-        $country = $this->CountriesTable
-            ->get($country->id, [
+        $country = CountryFactory::get($country->id, [
                 'contain' => 'Cities',
             ]);
 
         $this->assertSame(4, count($country->cities));
-        $this->assertSame(4, $this->CitiesTable->find()->count());
+        $this->assertSame(4, CityFactory::count());
 
         if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
-            $this->assertSame($city1, $this->CitiesTable->get(1)->name);
-            $this->assertSame($city2, $this->CitiesTable->get(2)->name);
-            $this->assertSame($street1, $this->AddressesTable->get(1)->street);
-            $this->assertSame($street2, $this->AddressesTable->get(2)->street);
+            $this->assertSame($city1, CityFactory::get(1)->name);
+            $this->assertSame($city2, CityFactory::get(2)->name);
+            $this->assertSame($street1, AddressFactory::get(1)->street);
+            $this->assertSame($street2, AddressFactory::get(2)->street);
         }
     }
 
@@ -679,8 +602,8 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(false, $country->virtual_cities);
 
         // Only the non virtual Cities will be saved
-        $this->assertSame(1, $this->CitiesTable->find()->count());
-        $this->assertSame(1, $this->CountriesTable->find()->count());
+        $this->assertSame(1, CityFactory::count());
+        $this->assertSame(1, CountryFactory::count());
     }
 
     /**
@@ -702,9 +625,9 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertSame(1, count($article->bills));
         }
 
-        $this->assertSame(2, $this->ArticlesTable->find()->count());
-        $this->assertSame(10, $this->AuthorsTable->find()->count());
-        $this->assertSame(2, $this->BillsTable->find()->count());
+        $this->assertSame(2, ArticleFactory::count());
+        $this->assertSame(10, AuthorFactory::count());
+        $this->assertSame(2, BillFactory::count());
     }
 
     /**
@@ -727,14 +650,14 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertSame(1, count($article->bills));
         }
 
-        $this->assertSame(2, $this->ArticlesTable->find()->count());
-        $this->assertSame(10, $this->AuthorsTable->find()->count());
-        $this->assertSame(2, $this->BillsTable->find()->count());
+        $this->assertSame(2, ArticleFactory::count());
+        $this->assertSame(10, AuthorFactory::count());
+        $this->assertSame(2, BillFactory::count());
     }
 
     public function testCompileEntityForToOneAssociation()
     {
-        $this->CitiesTable->addAssociations([
+        CityFactory::make()->getRootTableRegistry()->addAssociations([
             'belongsTo' => [
                 'Countries'
             ],

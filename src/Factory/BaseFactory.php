@@ -588,6 +588,7 @@ abstract class BaseFactory
      * @param string $type the type of query to perform
      * @param array $options An array that will be passed to Query::applyOptions()
      * @return \Cake\ORM\Query The query builder
+     * @see Query::find()
      */
     public static function find(string $type = 'all', array $options = []): Query
     {
@@ -595,9 +596,23 @@ abstract class BaseFactory
     }
 
     /**
+     * Get from primary key the factory's related table entries, without before find.
+     *
+     * @param mixed $primaryKey primary key value to find
+     * @param array $options options accepted by `Table::find()`
+     * @return \Cake\Datasource\EntityInterface
+     * @see Table::get()
+     */
+    public static function get($primaryKey, array $options = []): EntityInterface
+    {
+        return self::make()->getTable()->get($primaryKey, $options);
+    }
+
+    /**
      * Count the factory's related table entries without before find.
      *
      * @return int
+     * @see Query::count()
      */
     public static function count(): int
     {

@@ -16,7 +16,6 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
 use Cake\ORM\Association;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
 use CakephpFixtureFactories\Factory\AssociationBuilder;
@@ -29,36 +28,6 @@ use CakephpFixtureFactories\Test\Factory\CountryFactory;
 
 class AssociationBuilderTest extends TestCase
 {
-    /**
-     * @var AuthorsTable
-     */
-    private $AuthorsTable;
-
-    /**
-     * @var AddressesTable
-     */
-    private $AddressesTable;
-
-    /**
-     * @var ArticlesTable
-     */
-    private $ArticlesTable;
-
-    /**
-     * @var CountriesTable
-     */
-    private $CountriesTable;
-
-    /**
-     * @var CitiesTable
-     */
-    private $CitiesTable;
-
-    /**
-     * @var CustomersTable
-     */
-    private $CustomersTable;
-
     public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
@@ -67,37 +36,6 @@ class AssociationBuilderTest extends TestCase
     public static function tearDownAfterClass(): void
     {
         Configure::delete('TestFixtureNamespace');
-    }
-
-    /**
-     * @var BillsTable
-     */
-    private $BillsTable;
-
-    public function setUp(): void
-    {
-        $this->AuthorsTable     = TableRegistry::getTableLocator()->get('Authors');
-        $this->AddressesTable   = TableRegistry::getTableLocator()->get('Addresses');
-        $this->ArticlesTable    = TableRegistry::getTableLocator()->get('Articles');
-        $this->CountriesTable   = TableRegistry::getTableLocator()->get('Countries');
-        $this->CitiesTable      = TableRegistry::getTableLocator()->get('Cities');
-        $this->BillsTable       = TableRegistry::getTableLocator()->get('TestPlugin.Bills');
-        $this->CustomersTable   = TableRegistry::getTableLocator()->get('TestPlugin.Customers');
-
-        parent::setUp();
-    }
-
-    public function tearDown(): void
-    {
-        unset($this->AuthorsTable);
-        unset($this->AddressesTable);
-        unset($this->ArticlesTable);
-        unset($this->CountriesTable);
-        unset($this->CitiesTable);
-        unset($this->BillsTable);
-        unset($this->CustomersTable);
-
-        parent::tearDown();
     }
 
     public function testCheckAssociationWithCorrectAssociation()
@@ -132,9 +70,7 @@ class AssociationBuilderTest extends TestCase
 
         $address = $factory->persist();
         $this->assertSame($street, $address->street);
-
-        $addresses = $this->AddressesTable->find();
-        $this->assertSame(1, $addresses->count());
+        $this->assertSame(1, AddressFactory::count());
     }
 
     public function testGetFactoryFromTableNameWrong()
@@ -163,8 +99,7 @@ class AssociationBuilderTest extends TestCase
 
         $bill = $factory->persist();
         $this->assertEquals($amount, $bill->amount);
-
-        $this->assertSame(1, $this->BillsTable->find()->count());
+        $this->assertSame(1, BillFactory::count());
     }
 
     public function testValidateToOneAssociationPass()
@@ -399,7 +334,7 @@ class AssociationBuilderTest extends TestCase
 
         $country = $CountryFactory->persist();
 
-        $country = $this->CountriesTable->findById($country->id)->contain('Cities')->firstOrFail();
+        $country = CountryFactory::find()->where(['id' => $country->id])->contain('Cities')->firstOrFail();
 
         $this->assertSame($cityName, $country->cities[0]->name);
     }
