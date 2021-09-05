@@ -16,6 +16,10 @@ namespace CakephpFixtureFactories\Test\Factory;
 use Faker\Generator;
 use CakephpFixtureFactories\Factory\BaseFactory;
 
+/**
+ * Class CountryFactory
+ * @static Country get(mixed $primaryKey, array $options)
+ */
 class CountryFactory extends BaseFactory
 {
     protected $uniqueProperties = [

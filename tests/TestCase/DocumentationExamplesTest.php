@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase;
 
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -22,30 +21,12 @@ use TestApp\Model\Entity\Article;
 
 class DocumentationExamplesTest extends TestCase
 {
-    /**
-     * @var \Cake\ORM\Table
-     */
-    private $Articles;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->Articles = TableRegistry::getTableLocator()->get('Articles');
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
-        unset($this->Articles);
-    }
-
     public function testArticlesFindPublished()
     {
         $articles = ArticleFactory::make(['published' => 1], 3)->persist();
         ArticleFactory::make(['published' => 0], 2)->persist();
 
-        $result = $this->Articles
-            ->find('published')
+        $result = ArticleFactory::find('published')
             ->find('list')
             ->toArray();
 

@@ -14,10 +14,9 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase;
 
 use Cake\ORM\Entity;
-use Cake\ORM\TableRegistry;
-use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
 use Cake\TestSuite\TestCase;
-
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
 
 class StaticFixturesTest extends TestCase
 {
@@ -27,7 +26,7 @@ class StaticFixturesTest extends TestCase
 
     public function testLoadStaticFixtures()
     {
-        $article = TableRegistry::getTableLocator()->get('Articles')->find()->firstOrFail();
+        $article = ArticleFactory::find()->firstOrFail();
         $this->assertInstanceOf(Entity::class, $article);
     }
 }
