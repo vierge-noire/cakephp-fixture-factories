@@ -8,7 +8,6 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\FactoryNotFoundException;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\PremiumAuthorFactory;
 use CakephpTestSuiteLight\SkipTablesTruncation;
 
