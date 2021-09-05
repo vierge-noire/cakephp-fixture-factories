@@ -20,9 +20,8 @@ class TenAustralianAuthorsScenario implements FixtureScenarioInterface
 {
     use ScenarioAwareTrait;
 
-    public function load()
+    public function load(...$args)
     {
-        $this->loadFixtureScenario(FiveAustralianAuthorsScenario::class);
-        $this->loadFixtureScenario(FiveAustralianAuthorsScenario::class);
+        return $this->loadFixtureScenario(NAustralianAuthorsScenario::class, 10);
     }
 }

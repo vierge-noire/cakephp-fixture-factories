@@ -251,14 +251,16 @@ class FixtureFactoryTask extends SimpleBakeTask
      */
     public function templateData(): array
     {
+        $rootTableRegistryName = $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName;
+        $entityClass = '\\' . TableRegistry::getTableLocator()->get($rootTableRegistryName)->getEntityClass();
         $data = [
-            'rootTableRegistryName' => $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName,
+            'rootTableRegistryName' => $rootTableRegistryName,
+            'entityClass' => $entityClass,
             'modelNameSingular' => Inflector::singularize($this->modelName),
             'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => Util::getFactoryNamespace($this->plugin),
         ];
-        $methods = [];
         if ($this->param('methods')) {
             $associations = $this->getAssociations();
 
