@@ -33,7 +33,6 @@ use TestPlugin\Test\Factory\BillFactory;
 use TestPlugin\Test\Factory\CustomerFactory;
 
 /**
- * App\Shell\Task\FactoryTask Test Case
  * @see BakeFixtureFactoryCommand
  */
 class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
