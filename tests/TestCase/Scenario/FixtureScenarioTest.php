@@ -8,30 +8,25 @@ declare(strict_types=1);
  *
  * @copyright     Copyright (c) 2020 Juan Pablo Ramirez and Nicolas Masson
  * @link          https://webrider.de/
- * @since         1.0.0
+ * @since         2.3.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 namespace CakephpFixtureFactories\Test\TestCase\Scenario;
 
 use Cake\Core\Configure;
-use Cake\Core\Exception\CakeException;
 use Cake\ORM\Query;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\FixtureScenarioException;
 use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
-use CakephpFixtureFactories\Test\Scenario\FiveAustralianAuthorsScenario;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Scenario\NAustralianAuthorsScenario;
 use CakephpFixtureFactories\Test\Scenario\TenAustralianAuthorsScenario;
+use TestApp\Model\Entity\Author;
 
 class FixtureScenarioTest extends TestCase
 {
     use ScenarioAwareTrait;
-
-    /**
-     * @var AuthorsTable
-     */
-    private $AuthorsTable;
 
     public static function setUpBeforeClass(): void
     {
@@ -43,25 +38,13 @@ class FixtureScenarioTest extends TestCase
         Configure::delete('TestFixtureNamespace');
     }
 
-    public function setUp(): void
-    {
-        $this->AuthorsTable     = TableRegistry::getTableLocator()->get('Authors');
-        parent::setUp();
-    }
-
-    public function tearDown(): void
-    {
-        unset($this->AuthorsTable);
-        parent::tearDown();
-    }
-
     public function scenarioNames(): array
     {
         return [
-            ['FiveAustralianAuthors', FiveAustralianAuthorsScenario::N],
-            [FiveAustralianAuthorsScenario::class, FiveAustralianAuthorsScenario::N],
-            ['TenAustralianAuthors', 2*FiveAustralianAuthorsScenario::N],
-            [TenAustralianAuthorsScenario::class, 2*FiveAustralianAuthorsScenario::N],
+            ['NAustralianAuthors', 3],
+            [NAustralianAuthorsScenario::class, 5],
+            ['TenAustralianAuthors', 10],
+            [TenAustralianAuthorsScenario::class, 10],
         ];
     }
 
@@ -70,10 +53,21 @@ class FixtureScenarioTest extends TestCase
      */
     public function testLoadScenario($scenario, int $expectedAuthors)
     {
-        $this->loadFixtureScenario($scenario);
+        /** @var Author[] $authors */
+        $authors = $this->loadFixtureScenario($scenario, $expectedAuthors);
         $this->assertSame($expectedAuthors, $this->countAustralianAuthors());
+        foreach ($authors as $author) {
+            $this->assertInstanceOf(Author::class, $author);
+            $this->assertSame(
+                NAustralianAuthorsScenario::COUNTRY_NAME,
+                $author->address->city->country->name
+            );
+        }
     }
 
+    /**
+     * Throw an exception because this is not implementing the FixtureScenarioInterface
+     */
     public function testLoadScenarioException()
     {
         $this->expectException(FixtureScenarioException::class);
@@ -82,9 +76,9 @@ class FixtureScenarioTest extends TestCase
 
     private function countAustralianAuthors(): int
     {
-        return $this->AuthorsTable->find()
+        return AuthorFactory::find()
             ->innerJoinWith('Address.City.Country', function (Query $q) {
-                return $q->where(['Country.name' => FiveAustralianAuthorsScenario::COUNTRY_NAME]);
+                return $q->where(['Country.name' => NAustralianAuthorsScenario::COUNTRY_NAME]);
             })
             ->count();
     }

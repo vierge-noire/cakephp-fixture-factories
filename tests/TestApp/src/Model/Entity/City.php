@@ -14,8 +14,8 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
- * @property \App\Model\Entity\Country $country
- * @property \App\Model\Entity\Address[] $addresses
+ * @property \TestApp\Model\Entity\Country $country
+ * @property \TestApp\Model\Entity\Address[] $addresses
  */
 class City extends Entity
 {
