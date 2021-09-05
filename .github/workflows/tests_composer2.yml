@@ -20,6 +20,11 @@ jobs:
         php-version: ['7.1', '7.4']
         db-type: [sqlite, mysql, pgsql]
         composer-type: [lowest, stable, dev]
+        exclude:
+          # Mysql CI triggers error on 7.1
+          - db-type: mysql
+            php-version: '7.1'
+
 
     name: PHP ${{ matrix.php-version }} & ${{ matrix.db-type }} & ${{ matrix.composer-type }}
 
