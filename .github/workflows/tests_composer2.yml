@@ -21,9 +21,11 @@ jobs:
         db-type: [sqlite, mysql, pgsql]
         composer-type: [lowest, stable, dev]
         exclude:
-          # excludes composer lowest on mysql
+          # excludes composer lowest on 7.2
+          - composer-type: lowest
+            php-version: '7.2'
+          # Mysql CI triggers error on 7.2
           - db-type: mysql
-            composer-type: lowest
             php-version: '7.2'
 
 
