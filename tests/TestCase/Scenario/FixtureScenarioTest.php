@@ -15,23 +15,17 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Scenario;
 
 use Cake\Core\Configure;
-use Cake\Core\Exception\CakeException;
 use Cake\ORM\Query;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\FixtureScenarioException;
 use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Scenario\FiveAustralianAuthorsScenario;
 use CakephpFixtureFactories\Test\Scenario\TenAustralianAuthorsScenario;
 
 class FixtureScenarioTest extends TestCase
 {
     use ScenarioAwareTrait;
-
-    /**
-     * @var AuthorsTable
-     */
-    private $AuthorsTable;
 
     public static function setUpBeforeClass(): void
     {
@@ -41,18 +35,6 @@ class FixtureScenarioTest extends TestCase
     public static function tearDownAfterClass(): void
     {
         Configure::delete('TestFixtureNamespace');
-    }
-
-    public function setUp(): void
-    {
-        $this->AuthorsTable     = TableRegistry::getTableLocator()->get('Authors');
-        parent::setUp();
-    }
-
-    public function tearDown(): void
-    {
-        unset($this->AuthorsTable);
-        parent::tearDown();
     }
 
     public function scenarioNames(): array
@@ -82,7 +64,7 @@ class FixtureScenarioTest extends TestCase
 
     private function countAustralianAuthors(): int
     {
-        return $this->AuthorsTable->find()
+        return AuthorFactory::find()
             ->innerJoinWith('Address.City.Country', function (Query $q) {
                 return $q->where(['Country.name' => FiveAustralianAuthorsScenario::COUNTRY_NAME]);
             })
