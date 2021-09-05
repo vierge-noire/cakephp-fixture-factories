@@ -286,14 +286,16 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function templateData(Arguments $arg): array
     {
+        $rootTableRegistryName = $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName;
+        $entityClass = '\\' . TableRegistry::getTableLocator()->get($rootTableRegistryName)->getEntityClass();
         $data = [
-            'rootTableRegistryName' => $this->plugin ? $this->plugin . '.' . $this->modelName : $this->modelName,
+            'rootTableRegistryName' => $rootTableRegistryName,
+            'entityClass' => $entityClass,
             'modelNameSingular' => Inflector::singularize($this->modelName),
             'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace($this->plugin),
         ];
-        $methods = [];
         if ($arg->getOption('methods')) {
             $associations = $this->getAssociations();
 
