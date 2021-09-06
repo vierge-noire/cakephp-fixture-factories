@@ -15,12 +15,9 @@ namespace CakephpFixtureFactories\Test\Scenario\SubFolder;
 
 
 use CakephpFixtureFactories\Scenario\FixtureScenarioInterface;
-use CakephpFixtureFactories\Test\Factory\AuthorFactory;
-use TestApp\Model\Entity\Author;
 
 class SubFolderScenario implements FixtureScenarioInterface
 {
-
     /**
      * Does nothing but proof that scenarios in subfolders are found
      */
