@@ -163,6 +163,15 @@ $threeCitiesAndFiveVillages = CityFactory::make()->threeCitiesAndFiveVillages()-
 $country = CountryFactory::make()->with('Cities', $threeCitiesAndFiveVillages)->persist();
 ```
 
+You may also pass an array of factories:
+```php
+$threeCitiesAndFiveVillages = CityFactory::make()->threeCitiesAndFiveVillages()->getEntities();
+$country = CountryFactory::make()->with('Cities', [
+    CityFactory::make()->threeCitiesAndFiveVillages(),
+    CityFactory::make()->capitalCity()
+])->persist();
+```
+
 ### With a callable
 
 In case a given field has not been specified with `faker` in the `setDefaultTemplate` method,  all the generated fields of a given factory
