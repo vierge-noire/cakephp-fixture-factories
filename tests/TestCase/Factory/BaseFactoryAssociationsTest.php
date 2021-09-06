@@ -545,6 +545,35 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame($city1, $cities[0]->name);
         $this->assertSame($city2, $cities[1]->name);
         $this->assertTrue(abs($cities[0]->id - $cities[1]->id) > 1);
+        $this->assertSame(2, CityFactory::count());
+        $this->assertSame(1, CountryFactory::count());
+    }
+
+    public function testCountryWith3CitiesMultipleFactories()
+    {
+        $city1 = 'A city';
+        $city2 = 'B city';
+        $city3 = 'C city';
+
+        $country = CountryFactory::make()
+            ->with('Cities', [
+                CityFactory::make([['name' => $city1], ['name' => $city3]])->without('Country'),
+                CityFactory::make()->patchData(['name' => $city2])->without('Country'),
+            ])
+            ->persist();
+
+        // Make sure that all was correctly persisted
+        $cities = CityFactory::find()
+            ->where(['country_id' => $country->id])
+            ->orderAsc('name')
+            ->toArray();
+
+        $this->assertSame(3, count($cities));
+        $this->assertSame($city1, $cities[0]->name);
+        $this->assertSame($city2, $cities[1]->name);
+        $this->assertSame($city3, $cities[2]->name);
+        $this->assertSame(3, CityFactory::count());
+        $this->assertSame(1, CountryFactory::count());
     }
 
     public function testCountryWith4Cities()
