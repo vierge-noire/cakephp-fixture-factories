@@ -21,6 +21,7 @@ use CakephpFixtureFactories\Error\FixtureScenarioException;
 use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Scenario\NAustralianAuthorsScenario;
+use CakephpFixtureFactories\Test\Scenario\SubFolder\SubFolderScenario;
 use CakephpFixtureFactories\Test\Scenario\TenAustralianAuthorsScenario;
 use TestApp\Model\Entity\Author;
 
@@ -45,6 +46,8 @@ class FixtureScenarioTest extends TestCase
             [NAustralianAuthorsScenario::class, 5],
             ['TenAustralianAuthors', 10],
             [TenAustralianAuthorsScenario::class, 10],
+            ['SubFolder/SubFolder', 0],
+            [SubFolderScenario::class, 0],
         ];
     }
 
@@ -54,7 +57,7 @@ class FixtureScenarioTest extends TestCase
     public function testLoadScenario($scenario, int $expectedAuthors)
     {
         /** @var Author[] $authors */
-        $authors = $this->loadFixtureScenario($scenario, $expectedAuthors);
+        $authors = $this->loadFixtureScenario($scenario, $expectedAuthors) ?? [];
         $this->assertSame($expectedAuthors, $this->countAustralianAuthors());
         foreach ($authors as $author) {
             $this->assertInstanceOf(Author::class, $author);
