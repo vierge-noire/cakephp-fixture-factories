@@ -26,7 +26,11 @@ $articles = ArticleFactory::make(3)->patchData(['title' => 'Foo'])->getEntities(
 ```
 or
 ```php
-$articles = ArticleFactory::make()->patchData(['title' => 'Foo'])->setTimes(3)->getEntities();
+$articles = ArticleFactory::make(3)->setField('title', 'Foo')->getEntities();
+```
+or
+```php
+$articles = ArticleFactory::make()->setField('title', 'Foo')->setTimes(3)->getEntities();
 ```
 or
 ```php

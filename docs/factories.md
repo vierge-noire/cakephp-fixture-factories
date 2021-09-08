@@ -59,9 +59,7 @@ class ArticleFactory extends BaseFactory
      */
     public function setJobTitle()
     {
-        return $this->patchData([
-            'title' => $this->getFaker()->jobTitle,
-        ]);
+        return $this->setField('title', $this->getFaker()->jobTitle());
     }
 }
 ```
