@@ -11,20 +11,17 @@ declare(strict_types=1);
  * @since         2.3.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-namespace CakephpFixtureFactories\Test\Scenario;
+namespace CakephpFixtureFactories\Test\Scenario\SubFolder;
 
 
 use CakephpFixtureFactories\Scenario\FixtureScenarioInterface;
-use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 
-class FiveAustralianAuthorsScenario implements FixtureScenarioInterface
+class SubFolderScenario implements FixtureScenarioInterface
 {
-    const COUNTRY_NAME = 'Australia';
-
-    const N = 5;
-
-    public function load()
+    /**
+     * Does nothing but proof that scenarios in subfolders are found
+     */
+    public function load(...$args)
     {
-        AuthorFactory::make(self::N)->fromCountry(self::COUNTRY_NAME)->persist();
     }
 }

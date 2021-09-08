@@ -26,7 +26,11 @@ $articles = ArticleFactory::make(3)->patchData(['title' => 'Foo'])->getEntities(
 ```
 or
 ```php
-$articles = ArticleFactory::make()->patchData(['title' => 'Foo'])->setTimes(3)->getEntities();
+$articles = ArticleFactory::make(3)->setField('title', 'Foo')->getEntities();
+```
+or
+```php
+$articles = ArticleFactory::make()->setField('title', 'Foo')->setTimes(3)->getEntities();
 ```
 or
 ```php
@@ -161,6 +165,15 @@ You may also inject an exiting entity. The previous example would be now:
 ```php
 $threeCitiesAndFiveVillages = CityFactory::make()->threeCitiesAndFiveVillages()->getEntities();
 $country = CountryFactory::make()->with('Cities', $threeCitiesAndFiveVillages)->persist();
+```
+
+You may also pass an array of factories:
+```php
+$threeCitiesAndFiveVillages = CityFactory::make()->threeCitiesAndFiveVillages()->getEntities();
+$country = CountryFactory::make()->with('Cities', [
+    CityFactory::make()->threeCitiesAndFiveVillages(),
+    CityFactory::make()->capitalCity()
+])->persist();
 ```
 
 ### With a callable

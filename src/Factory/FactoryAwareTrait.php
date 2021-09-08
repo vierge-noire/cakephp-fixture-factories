@@ -28,7 +28,8 @@ trait FactoryAwareTrait
      * @param  string           $name          Factory or model name
      * @param  string|array[]   ...$arguments  Additional arguments for `BaseFactory::make`
      * @return \CakephpFixtureFactories\Factory\BaseFactory
-     * @see CakephpFixtureFactories\Factory\BaseFactory::make
+     * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
+     * @see \CakephpFixtureFactories\Factory\BaseFactory::make
      */
     public function getFactory(string $name, ...$arguments): BaseFactory
     {

@@ -16,10 +16,10 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 
 use Cake\Core\Configure;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Error\UniquenessException;
+use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
@@ -27,26 +27,6 @@ use CakephpFixtureFactories\Test\Factory\CountryFactory;
 
 class BaseFactoryUniqueEntitiesTest extends TestCase
 {
-    /**
-     * @var \TestApp\Model\Table\CountriesTable
-     */
-    public $Countries;
-
-    /**
-     * @var \TestApp\Model\Table\CitiesTable
-     */
-    public $Cities;
-
-    /**
-     * @var \TestApp\Model\Table\AuthorsTable
-     */
-    public $Authors;
-
-    /**
-     * @var \TestApp\Model\Table\AddressesTable
-     */
-    public $Addresses;
-
     public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
@@ -55,22 +35,6 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
     public static function tearDownAfterClass(): void
     {
         Configure::delete('TestFixtureNamespace');
-    }
-
-    public function setUp(): void
-    {
-        $this->Addresses = TableRegistry::getTableLocator()->get('Addresses');
-        $this->Authors = TableRegistry::getTableLocator()->get('Authors');
-        $this->Countries = TableRegistry::getTableLocator()->get('Countries');
-        $this->Cities = TableRegistry::getTableLocator()->get('Cities');
-    }
-
-    public function tearDown(): void
-    {
-        unset($this->Addresses);
-        unset($this->Authors);
-        unset($this->Cities);
-        unset($this->Countries);
     }
 
     public function testGetUniqueProperties()
@@ -104,8 +68,8 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
     {
         $nCities = 3;
         CityFactory::make($nCities)->with('Country')->persist();
-        $this->assertSame($nCities, $this->Cities->find()->count());
-        $this->assertSame($nCities, $this->Countries->find()->count());
+        $this->assertSame($nCities, CityFactory::count());
+        $this->assertSame($nCities, CountryFactory::count());
     }
 
     public function testDetectDuplicateInAssociation()
@@ -127,7 +91,7 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
         $this->assertSame($city->get('country_id'), $newCountry->id);
         $this->assertSame($originalCountry->unique_stamp, $unique_stamp);
         $this->assertSame($newCountry->unique_stamp, $unique_stamp);
-        $this->assertSame(1, $this->Countries->find()->count());
+        $this->assertSame(1, CountryFactory::count());
     }
 
     /**
@@ -152,8 +116,8 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
 
         $this->assertSame($originalAuthor->id, $newAuthor->id);
         $this->assertSame($authorName, $newAuthor->name);
-        $this->assertSame(1, $this->Authors->find()->count());
-        $this->assertSame(1, $this->Addresses->find()->count());
+        $this->assertSame(1, AuthorFactory::count());
+        $this->assertSame(1, AddressFactory::count());
     }
 
     /**
@@ -289,9 +253,9 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
             ->with('Cities', compact('virtual_unique_stamp'))
             ->persist();
 
-        $this->assertSame(1, $this->Cities->find()->count());
-        $this->assertSame($nCountries, $this->Countries->find()->count());
-        $cityId = $this->Cities->find()->first()->id;
+        $this->assertSame(1, CityFactory::count());
+        $this->assertSame($nCountries, CountryFactory::count());
+        $cityId = CityFactory::find()->first()->id;
         foreach ($countries as $country) {
             $this->assertSame($virtual_unique_stamp, $country->cities[0]->virtual_unique_stamp);
             $this->assertSame($cityId, $country->cities[0]->id);
@@ -314,9 +278,9 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
             ->with('Country', compact('unique_stamp'))
             ->persist();
 
-        $this->assertSame(1, $this->Countries->find()->count());
-        $this->assertSame($nCities, $this->Cities->find()->count());
-        $countryId = $this->Countries->find()->first()->id;
+        $this->assertSame(1, CountryFactory::count());
+        $this->assertSame($nCities, CityFactory::count());
+        $countryId = CountryFactory::find()->first()->id;
         foreach ($cities as $city) {
             $this->assertSame( $unique_stamp, $city->country->unique_stamp);
             $this->assertSame($countryId, $city->country_id);
@@ -341,9 +305,9 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
             ->with('Country', compact('unique_stamp') + ['name' => $countryName])
             ->persist();
 
-        $this->assertSame(1, $this->Countries->find()->count());
-        $this->assertSame($nCities, $this->Cities->find()->count());
-        $retrievedCountry = $this->Countries->find()->first();
+        $this->assertSame(1, CountryFactory::count());
+        $this->assertSame($nCities, CityFactory::count());
+        $retrievedCountry = CountryFactory::find()->first();
         $countryId = $retrievedCountry->id;
         $this->assertSame($countryName, $retrievedCountry->name);
         foreach ($cities as $city) {

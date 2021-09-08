@@ -135,9 +135,16 @@ class DataCompiler
         if (is_array($this->dataFromInstantiation) && isset($this->dataFromInstantiation[0])) {
             $compiledTemplateData = [];
             foreach ($this->dataFromInstantiation as $entity) {
-                $compiledTemplateData[] = $this->compileEntity($entity, $setPrimaryKey);
-                // Only the first entity gets its primary key set.
-                $setPrimaryKey = false;
+                if ($entity instanceof BaseFactory) {
+                    foreach ($entity->getEntities() as $subEntity) {
+                        $compiledTemplateData[] = $this->compileEntity($subEntity, $setPrimaryKey);
+                        $setPrimaryKey = false;
+                    }
+                } else {
+                    $compiledTemplateData[] = $this->compileEntity($entity, $setPrimaryKey);
+                    // Only the first entity gets its primary key set.
+                    $setPrimaryKey = false;
+                }
             }
         } else {
             $compiledTemplateData = $this->compileEntity($this->dataFromInstantiation, $setPrimaryKey);

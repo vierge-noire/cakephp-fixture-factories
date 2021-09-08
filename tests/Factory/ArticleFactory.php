@@ -17,6 +17,13 @@ use CakephpFixtureFactories\Factory\BaseFactory;
 use Faker\Generator;
 use TestApp\Model\Entity\Article;
 
+/**
+ * Class ArticleFactory
+ *
+ * @method \TestApp\Model\Entity\Article getEntity()
+ * @method \TestApp\Model\Entity\Article[] getEntities()
+ * @method \TestApp\Model\Entity\Article|\TestApp\Model\Entity\Article[] persist()
+ */
 class ArticleFactory extends BaseFactory
 {
     public const DEFAULT_NUMBER_OF_AUTHORS = 2;
@@ -98,25 +105,21 @@ class ArticleFactory extends BaseFactory
      */
     public function setJobTitle()
     {
-        return $this->patchData([
-            'title' => $this->getFaker()->jobTitle,
-        ]);
+        return $this->setField('title', $this->getFaker()->jobTitle());
     }
 
     public function withHiddenBiography(string $text)
     {
-        return $this->patchData([
-            Article::HIDDEN_PARAGRAPH_PROPERTY_NAME => $text
-        ]);
+        return $this->setField(Article::HIDDEN_PARAGRAPH_PROPERTY_NAME, $text);
     }
 
     public function published()
     {
-        return $this->patchData(['published' => true]);
+        return $this->setField('published', true);
     }
 
     public function unpublished()
     {
-        return $this->patchData(['published' => false]);
+        return $this->setField('published', false);
     }
 }

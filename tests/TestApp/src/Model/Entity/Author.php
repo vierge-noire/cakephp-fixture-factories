@@ -16,9 +16,9 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
- * @property \App\Model\Entity\Address $address
- * @property \App\Model\Entity\BusinessAddress $business_address
- * @property \App\Model\Entity\Article[] $articles
+ * @property \TestApp\Model\Entity\Address $address
+ * @property \TestApp\Model\Entity\Address $business_address
+ * @property \TestApp\Model\Entity\Article[] $articles
  */
 class Author extends Entity
 {
