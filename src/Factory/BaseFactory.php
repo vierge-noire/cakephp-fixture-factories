@@ -371,6 +371,18 @@ abstract class BaseFactory
     }
 
     /**
+     * Sets the value for a single field
+     *
+     * @param string $field to set
+     * @param mixed $value to assign
+     * @return $this
+     */
+    public function setField(string $field, $value)
+    {
+        return $this->patchData([$field => $value]);
+    }
+
+    /**
      * A protected class dedicated to generating / collecting data for this factory
      * @return DataCompiler
      */

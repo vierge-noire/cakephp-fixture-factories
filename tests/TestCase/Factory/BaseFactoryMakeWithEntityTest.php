@@ -53,7 +53,7 @@ class BaseFactoryMakeWithEntityTest extends TestCase
         $author1 = AuthorFactory::make()->persist();
         $author2 = AuthorFactory::make($author1)->persist();
         $author3Name = 'Foo';
-        $author3 = AuthorFactory::make($author1)->patchData(['name' => $author3Name])->persist();
+        $author3 = AuthorFactory::make($author1)->setField('name', $author3Name)->persist();
 
         $this->assertSame($author1, $author2);
         $this->assertSame($author1->id, $author3->id);

@@ -105,25 +105,21 @@ class ArticleFactory extends BaseFactory
      */
     public function setJobTitle()
     {
-        return $this->patchData([
-            'title' => $this->getFaker()->jobTitle,
-        ]);
+        return $this->setField('title', $this->getFaker()->jobTitle());
     }
 
     public function withHiddenBiography(string $text)
     {
-        return $this->patchData([
-            Article::HIDDEN_PARAGRAPH_PROPERTY_NAME => $text
-        ]);
+        return $this->setField(Article::HIDDEN_PARAGRAPH_PROPERTY_NAME, $text);
     }
 
     public function published()
     {
-        return $this->patchData(['published' => true]);
+        return $this->setField('published', true);
     }
 
     public function unpublished()
     {
-        return $this->patchData(['published' => false]);
+        return $this->setField('published', false);
     }
 }
