@@ -13,8 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-
-use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;

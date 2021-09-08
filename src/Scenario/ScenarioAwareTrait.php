@@ -25,25 +25,30 @@ trait ScenarioAwareTrait
      * Load a given fixture scenario
      *
      * @param string $scenario Name of the scenario or fully qualified class.
-     * @return void
+     * @param mixed ...$args Arguments passed to the scenario
+     * @return mixed
+     * @throws \CakephpFixtureFactories\Error\FixtureScenarioException if the scenario could not be found.
      */
-    public function loadFixtureScenario(string $scenario): void
+    public function loadFixtureScenario(string $scenario, ...$args)
     {
         if (!class_exists($scenario)) {
             // phpcs:disable
             @[$scenarioName, $plugin] = array_reverse(explode('.', $scenario));
             // phpcs:enable
             $scenarioNamespace = trim($this->getFactoryNamespace($plugin), 'Factory') . 'Scenario';
+            $scenarioName = str_replace('/', '\\', $scenarioName);
             $scenario = $scenarioNamespace . '\\' . $scenarioName . 'Scenario';
         }
 
-        if (!is_subclass_of($scenario, FixtureScenarioInterface::class)) {
-            $msg = "The class {$scenario} must implement " . FixtureScenarioInterface::class;
-            throw new FixtureScenarioException($msg);
+        try {
+            $scenario = new $scenario();
+            if ($scenario instanceof FixtureScenarioInterface) {
+                return $scenario->load(...$args);
+            } else {
+                throw new \Exception("{$scenario} must implement " . FixtureScenarioInterface::class);
+            }
+        } catch (\Throwable $e) {
+            throw new FixtureScenarioException($e->getMessage());
         }
-
-        /** @var \CakephpFixtureFactories\Scenario\FixtureScenarioInterface $scenario */
-        $scenario = new $scenario();
-        $scenario->load();
     }
 }

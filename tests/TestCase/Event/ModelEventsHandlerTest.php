@@ -14,17 +14,21 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Test\TestCase\Event;
 
+use Cake\Datasource\ModelAwareTrait;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Event\ModelEventsHandler;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\CountriesTable;
 
-class ModelEventsHandlerTest extends \Cake\TestSuite\TestCase
+/**
+ * Class ModelEventsHandlerTest
+ * @property ArticlesTable $Articles
+ * @property CountriesTable $Countries
+ */
+class ModelEventsHandlerTest extends TestCase
 {
-    /**
-     * @var ArticlesTable
-     */
-    private $Articles;
+    use ModelAwareTrait;
 
     /**
      * @var CountriesTable
@@ -33,8 +37,8 @@ class ModelEventsHandlerTest extends \Cake\TestSuite\TestCase
 
     public function setUp()
     {
-        $this->Articles = TableRegistry::getTableLocator()->get('Articles');
-        $this->Countries = TableRegistry::getTableLocator()->get('Countries');
+        $this->loadModel('Articles');
+        $this->loadModel('Countries');
     }
 
     public function tearDown()
@@ -47,7 +51,6 @@ class ModelEventsHandlerTest extends \Cake\TestSuite\TestCase
 
     public function testBeforeMarshalOnTable()
     {
-
         $country = $this->Countries->newEntity(['name' => 'Foo']);
         $this->assertTrue($country->beforeMarshalTriggered);
     }
