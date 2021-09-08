@@ -46,7 +46,7 @@ class FixtureScenarioTest extends TestCase
             [NAustralianAuthorsScenario::class, 5],
             ['TenAustralianAuthors', 10],
             [TenAustralianAuthorsScenario::class, 10],
-            ['Subfolder/SubFolder', 0],
+            ['SubFolder/SubFolder', 0],
             [SubFolderScenario::class, 0],
         ];
     }
