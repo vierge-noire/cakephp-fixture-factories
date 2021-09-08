@@ -36,7 +36,7 @@ trait ScenarioAwareTrait
             // phpcs:enable
             $scenarioNamespace = trim($this->getFactoryNamespace($plugin), 'Factory') . 'Scenario';
             $scenarioName = str_replace('/', '\\', $scenarioName);
-            $scenario = '\\' . $scenarioNamespace . '\\' . $scenarioName . 'Scenario';
+            $scenario = $scenarioNamespace . '\\' . $scenarioName . 'Scenario';
         }
 
         if (!is_subclass_of($scenario, FixtureScenarioInterface::class)) {
