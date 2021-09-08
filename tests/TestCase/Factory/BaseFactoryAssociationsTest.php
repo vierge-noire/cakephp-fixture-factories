@@ -559,7 +559,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $country = CountryFactory::make()
             ->with('Cities', [
                 CityFactory::make([['name' => $city1], ['name' => $city3]])->without('Country'),
-                CityFactory::make()->patchData(['name' => $city2])->without('Country'),
+                CityFactory::make()->setField('name', $city2)->without('Country'),
             ])
             ->persist();
 
