@@ -35,8 +35,8 @@ class CountryFactory extends BaseFactory
     {
         $this->setDefaultData(function (Generator $faker) {
             return [
-                'name' => $faker->country,
-                'unique_stamp' => $faker->uuid,
+                'name' => $faker->country(),
+                'unique_stamp' => uniqid(),
             ];
         });
     }

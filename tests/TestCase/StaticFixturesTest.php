@@ -13,20 +13,66 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase;
 
-use Cake\ORM\Entity;
+use Cake\ORM\Query;
+use Cake\TestSuite\Fixture\FixtureStrategyInterface;
+use Cake\TestSuite\Fixture\TransactionStrategy;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Fixture\AddressesFixture;
+use CakephpFixtureFactories\Test\Fixture\ArticlesAuthorsFixture;
 use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
+use CakephpFixtureFactories\Test\Fixture\AuthorsFixture;
+use CakephpFixtureFactories\Test\Fixture\CitiesFixture;
+use CakephpFixtureFactories\Test\Fixture\CountriesFixture;
+use TestApp\Model\Entity\Article;
+use TestApp\Model\Entity\Author;
 
 class StaticFixturesTest extends TestCase
 {
     protected $fixtures = [
+        AddressesFixture::class,
         ArticlesFixture::class,
+        ArticlesAuthorsFixture::class,
+        AuthorsFixture::class,
+        CitiesFixture::class,
+        CountriesFixture::class,
     ];
 
-    public function testLoadStaticFixtures()
+    protected function getFixtureStrategy(): FixtureStrategyInterface
+    {
+        return new TransactionStrategy();
+    }
+
+    public function testLoadStaticFixtures_Articles()
     {
         $article = ArticleFactory::find()->firstOrFail();
-        $this->assertInstanceOf(Entity::class, $article);
+        $this->assertInstanceOf(Article::class, $article);
+    }
+
+    public function testLoadStaticFixtures_Authors()
+    {
+        $author = AuthorFactory::find()->firstOrFail();
+        $this->assertInstanceOf(Author::class, $author);
+    }
+
+    public function testLoadStaticFixtures_FindAustralianAuthors()
+    {
+        $australianAuthors = AuthorFactory::find()->innerJoinWith('Address.City.Country', function(Query $q) {
+            return $q->where(['Country.name' => 'Australia']);
+        });
+
+        $this->assertSame(1, $australianAuthors->count());
+        $this->assertSame(2, $australianAuthors->firstOrFail()->id);
+    }
+
+    public function testLoadStaticFixtures_FindAustralianArticles()
+    {
+        $australianArticles = ArticleFactory::find()->innerJoinWith('Authors.Address.City.Country', function(Query $q) {
+            return $q->where(['Country.name' => 'Australia']);
+        });
+
+        $this->assertSame(1, $australianArticles->count());
+        $this->assertSame(2, $australianArticles->firstOrFail()->id);
     }
 }

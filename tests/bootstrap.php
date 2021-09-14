@@ -19,7 +19,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
-use CakephpTestMigrator\Migrator;
+use Migrations\TestSuite\Migrator;
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
@@ -154,6 +154,7 @@ ConnectionManager::setConfig('default', $dbConnection);
 ConnectionManager::setConfig('test', $dbConnection);
 $dbConnection['dummy_key'] = 'DummyKeyValue';
 ConnectionManager::setConfig('dummy', $dbConnection);
+ConnectionManager::setConfig('test_dummy', $dbConnection);
 
 Configure::write('Session', [
     'defaults' => 'php',

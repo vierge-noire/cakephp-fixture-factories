@@ -18,13 +18,9 @@
     </testsuites>
 
     <!-- Setup a listener for fixtures -->
-    <listeners>
-        <listener class="CakephpTestSuiteLight\FixtureInjector">
-            <arguments>
-                <object class="CakephpTestSuiteLight\FixtureManager" />
-            </arguments>
-        </listener>
-    </listeners>
+    <extensions>
+        <extension class="\Cake\TestSuite\Fixture\PHPUnitExtension" />
+    </extensions>
 
     <!-- Ignore vendor tests in code coverage reports -->
     <filter>

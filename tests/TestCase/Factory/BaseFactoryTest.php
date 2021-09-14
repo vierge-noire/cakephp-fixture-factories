@@ -15,6 +15,8 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
+use Cake\TestSuite\Fixture\FixtureStrategyInterface;
+use Cake\TestSuite\Fixture\TransactionStrategy;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
@@ -41,6 +43,11 @@ use function is_int;
 
 class BaseFactoryTest extends TestCase
 {
+    protected function getFixtureStrategy(): FixtureStrategyInterface
+    {
+        return new TransactionStrategy();
+    }
+
     public function dataForTestConnectionInDataProvider()
     {
         return [

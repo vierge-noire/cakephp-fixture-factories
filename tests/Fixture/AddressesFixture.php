@@ -15,23 +15,21 @@ namespace CakephpFixtureFactories\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
-class ArticlesFixture extends TestFixture
+class AddressesFixture extends TestFixture
 {
     public function init(): void
     {
         $this->records = [
             [
-                'title' => 'First Article',
-                'body' => 'First Article Body',
-                'published' => '1',
+                'street' => 'First Street',
+                'city_id' => 1,
                 'created' => date('Y-m-d H:i:s'),
                 'modified' => date('Y-m-d H:i:s'),
             ],
             [
                 'id' => 2,
-                'title' => 'Australian Article',
-                'body' => 'Australian Article Body',
-                'published' => '1',
+                'street' => 'Sydney Street',
+                'city_id' => 2,
                 'created' => date('Y-m-d H:i:s'),
                 'modified' => date('Y-m-d H:i:s'),
             ],

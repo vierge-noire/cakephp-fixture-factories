@@ -452,7 +452,7 @@ class DataCompiler
         switch ($columnType) {
             case 'uuid':
             case 'string':
-                $res = $this->getFactory()->getFaker()->uuid();
+                $res = uniqid(); //$this->getFactory()->getFaker()->uuid();
                 break;
             case 'biginteger':
                 $res = mt_rand(0, intval('9223372036854775807'));

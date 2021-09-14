@@ -15,25 +15,14 @@ namespace CakephpFixtureFactories\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
-class ArticlesFixture extends TestFixture
+class ArticlesAuthorsFixture extends TestFixture
 {
     public function init(): void
     {
         $this->records = [
             [
-                'title' => 'First Article',
-                'body' => 'First Article Body',
-                'published' => '1',
-                'created' => date('Y-m-d H:i:s'),
-                'modified' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'id' => 2,
-                'title' => 'Australian Article',
-                'body' => 'Australian Article Body',
-                'published' => '1',
-                'created' => date('Y-m-d H:i:s'),
-                'modified' => date('Y-m-d H:i:s'),
+                'article_id' => 2,  // That australian article
+                'author_id' => 2,   // That australian author
             ],
         ];
         parent::init();
