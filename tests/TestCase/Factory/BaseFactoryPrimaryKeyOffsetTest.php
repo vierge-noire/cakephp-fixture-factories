@@ -19,9 +19,12 @@ use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public function dataForTestSetPrimaryKeyOffset()
     {
         return [

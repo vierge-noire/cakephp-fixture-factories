@@ -16,22 +16,11 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
-use CakephpTestSuiteLight\FixtureInjector;
-use CakephpTestSuiteLight\FixtureManager;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
-class FixtureInjectorTest extends TestCase
+class BaseFactoryDataProviderTest extends TestCase
 {
-    /**
-     * @var FixtureManager
-     */
-    public $FixtureManager;
-
-    public function setUp(): void
-    {
-        $this->FixtureManager = new FixtureInjector(
-            $this->createMock(FixtureManager::class)
-        );
-    }
+    use TruncateDirtyTables;
 
     /**
      * For each of the data provided, their should be

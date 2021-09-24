@@ -19,10 +19,13 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\Article;
 
 class BaseFactoryHiddenPropertiesTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public const DUMMY_HIDDEN_PARAGRAPH = 'Foo!';
 
     /**

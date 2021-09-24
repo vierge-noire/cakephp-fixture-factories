@@ -29,6 +29,7 @@ class FactoryTableRegistryTest extends TestCase
 {
     public function setUp(): void
     {
+        parent::setUp();
         TableRegistry::getTableLocator()->clear();
     }
 

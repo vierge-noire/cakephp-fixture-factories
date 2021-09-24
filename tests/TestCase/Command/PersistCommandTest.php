@@ -23,6 +23,7 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Command\PersistCommand;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Table\AddressesTable;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\CitiesTable;
@@ -30,7 +31,6 @@ use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Table\BillsTable;
 
 /**
- * App\Shell\Task\FactoryTask Test Case
  * @property ArticlesTable $Articles
  * @property CountriesTable $Countries
  * @property CitiesTable $Cities
@@ -40,6 +40,7 @@ use TestPlugin\Model\Table\BillsTable;
 class PersistCommandTest extends TestCase
 {
     use ModelAwareTrait;
+    use TruncateDirtyTables;
 
     /**
      * @var PersistCommand
@@ -57,6 +58,7 @@ class PersistCommandTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->command = new PersistCommand();
         $this->io  = new ConsoleIo();
         $this->io->level(ConsoleIo::QUIET);
@@ -69,6 +71,7 @@ class PersistCommandTest extends TestCase
 
     public function tearDown(): void
     {
+        parent::tearDown();
         unset($this->command);
         unset($this->io);
         unset($this->Articles);

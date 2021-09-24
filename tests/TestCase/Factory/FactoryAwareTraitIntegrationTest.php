@@ -13,8 +13,6 @@ use CakephpTestSuiteLight\SkipTablesTruncation;
 
 class FactoryAwareTraitIntegrationTest extends TestCase
 {
-    use SkipTablesTruncation;
-
     public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

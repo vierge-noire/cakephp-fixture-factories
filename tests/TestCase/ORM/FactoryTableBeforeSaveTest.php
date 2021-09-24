@@ -19,9 +19,12 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\ORM\FactoryTableBeforeSave;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class FactoryTableBeforeSaveTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public function testFindDuplicate()
     {
         $persistedCountry = CountryFactory::make()->persist();

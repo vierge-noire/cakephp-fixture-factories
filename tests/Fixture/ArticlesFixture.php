@@ -17,22 +17,11 @@ use Cake\TestSuite\Fixture\TestFixture;
 
 class ArticlesFixture extends TestFixture
 {
-    public $fields = [
-        'id' => ['type' => 'integer'],
-        'title' => ['type' => 'string', 'length' => 255, 'null' => false],
-        'body' => 'text',
-        'published' => ['type' => 'integer', 'default' => '0', 'null' => false],
-        'created' => 'datetime',
-        'modified' => 'datetime',
-        '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id']],
-        ],
-    ];
-
     public function init(): void
     {
         $this->records = [
             [
+                'id' => 1,
                 'title' => 'First Article',
                 'body' => 'First Article Body',
                 'published' => '1',

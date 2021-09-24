@@ -37,6 +37,7 @@ class ModelEventsHandlerTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->loadModel('Articles');
         $this->loadModel('Countries');
     }

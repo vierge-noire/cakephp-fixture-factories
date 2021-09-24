@@ -16,11 +16,14 @@ namespace CakephpFixtureFactories\Test\TestCase;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use Faker\Generator;
 use TestApp\Model\Entity\Article;
 
 class DocumentationExamplesTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public function testArticlesFindPublished()
     {
         $articles = ArticleFactory::make(['published' => 1], 3)->persist();

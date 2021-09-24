@@ -24,9 +24,12 @@ use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class BaseFactoryUniqueEntitiesTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

@@ -21,6 +21,11 @@ use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpTestSuiteLight\FixtureInjector;
 use CakephpTestSuiteLight\FixtureManager;
 
+/**
+ * Class SetupCommand
+ *
+ * @deprecated The SetupCommand is not required anymore
+ */
 class SetupCommand extends Command
 {
     /**
@@ -55,6 +60,8 @@ class SetupCommand extends Command
      */
     public function execute(Arguments $args, ConsoleIo $io)
     {
+        $io->warning('The setup command is deprecated.');
+        $io->warning('Please refer to https://book.cakephp.org/4.next/en/appendices/fixture-upgrade.html.');
         $filePath = $this->getPhpunitFilePath($args, $io);
         $this->replaceListenersInPhpunitXmlFile($filePath, $io);
         $io->success("The listener was successfully replaced in $filePath.");

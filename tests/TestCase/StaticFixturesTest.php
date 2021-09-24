@@ -17,9 +17,12 @@ use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class StaticFixturesTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     protected $fixtures = [
         ArticlesFixture::class,
     ];

@@ -27,6 +27,7 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\City;
@@ -38,6 +39,8 @@ use TestPlugin\Model\Entity\Customer;
 
 class BaseFactoryAssociationsTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

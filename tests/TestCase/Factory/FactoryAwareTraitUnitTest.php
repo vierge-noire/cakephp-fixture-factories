@@ -9,8 +9,6 @@ use CakephpTestSuiteLight\SkipTablesTruncation;
 
 class FactoryAwareTraitUnitTest extends TestCase
 {
-    use SkipTablesTruncation;
-
     public function getFactoryNamespaceData(): array
     {
         return [

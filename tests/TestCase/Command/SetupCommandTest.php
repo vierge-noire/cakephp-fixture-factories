@@ -21,6 +21,7 @@ use CakephpFixtureFactories\Command\SetupCommand;
 
 /**
  * App\Shell\Task\FactoryTask Test Case
+ * @deprecated The SetupCommand is not required anymore
  */
 class SetupCommandTest extends TestCase
 {
@@ -46,6 +47,7 @@ class SetupCommandTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->setupCommand = new SetupCommand();
         $this->io  = new ConsoleIo();
     }

@@ -19,11 +19,14 @@ use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleWithFiveBillsFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use Faker\Generator;
 use TestApp\Model\Entity\Author;
 
 class BaseFactoryDefaultValuesTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public function testMakeAuthorWithDefaultName()
     {
         $author = AuthorFactory::make()->getEntity();

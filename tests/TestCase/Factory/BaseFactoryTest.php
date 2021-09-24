@@ -26,6 +26,7 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use Faker\Generator;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
@@ -41,6 +42,8 @@ use function is_int;
 
 class BaseFactoryTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public function dataForTestConnectionInDataProvider()
     {
         return [
@@ -844,7 +847,7 @@ class BaseFactoryTest extends TestCase
     {
         ArticleFactory::make()->setTimes($times)->persist();
 
-        $this->assertSame($times, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+        $this->assertSame($times, ArticleFactory::count());
     }
 
     /**

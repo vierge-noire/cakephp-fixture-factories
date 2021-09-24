@@ -18,13 +18,17 @@ use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class BaseFactoryStaticFinderTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public $Articles;
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->Articles = TableRegistry::getTableLocator()->get('Articles');
         $this->Articles->getEventManager()->on(
             'Model.beforeFind',
@@ -38,6 +42,7 @@ class BaseFactoryStaticFinderTest extends TestCase
     {
         unset($this->Articles);
         TableRegistry::getTableLocator()->clear();
+        parent::tearDown();
     }
 
     /**

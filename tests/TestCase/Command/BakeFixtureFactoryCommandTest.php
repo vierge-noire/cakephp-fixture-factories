@@ -17,6 +17,7 @@ use Cake\Console\Exception\StopException;
 use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Test\TestCase\Helper\TestCaseWithFixtureBaking;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\Author;
@@ -37,6 +38,8 @@ use TestPlugin\Test\Factory\CustomerFactory;
  */
 class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 {
+    use TruncateDirtyTables;
+
     /**
      * @var string
      */

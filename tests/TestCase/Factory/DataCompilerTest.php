@@ -27,8 +27,6 @@ use TestApp\Model\Table\PremiumAuthorsTable;
 
 class DataCompilerTest extends TestCase
 {
-    use SkipTablesTruncation;
-
     /**
      * @var DataCompiler
      */

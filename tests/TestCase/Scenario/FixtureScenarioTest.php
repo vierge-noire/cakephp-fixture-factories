@@ -23,11 +23,13 @@ use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Scenario\NAustralianAuthorsScenario;
 use CakephpFixtureFactories\Test\Scenario\SubFolder\SubFolderScenario;
 use CakephpFixtureFactories\Test\Scenario\TenAustralianAuthorsScenario;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\Author;
 
 class FixtureScenarioTest extends TestCase
 {
     use ScenarioAwareTrait;
+    use TruncateDirtyTables;
 
     public static function setUpBeforeClass(): void
     {
