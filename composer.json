@@ -17,7 +17,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.2",
-        "cakephp/cakephp": "dev-4.next as 4.3.0-RC1",
+        "cakephp/cakephp": "dev-4.next as 4.3.0-RC2",
         "fakerphp/faker": "^1.15",
         "vierge-noire/cakephp-test-suite-light": "dev-#49-cake-4.3-compatibility as v2.4"
     },
