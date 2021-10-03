@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
-use Cake\Datasource\ModelAwareTrait;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -35,13 +34,12 @@ use TestApp\Model\Entity\City;
 use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
-/**
- * Class EventCollectorTest
- * @property CountriesTable $Countries
- */
 class EventCollectorTest extends TestCase
 {
-    use ModelAwareTrait;
+    /**
+     * @var CountriesTable
+     */
+    private $Countries;
 
     public static function setUpBeforeClass()
     {
@@ -57,14 +55,19 @@ class EventCollectorTest extends TestCase
 
     public function setUp()
     {
+        /** @var CountriesTable $Countries */
+        $Countries = TableRegistry::getTableLocator()->get('Countries');
+        $this->Countries = $Countries;
+
         parent::setUp();
-        $this->loadModel('Countries');
     }
 
     public function tearDown()
     {
-        parent::tearDown();
         Configure::delete('TestFixtureGlobalBehaviors');
+        unset($this->Countries);
+
+        parent::tearDown();
     }
 
     /**
