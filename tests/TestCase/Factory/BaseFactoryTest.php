@@ -354,14 +354,12 @@ class BaseFactoryTest extends TestCase
      */
     public function testMakeHasOneAssociationFromArrayWithoutSettingAssociatedThenPersist()
     {
-        $factory = AuthorFactory::make([
+        $persistedEntity = AuthorFactory::make([
             'name' => 'test author',
             'business_address' => [
                 'street' => 'test address'
             ]
-        ]);
-
-        $persistedEntity = $factory->persist();
+        ])->persist();
 
         $this->assertSame(true, $persistedEntity instanceof Author);
         $this->assertSame(true, is_int($persistedEntity->id));
@@ -516,27 +514,27 @@ class BaseFactoryTest extends TestCase
 
     public function testGetEntityAfterMakingMultipleShouldReturnTheFirstOfAll()
     {
-        $name = 'Foo';
-        $article = ArticleFactory::make(compact('name'), 2)->getEntity();
-        $this->assertSame($name, $article->name);
+        $title = 'Foo';
+        $article = ArticleFactory::make(compact('title'), 2)->getEntity();
+        $this->assertSame($title, $article->title);
     }
 
     public function testGetEntityAfterMakingMultipleFromArrayShouldReturnTheFirstOfAll()
     {
-        $name = 'Foo';
+        $title = 'Foo';
         $article = ArticleFactory::make([
-            ['name' => $name],
-            ['name' => 'Bar'],
+            ['title' => $title],
+            ['title' => 'Bar'],
         ], 2)->getEntity();
-        $this->assertSame($name, $article->name);
+        $this->assertSame($title, $article->title);
     }
 
     public function testGetEntitiesAfterMakingOneShouldNotThrowException()
     {
-        $name = 'foo';
-        $articles = ArticleFactory::make(compact('name'))->getEntities();
+        $title = 'foo';
+        $articles = ArticleFactory::make(compact('title'))->getEntities();
         $this->assertTrue(is_array($articles));
-        $this->assertSame($name, $articles[0]->name);
+        $this->assertSame($title, $articles[0]->title);
     }
 
     public function testHasAssociation()

@@ -15,6 +15,20 @@ namespace TestPlugin\Model\Entity;
 
 use Cake\ORM\Entity as BaseEntity;
 
+/**
+ * Bill Entity
+ *
+ * @property int $id
+ * @property string $street
+ * @property int $customer_id
+ * @property int $article_id
+ * @property int $amount
+ * @property \Cake\I18n\FrozenTime $created
+ * @property \Cake\I18n\FrozenTime|null $modified
+ *
+ * @property \TestPlugin\Model\Entity\Customer $customer
+ * @property \TestApp\Model\Entity\Article $article
+ */
 class Bill extends BaseEntity
 {
     protected $_accessible = [

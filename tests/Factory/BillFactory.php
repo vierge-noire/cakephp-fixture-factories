@@ -16,6 +16,13 @@ namespace CakephpFixtureFactories\Test\Factory;
 use Faker\Generator;
 use CakephpFixtureFactories\Factory\BaseFactory;
 
+/**
+ * Class BillFactory
+ * @method \TestPlugin\Model\Entity\Bill getEntity()
+ * @method \TestPlugin\Model\Entity\Bill[] getEntities()
+ * @method \TestPlugin\Model\Entity\Bill|\TestPlugin\Model\Entity\Bill[] persist()
+ * @method static \TestPlugin\Model\Entity\Bill get(mixed $primaryKey, array $options = [])
+ */
 class BillFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string

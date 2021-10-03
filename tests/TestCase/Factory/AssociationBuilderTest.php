@@ -72,6 +72,7 @@ class AssociationBuilderTest extends TestCase
         $AssociationBuilder = new AssociationBuilder(AuthorFactory::make());
 
         $street = 'Foo';
+        /** @var AddressFactory $factory */
         $factory = $AssociationBuilder->getFactoryFromTableName('Address', compact('street'));
         $this->assertInstanceOf(AddressFactory::class, $factory);
 
@@ -101,6 +102,7 @@ class AssociationBuilderTest extends TestCase
         $AssociationBuilder = new AssociationBuilder(ArticleFactory::make());
 
         $amount = 123;
+        /** @var BillFactory $factory */
         $factory = $AssociationBuilder->getAssociatedFactory('Bills', compact('amount'));
         $this->assertInstanceOf(BillFactory::class, $factory);
 
@@ -343,6 +345,6 @@ class AssociationBuilderTest extends TestCase
 
         $country = CountryFactory::find()->where(['id' => $country->id])->contain('Cities')->firstOrFail();
 
-        $this->assertSame($cityName, $country->cities[0]->name);
+        $this->assertSame($cityName, $country->get('cities')[0]->name);
     }
 }

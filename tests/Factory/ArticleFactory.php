@@ -23,6 +23,7 @@ use TestApp\Model\Entity\Article;
  * @method \TestApp\Model\Entity\Article getEntity()
  * @method \TestApp\Model\Entity\Article[] getEntities()
  * @method \TestApp\Model\Entity\Article|\TestApp\Model\Entity\Article[] persist()
+ * @method static \TestApp\Model\Entity\Article get(mixed $primaryKey, array $options = [])
  */
 class ArticleFactory extends BaseFactory
 {

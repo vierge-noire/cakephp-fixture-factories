@@ -52,27 +52,27 @@ class ModelEventsHandlerTest extends TestCase
     public function testBeforeMarshalOnTable()
     {
         $country = $this->Countries->newEntity(['name' => 'Foo']);
-        $this->assertTrue($country->beforeMarshalTriggered);
+        $this->assertTrue($country->get('beforeMarshalTriggered'));
     }
 
     public function testBeforeMarshalOnTableHandled()
     {
         ModelEventsHandler::handle($this->Countries);
         $country = $this->Countries->newEntity(['name' => 'Foo']);
-        $this->assertNull($country->beforeMarshalTriggered);
+        $this->assertNull($country->get('beforeMarshalTriggered'));
     }
     public function testBeforeMarshalOnTableHandledPermissive()
     {
         ModelEventsHandler::handle($this->Countries, ['Model.beforeMarshal']);
         $country = $this->Countries->newEntity(['name' => 'Foo']);
-        $this->assertTrue($country->beforeMarshalTriggered);
+        $this->assertTrue($country->get('beforeMarshalTriggered'));
     }
 
     public function testBeforeSaveInBehaviorOnTable()
     {
         $article = $this->Articles->newEntity(['title' => 'Foo']);
         $this->Articles->saveOrFail($article);
-        $this->assertTrue($article->beforeSaveInBehaviorTriggered);
+        $this->assertTrue($article->get('beforeSaveInBehaviorTriggered'));
     }
 
     public function testBeforeSaveInBehaviorOnTableHandled()
@@ -80,7 +80,7 @@ class ModelEventsHandlerTest extends TestCase
         ModelEventsHandler::handle($this->Articles);
         $article = $this->Articles->newEntity(['title' => 'Foo']);
         $this->Articles->saveOrFail($article);
-        $this->assertNull($article->beforeSaveInBehaviorTriggered);
+        $this->assertNull($article->get('beforeSaveInBehaviorTriggered'));
     }
 
     public function testBeforeSaveInBehaviorOnTableHandledPermissive()
@@ -88,6 +88,6 @@ class ModelEventsHandlerTest extends TestCase
         ModelEventsHandler::handle($this->Articles, [], ['Sluggable']);
         $article = $this->Articles->newEntity(['title' => 'Foo']);
         $this->Articles->saveOrFail($article);
-        $this->assertTrue($article->beforeSaveInBehaviorTriggered);
+        $this->assertTrue($article->get('beforeSaveInBehaviorTriggered'));
     }
 }
