@@ -11,10 +11,12 @@ use CakephpFixtureFactories\Test\TestCase\Factory\BaseFactoryAssociationsTest;
  *
  * @property int $id
  * @property string $name
+ * @property string $unique_stamp
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *
  * @property \TestApp\Model\Entity\City[] $cities
+ * @property bool $virtual_cities
  */
 class Country extends Entity
 {

@@ -161,7 +161,7 @@ class DataCompilerTest extends TestCase
 
     /**
      * @dataProvider dataForGetModifiedUniqueFields
-     * @param BaseFactory $factory
+     * @param array $injectedData
      * @param array $expected
      */
     public function testGetModifiedUniqueFields(array $injectedData, array $expected)

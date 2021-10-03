@@ -4,5 +4,3 @@ parameters:
         - tests/bootstrap.php
     paths:
         - src/
-        - tests/TestCase/DocumentationExamplesTest.php
-        - tests/TestApp
