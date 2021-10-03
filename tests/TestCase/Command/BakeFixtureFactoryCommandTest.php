@@ -276,7 +276,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     /**
      * @dataProvider dataForTestThisTableShouldBeBaked
      * @param string $model
-     * @param $plugin
+     * @param mixed $plugin
      * @param bool $expected
      */
     public function testThisTableShouldBeBaked(string $model, $plugin, bool $expected)
