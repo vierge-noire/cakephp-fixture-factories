@@ -588,7 +588,7 @@ class BaseFactoryTest extends TestCase
 
         $this->assertSame($id, $article->id);
         $this->assertSame(1, $articles->count());
-        $this->assertSame($id, $articles->firstOrFail()->id);
+        $this->assertSame($id, $articles->firstOrFail()->get('id'));
     }
 
     public function testPatchingWithAssociationPluginToApp()
@@ -756,7 +756,7 @@ class BaseFactoryTest extends TestCase
     {
         AuthorFactory::make()->withAddress()->withAddress()->persist();
 
-        $this->assertEquals(1, TableRegistry::getTableLocator()->get('Addresses')->find()->count());
+        $this->assertEquals(1, AddressFactory::count());
     }
 
     public function testSaveMultipleInArray()
@@ -768,7 +768,7 @@ class BaseFactoryTest extends TestCase
             ['name' => $name2],
         ])->persist();
 
-        $this->assertSame(2, TableRegistry::getTableLocator()->get('Countries')->find()->count());
+        $this->assertSame(2, CountryFactory::count());
         $this->assertSame($name1, $countries[0]->name);
         $this->assertSame($name2, $countries[1]->name);
     }
@@ -783,8 +783,7 @@ class BaseFactoryTest extends TestCase
             ['name' => $name2],
         ], $times)->persist();
 
-        $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
-        $this->assertSame($times * 2, $CountriesTable->find()->count());
+        $this->assertSame($times * 2, CountryFactory::count());
 
         $this->assertSame($name1, $countries[0]->name);
         $this->assertSame($name2, $countries[1]->name);

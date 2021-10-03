@@ -17,6 +17,7 @@ use Cake\ORM\Entity;
  *
  * @property \TestPlugin\Model\Entity\Bill[] $bills
  * @property \TestApp\Model\Entity\Author[] $authors
+ * @property \Cake\ORM\Entity[] $articles_authors
  */
 class Article extends Entity
 {

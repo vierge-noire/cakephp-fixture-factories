@@ -13,6 +13,7 @@ use Cake\ORM\Entity;
  * @property int $country_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
+ * @property string $virtual_unique_stamp
  *
  * @property \TestApp\Model\Entity\Country $country
  * @property \TestApp\Model\Entity\Address[] $addresses

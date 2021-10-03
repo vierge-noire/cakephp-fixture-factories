@@ -314,7 +314,7 @@ abstract class BaseFactory
     }
 
     /**
-     * @return array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|false|null
+     * @return \Cake\Datasource\EntityInterface|array<\Cake\Datasource\EntityInterface>|\Cake\Datasource\ResultSetInterface
      * @throws \CakephpFixtureFactories\Error\PersistenceException if the entity/entities could not be saved.
      */
     public function persist()
@@ -325,25 +325,15 @@ abstract class BaseFactory
 
         try {
             if (count($entities) === 1) {
-                return $this->persistOne($entities[0]);
+                return $this->getTable()->saveOrFail($entities[0], $this->getSaveOptions());
             } else {
-                return $this->persistMany($entities);
+                return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
             }
         } catch (\Throwable $exception) {
             $factory = static::class;
             $message = $exception->getMessage();
             throw new PersistenceException("Error in Factory $factory.\n Message: $message \n");
         }
-    }
-
-    /**
-     * @param \Cake\Datasource\EntityInterface $entity Entity to persist.
-     * @return \Cake\Datasource\EntityInterface
-     * @throws \Cake\ORM\Exception\PersistenceFailedException When the entity couldn't be saved
-     */
-    protected function persistOne(EntityInterface $entity): EntityInterface
-    {
-        return $this->getTable()->saveOrFail($entity, $this->getSaveOptions());
     }
 
     /**
@@ -354,17 +344,6 @@ abstract class BaseFactory
         return array_merge($this->saveOptions, [
             'associated' => $this->getAssociated(),
         ]);
-    }
-
-    /**
-     * @param \Cake\Datasource\EntityInterface[] $entities Data to persist
-     * @return \Cake\Datasource\EntityInterface[]|\Cake\Datasource\ResultSetInterface|false False on failure, entities list on success.
-     * @throws \Exception
-     * @throws \Cake\ORM\Exception\PersistenceFailedException If an entity couldn't be saved.
-     */
-    protected function persistMany(array $entities)
-    {
-        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
     }
 
     /**

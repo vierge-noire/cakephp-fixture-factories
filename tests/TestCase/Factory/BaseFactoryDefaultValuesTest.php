@@ -40,7 +40,6 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $this->assertTrue(is_string($author->name));
         foreach ($author->articles as $article) {
             $this->assertTrue(is_string($article->title));
-            $this->assertFalse(isset($article->title->authors));
         }
     }
 
