@@ -29,7 +29,7 @@ class BaseFactoryHiddenPropertiesTest extends TestCase
      * Assert that the hidden paragraph property in articles is well persisted
      * but remains invisible when toArray is called.
      *
-     * @param $articles
+     * @param Article|Article[] $articles
      * @param bool $persisted
      */
     private function assertHiddenParagraphIsVisible($articles, bool $persisted)

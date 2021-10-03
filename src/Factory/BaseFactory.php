@@ -535,7 +535,7 @@ abstract class BaseFactory
      * The data can be an array, an integer, an entity interface, a callable or a factory
      *
      * @param string $associationName Association name
-     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
+     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface $data Injected data
      * @return $this
      */
     public function with(string $associationName, $data = [])

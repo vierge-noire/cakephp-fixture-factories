@@ -86,7 +86,7 @@ class EventCollector
     }
 
     /**
-     * @param array $activeBehaviors Behaviors the factory will listen to
+     * @param array|string $activeBehaviors Behaviors the factory will listen to
      * @return array
      */
     public function listeningToBehaviors($activeBehaviors): array

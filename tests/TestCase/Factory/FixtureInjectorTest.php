@@ -16,30 +16,15 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
-use CakephpTestSuiteLight\FixtureInjector;
-use CakephpTestSuiteLight\FixtureManager;
 
 class FixtureInjectorTest extends TestCase
 {
-    /**
-     * @var FixtureManager
-     */
-    public $FixtureManager;
-
-    public function setUp(): void
-    {
-        $this->FixtureManager = new FixtureInjector(
-            $this->createMock(FixtureManager::class)
-        );
-    }
-
     /**
      * For each of the data provided, their should be
      * 10 Articles found, which is the last value given to times
      * value
      *
      * @return array
-     * @throws Exception
      */
     public function createWithOneFactoryInTheDataProvider()
     {
@@ -73,7 +58,6 @@ class FixtureInjectorTest extends TestCase
      *
      * @dataProvider createWithOneFactoryInTheDataProvider
      * @param ArticleFactory $factory
-     * @throws Exception
      */
     public function testCreateFactoryInTheDataProvider(ArticleFactory $factory)
     {
@@ -88,7 +72,6 @@ class FixtureInjectorTest extends TestCase
      * @dataProvider createWithDifferentFactoriesInTheDataProvider
      * @param int $n
      * @param ArticleFactory $factory
-     * @throws Exception
      */
     public function testCreateFactoryInTheDataProvider2(int $n, ArticleFactory $factory)
     {
