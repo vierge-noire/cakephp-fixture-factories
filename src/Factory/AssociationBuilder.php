@@ -156,9 +156,7 @@ class AssociationBuilder
         $times = $this->getTimeBetweenBrackets($firstAssociation);
         $this->removeBrackets($firstAssociation);
 
-        $table =
-            $this->getTable()->getAssociation($firstAssociation)->getClassName() ??
-            $this->getTable()->getAssociation($firstAssociation)->getName();
+        $table = $this->getTable()->getAssociation($firstAssociation)->getClassName();
 
         if (!empty($associations)) {
             $factory = $this->getFactoryFromTableName($table);
