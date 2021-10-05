@@ -43,7 +43,6 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $this->assertTrue(is_string($author->name));
         foreach ($author->articles as $article) {
             $this->assertTrue(is_string($article->title));
-            $this->assertFalse(isset($article->title->authors));
         }
     }
 
@@ -63,7 +62,7 @@ class BaseFactoryDefaultValuesTest extends TestCase
         $article = ArticleWithFiveBillsFactory::make()->getEntity();
 
         $this->assertInstanceOf(Author::class, $article->authors[0]);
-        $this->equalTo(5, count($article->bills));
+        $this->assertSame(5, count($article->bills));
     }
 
     /**

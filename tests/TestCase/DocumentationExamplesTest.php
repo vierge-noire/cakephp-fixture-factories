@@ -29,10 +29,8 @@ class DocumentationExamplesTest extends TestCase
         $articles = ArticleFactory::make(['published' => 1], 3)->persist();
         ArticleFactory::make(['published' => 0], 2)->persist();
 
-        $result = ArticleFactory::find('published')
-            ->find('list')
-            ->toArray();
-
+        $result = ArticleFactory::find('published')->find('list')->toArray();
+        
         $expected = [
             $articles[0]->id => $articles[0]->title,
             $articles[1]->id => $articles[1]->title,

@@ -105,10 +105,10 @@ class BakeFixtureFactoryCommand extends BakeCommand
     }
 
     /**
-     * @param \Cake\Console\Arguments $arguments Arguments
+     * @param \Cake\Console\Arguments $args Arguments
      * @return string
      */
-    public function getPath(Arguments $arguments): string
+    public function getPath(Arguments $args): string
     {
         if ($this->plugin) {
             $path = $this->_pluginPath($this->plugin) . $this->pathFragment;
@@ -331,7 +331,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
         ];
 
         foreach ($this->getTable()->associations() as $association) {
-            $modelName = $association->getClassName() ?? $association->getName();
+            $modelName = $association->getClassName();
             $factory = $this->getFactoryClassName($modelName);
             switch ($association->type()) {
                 case 'oneToOne':

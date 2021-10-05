@@ -13,8 +13,8 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Error;
 
-use Cake\Core\Exception\Exception;
+use Cake\Core\Exception\CakeException;
 
-class AssociationBuilderException extends Exception
+class AssociationBuilderException extends CakeException
 {
 }

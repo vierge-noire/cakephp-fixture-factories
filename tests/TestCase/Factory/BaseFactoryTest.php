@@ -364,14 +364,12 @@ class BaseFactoryTest extends TestCase
      */
     public function testMakeHasOneAssociationFromArrayWithoutSettingAssociatedThenPersist()
     {
-        $factory = AuthorFactory::make([
+        $persistedEntity = AuthorFactory::make([
             'name' => 'test author',
             'business_address' => [
                 'street' => 'test address',
             ],
-        ]);
-
-        $persistedEntity = $factory->persist();
+        ])->persist();
 
         $this->assertSame(true, $persistedEntity instanceof Author);
         $this->assertSame(true, is_int($persistedEntity->id));
@@ -529,27 +527,27 @@ class BaseFactoryTest extends TestCase
 
     public function testGetEntityAfterMakingMultipleShouldReturnTheFirstOfAll()
     {
-        $name = 'Foo';
-        $article = ArticleFactory::make(compact('name'), 2)->getEntity();
-        $this->assertSame($name, $article->name);
+        $title = 'Foo';
+        $article = ArticleFactory::make(compact('title'), 2)->getEntity();
+        $this->assertSame($title, $article->title);
     }
 
     public function testGetEntityAfterMakingMultipleFromArrayShouldReturnTheFirstOfAll()
     {
-        $name = 'Foo';
+        $title = 'Foo';
         $article = ArticleFactory::make([
-            ['name' => $name],
-            ['name' => 'Bar'],
+            ['title' => $title],
+            ['title' => 'Bar'],
         ], 2)->getEntity();
-        $this->assertSame($name, $article->name);
+        $this->assertSame($title, $article->title);
     }
 
     public function testGetEntitiesAfterMakingOneShouldNotThrowException()
     {
-        $name = 'foo';
-        $articles = ArticleFactory::make(compact('name'))->getEntities();
+        $title = 'foo';
+        $articles = ArticleFactory::make(compact('title'))->getEntities();
         $this->assertIsArray($articles);
-        $this->assertSame($name, $articles[0]->name);
+        $this->assertSame($title, $articles[0]->title);
     }
 
     public function testHasAssociation()
@@ -593,7 +591,7 @@ class BaseFactoryTest extends TestCase
 
         $this->assertSame($id, $article->id);
         $this->assertSame(1, $articles->count());
-        $this->assertSame($id, $articles->firstOrFail()->id);
+        $this->assertSame($id, $articles->firstOrFail()->get('id'));
     }
 
     public function testPatchingWithAssociationPluginToApp()
@@ -650,7 +648,7 @@ class BaseFactoryTest extends TestCase
             ->persist();
 
         $this->assertSame(true, is_int($article->id));
-        $this->equalTo($n, count($article->bills));
+        $this->assertSame($n, count($article->bills));
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
             $this->assertEquals($bill->article_id, $article->id);
@@ -677,7 +675,7 @@ class BaseFactoryTest extends TestCase
             ->persist();
 
         $this->assertSame(true, is_int($article->id));
-        $this->equalTo($n, count($article->bills));
+        $this->assertSame($n, count($article->bills));
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
             $this->assertSame($bill->article_id, $article->id);
@@ -713,7 +711,7 @@ class BaseFactoryTest extends TestCase
             ->persist();
 
         $this->assertSame(true, is_int($customer->id));
-        $this->equalTo($n, count($customer->bills));
+        $this->assertSame($n, count($customer->bills));
         $this->assertEquals($name, $customer->name);
         foreach ($customer->bills as $bill) {
             $this->assertEquals($bill->customer_id, $customer->id);
@@ -761,7 +759,7 @@ class BaseFactoryTest extends TestCase
     {
         AuthorFactory::make()->withAddress()->withAddress()->persist();
 
-        $this->assertEquals(1, TableRegistry::getTableLocator()->get('Addresses')->find()->count());
+        $this->assertEquals(1, AddressFactory::count());
     }
 
     public function testSaveMultipleInArray()
@@ -773,7 +771,7 @@ class BaseFactoryTest extends TestCase
             ['name' => $name2],
         ])->persist();
 
-        $this->assertSame(2, TableRegistry::getTableLocator()->get('Countries')->find()->count());
+        $this->assertSame(2, CountryFactory::count());
         $this->assertSame($name1, $countries[0]->name);
         $this->assertSame($name2, $countries[1]->name);
     }
@@ -788,8 +786,7 @@ class BaseFactoryTest extends TestCase
             ['name' => $name2],
         ], $times)->persist();
 
-        $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
-        $this->assertSame($times * 2, $CountriesTable->find()->count());
+        $this->assertSame($times * 2, CountryFactory::count());
 
         $this->assertSame($name1, $countries[0]->name);
         $this->assertSame($name2, $countries[1]->name);

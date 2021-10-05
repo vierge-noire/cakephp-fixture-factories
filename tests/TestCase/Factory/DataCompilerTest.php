@@ -97,7 +97,6 @@ class DataCompilerTest extends TestCase
     public function testGenerateArrayOfRandomPrimaryKeys()
     {
         $res = $this->articleDataCompiler->generateArrayOfRandomPrimaryKeys();
-        $this->assertTrue(is_array($res));
         $this->assertTrue(is_int($res['id']));
         $this->assertSame(1, count($res));
     }
@@ -105,7 +104,6 @@ class DataCompilerTest extends TestCase
     public function testCreatePrimaryKeyOffset()
     {
         $res = $this->articleDataCompiler->createPrimaryKeyOffset();
-        $this->assertTrue(is_array($res));
         $this->assertTrue(is_int($res['id']));
         $this->assertSame(1, count($res));
 
@@ -159,7 +157,7 @@ class DataCompilerTest extends TestCase
 
     /**
      * @dataProvider dataForGetModifiedUniqueFields
-     * @param BaseFactory $factory
+     * @param array $injectedData
      * @param array $expected
      */
     public function testGetModifiedUniqueFields(array $injectedData, array $expected)

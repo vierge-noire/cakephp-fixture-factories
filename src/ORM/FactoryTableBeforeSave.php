@@ -109,12 +109,15 @@ final class FactoryTableBeforeSave
      */
     public function findDuplicate(array $conditions)
     {
-        return $this->getTable()
+        /** @var array|null $duplicate */
+        $duplicate = $this->getTable()
             ->find()
             ->select($this->getPropertiesToPatchFromDuplicate())
             ->where($conditions)
             ->disableHydration()
             ->first();
+
+        return $duplicate;
     }
 
     /**

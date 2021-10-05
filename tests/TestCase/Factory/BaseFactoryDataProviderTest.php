@@ -28,7 +28,6 @@ class BaseFactoryDataProviderTest extends TestCase
      * value
      *
      * @return array
-     * @throws Exception
      */
     public function createWithOneFactoryInTheDataProvider()
     {
@@ -62,7 +61,6 @@ class BaseFactoryDataProviderTest extends TestCase
      *
      * @dataProvider createWithOneFactoryInTheDataProvider
      * @param ArticleFactory $factory
-     * @throws Exception
      */
     public function testCreateFactoryInTheDataProvider(ArticleFactory $factory)
     {
@@ -77,7 +75,6 @@ class BaseFactoryDataProviderTest extends TestCase
      * @dataProvider createWithDifferentFactoriesInTheDataProvider
      * @param int $n
      * @param ArticleFactory $factory
-     * @throws Exception
      */
     public function testCreateFactoryInTheDataProvider2(int $n, ArticleFactory $factory)
     {

@@ -23,11 +23,12 @@ class NAustralianAuthorsScenario implements FixtureScenarioInterface
     const COUNTRY_NAME = 'Australia';
 
     /**
-     * @param int $n the number of authors
+     * @param mixed $args the number of authors
      * @return Author|Author[]
      */
-    public function load($n = 1, ...$args)
+    public function load(...$args)
     {
+        $n = $args[0];
         return AuthorFactory::make($n)->fromCountry(self::COUNTRY_NAME)->persist();
     }
 }

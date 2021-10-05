@@ -16,7 +16,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Command;
 use Cake\Console\Exception\StopException;
 use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
 use CakephpFixtureFactories\Factory\BaseFactory;
-use CakephpFixtureFactories\Test\TestCase\Helper\TestCaseWithFixtureBaking;
+use CakephpFixtureFactories\Test\Util\TestCaseWithFixtureBaking;
 use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
@@ -279,7 +279,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     /**
      * @dataProvider dataForTestThisTableShouldBeBaked
      * @param string $model
-     * @param $plugin
+     * @param mixed $plugin
      * @param bool $expected
      */
     public function testThisTableShouldBeBaked(string $model, $plugin, bool $expected)

@@ -20,6 +20,7 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
+use TestApp\Model\Entity\Country;
 
 class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
@@ -93,6 +94,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
         $cityOffset = rand(1, 100000);
         $countryOffset = rand(1, 100000);
 
+        /** @var Country $country */
         $country = CountryFactory::make()
             ->with('Cities', CityFactory::make($nCities)->setPrimaryKeyOffset($cityOffset))
             ->setPrimaryKeyOffset($countryOffset)

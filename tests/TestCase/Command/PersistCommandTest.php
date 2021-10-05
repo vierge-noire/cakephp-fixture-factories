@@ -18,28 +18,18 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\Exception\StopException;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
-use Cake\Datasource\ModelAwareTrait;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Command\PersistCommand;
+use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
-use TestApp\Model\Table\AddressesTable;
-use TestApp\Model\Table\ArticlesTable;
-use TestApp\Model\Table\CitiesTable;
-use TestApp\Model\Table\CountriesTable;
-use TestPlugin\Model\Table\BillsTable;
+use CakephpFixtureFactories\Test\Factory\CityFactory;
+use CakephpFixtureFactories\Test\Factory\CountryFactory;
 
-/**
- * @property ArticlesTable $Articles
- * @property CountriesTable $Countries
- * @property CitiesTable $Cities
- * @property AddressesTable $Addresses
- * @property BillsTable $Bills
- */
 class PersistCommandTest extends TestCase
 {
-    use ModelAwareTrait;
     use TruncateDirtyTables;
 
     /**
@@ -59,26 +49,18 @@ class PersistCommandTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
         $this->command = new PersistCommand();
         $this->io  = new ConsoleIo();
         $this->io->level(ConsoleIo::QUIET);
-        $this->loadModel('Articles');
-        $this->loadModel('Countries');
-        $this->loadModel('Cities');
-        $this->loadModel('Addresses');
-        $this->loadModel('TestPlugin.Bills');
     }
 
     public function tearDown(): void
     {
         parent::tearDown();
+
         unset($this->command);
         unset($this->io);
-        unset($this->Articles);
-        unset($this->Countries);
-        unset($this->Cities);
-        unset($this->Addresses);
-        unset($this->Bills);
     }
 
     public function dataProviderForStringFactories(): array
@@ -100,7 +82,7 @@ class PersistCommandTest extends TestCase
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertSame(1, $this->Articles->find()->count());
+        $this->assertSame(1, ArticleFactory::count());
     }
 
     public function dataProviderForStringPluginFactories(): array
@@ -122,7 +104,7 @@ class PersistCommandTest extends TestCase
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertSame(1, $this->Bills->find()->count());
+        $this->assertSame(1, BillFactory::count());
     }
 
     /**
@@ -136,7 +118,7 @@ class PersistCommandTest extends TestCase
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertEquals($number, $this->Articles->find()->count());
+        $this->assertEquals($number, ArticleFactory::count());
     }
 
     public function testPersistWithMethodAndNumber()
@@ -147,8 +129,8 @@ class PersistCommandTest extends TestCase
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertEquals($number, $this->Articles->find()->count());
-        $this->assertEquals($number, $this->Bills->find()->count());
+        $this->assertEquals($number, ArticleFactory::count());
+        $this->assertEquals($number, BillFactory::count());
     }
 
     public function testPersistWithAssociation()
@@ -160,9 +142,9 @@ class PersistCommandTest extends TestCase
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertEquals(1, $this->Countries->find()->count());
-        $this->assertEquals($numberOfCities, $this->Cities->find()->count());
-        $this->assertEquals($numberOfCities * $numberOfAddresses, $this->Addresses->find()->count());
+        $this->assertEquals(1, CountryFactory::count());
+        $this->assertEquals($numberOfCities, CityFactory::count());
+        $this->assertEquals($numberOfCities * $numberOfAddresses, AddressFactory::count());
     }
 
     public function testPersistWithMethodAndNumberDryRun()
@@ -173,8 +155,8 @@ class PersistCommandTest extends TestCase
         $output = $this->command->execute($args, $this->io);
 
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertSame(0, $this->Articles->find()->count());
-        $this->assertSame(0, $this->Bills->find()->count());
+        $this->assertSame(0, ArticleFactory::count());
+        $this->assertSame(0, BillFactory::count());
     }
 
     public function testPersistWithWrongFactory()
@@ -203,7 +185,8 @@ class PersistCommandTest extends TestCase
     {
         $output = $this->command->execute(new Arguments([ArticleFactory::class], [], [PersistCommand::ARG_NAME]), $this->io);
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);
-        $this->assertSame('test', $this->Bills->getConnection()->configName());
+        $configName = TableRegistry::getTableLocator()->get('TestPlugin.Bills')->getConnection()->configName();
+        $this->assertSame('test', $configName);
 
         $output = $this->command->execute(new Arguments([ArticleFactory::class], ['connection' => 'dummy'], [PersistCommand::ARG_NAME]), $this->io);
         $this->assertSame(PersistCommand::CODE_SUCCESS, $output);

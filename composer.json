@@ -27,7 +27,8 @@
         "cakephp/migrations": "dev-3.next",
         "josegonzalez/dotenv": "dev-master",
         "phpstan/phpstan": "^0.12.48@dev",
-        "phpunit/phpunit": "^8.5 || ^9.3"
+        "phpunit/phpunit": "^8.5 || ^9.3",
+        "vimeo/psalm": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -48,6 +49,7 @@
         "pgsql": "bash run_tests.sh Postgres",
         "sqlite": "bash run_tests.sh Sqlite",
         "phpstan": "vendor/bin/phpstan analyse --memory-limit=-1",
+        "psalm": "vendor/bin/psalm",
         "cs-check": "vendor/bin/phpcs --colors -p -s --extensions=php src/ tests/TestApp/tests/Factory tests/TestApp/plugins/TestPlugin/tests/Factory",
         "cs-fix": "vendor/bin/phpcbf --colors -p -s --extensions=php src/ tests/TestApp/tests/Factory"
     },

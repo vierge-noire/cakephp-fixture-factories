@@ -48,3 +48,6 @@ jobs:
 
       - name: Run phpcs
         run: composer cs-check
+
+      - name: Run psalm
+        run: composer psalm

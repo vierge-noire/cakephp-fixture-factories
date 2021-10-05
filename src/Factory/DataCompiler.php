@@ -481,8 +481,14 @@ class DataCompiler
     public function setPrimaryKeyOffset($primaryKeyOffset): void
     {
         if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
+            $primaryKey = $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
+            if (!is_string($primaryKey)) {
+                throw new FixtureFactoryException(
+                    "The primary key assigned must be a string as $primaryKeyOffset is a string or an integer."
+                );
+            }
             $this->primaryKeyOffset = [
-                $this->getFactory()->getRootTableRegistry()->getPrimaryKey() => $primaryKeyOffset,
+                $primaryKey => $primaryKeyOffset,
             ];
         } elseif (is_array($primaryKeyOffset)) {
             $this->primaryKeyOffset = $primaryKeyOffset;

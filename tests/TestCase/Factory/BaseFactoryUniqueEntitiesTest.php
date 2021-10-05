@@ -25,6 +25,7 @@ use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
+use TestApp\Model\Entity\Country;
 
 class BaseFactoryUniqueEntitiesTest extends TestCase
 {
@@ -283,7 +284,7 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
 
         $this->assertSame(1, CountryFactory::count());
         $this->assertSame($nCities, CityFactory::count());
-        $countryId = CountryFactory::find()->first()->id;
+        $countryId = CountryFactory::find()->first()->get('id');
         foreach ($cities as $city) {
             $this->assertSame( $unique_stamp, $city->country->unique_stamp);
             $this->assertSame($countryId, $city->country_id);
@@ -310,6 +311,7 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
 
         $this->assertSame(1, CountryFactory::count());
         $this->assertSame($nCities, CityFactory::count());
+        /** @var Country $retrievedCountry */
         $retrievedCountry = CountryFactory::find()->first();
         $countryId = $retrievedCountry->id;
         $this->assertSame($countryName, $retrievedCountry->name);
