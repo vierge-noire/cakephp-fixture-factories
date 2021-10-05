@@ -60,7 +60,8 @@ class SetupCommand extends Command
      */
     public function execute(Arguments $args, ConsoleIo $io)
     {
-        $io->warning('The setup command is deprecated.');
+        $thisClassName = self::class;
+        $io->warning("{$thisClassName} is deprecated.");
         $io->warning('Please refer to https://book.cakephp.org/4.next/en/appendices/fixture-upgrade.html.');
         $filePath = $this->getPhpunitFilePath($args, $io);
         $this->replaceListenersInPhpunitXmlFile($filePath, $io);
