@@ -76,7 +76,10 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
         $this->assertSame($nCities, CountryFactory::count());
     }
 
-    public function testDetectDuplicateInAssociation()
+    /**
+     * Unique stamp in a belongs-to-one association
+     */
+    public function testDetectDuplicateInBelongsToOneAssociation()
     {
         $unique_stamp = 'Foo';
         $originalCountry = CountryFactory::make([
@@ -84,18 +87,22 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
             'name' => 'First save',
         ])->persist();
 
+        $newName = 'Second save';
         $city = CityFactory::make()->withCountry([
             'unique_stamp' => $unique_stamp,
-            'name' => 'Second save',
+            'name' => $newName,
         ])->persist();
+        $newCountry = $city->country;
 
-        $newCountry = $city->get('country');
+        $originalCountry = CountryFactory::get($originalCountry->id);
+        $cityInDB = CityFactory::get($city->id);
 
         $this->assertSame($originalCountry->id, $newCountry->id);
-        $this->assertSame($city->get('country_id'), $newCountry->id);
+        $this->assertSame($cityInDB->country_id, $newCountry->id);
         $this->assertSame($originalCountry->unique_stamp, $unique_stamp);
         $this->assertSame($newCountry->unique_stamp, $unique_stamp);
         $this->assertSame(1, CountryFactory::count());
+        $this->assertSame(1, CityFactory::count());
     }
 
     /**
@@ -105,18 +112,15 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
      */
     public function testDetectDuplicatePrimaryKeyInAssociation()
     {
-        $authorId = rand();
-        $originalAuthor = AuthorFactory::make([
-            'id' => $authorId,
-        ])->persist();
+        $originalAuthor = AuthorFactory::make()->persist();
 
         $authorName = 'Foo';
         $article = ArticleFactory::make()->with('Authors', [
-            'id' => $authorId,
+            'id' => $originalAuthor->id,
             'name' => $authorName
         ])->persist();
 
-        $newAuthor = $article->get('authors')[0];
+        $newAuthor = $article->authors[0];
 
         $this->assertSame($originalAuthor->id, $newAuthor->id);
         $this->assertSame($authorName, $newAuthor->name);
