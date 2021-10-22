@@ -132,7 +132,7 @@ class AssociationBuilder
         }
 
         $thisFactoryRegistryName = $this->getTable()->getRegistryAlias();
-        $associatedFactoryTable = $associatedFactory->getRootTableRegistry();
+        $associatedFactoryTable = $associatedFactory->getTable();
 
         $associatedAssociationName = Inflector::singularize($thisFactoryRegistryName);
 
@@ -281,6 +281,6 @@ class AssociationBuilder
      */
     public function getTable(): Table
     {
-        return $this->getFactory()->getRootTableRegistry();
+        return $this->getFactory()->getTable();
     }
 }

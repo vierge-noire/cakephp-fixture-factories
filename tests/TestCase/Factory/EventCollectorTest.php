@@ -27,7 +27,6 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
-use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;

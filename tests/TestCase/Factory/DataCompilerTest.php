@@ -17,7 +17,6 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;

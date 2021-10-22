@@ -60,23 +60,23 @@ trait FactoryAwareTrait
     /**
      * Returns the factory file name
      *
-     * @param  string $name [description]
+     * @param  string $name Name of the model or table
      * @return string       [description]
      */
     public function getFactoryFileName(string $name): string
     {
-        return $this->getFactoryNameFromModelName($name) . '.php';
+        return str_replace('\\', DIRECTORY_SEPARATOR, $this->getFactoryNameFromModelName($name)) . '.php';
     }
 
     /**
      * Return the name of the factory from a model name
      *
-     * @param string $modelName Name of the model
+     * @param string $modelName Name of the model or table
      * @return string
      */
     public static function getFactoryNameFromModelName(string $modelName): string
     {
-        return Inflector::singularize(ucfirst($modelName)) . 'Factory';
+        return str_replace('/', '\\', Inflector::classify($modelName)) . 'Factory';
     }
 
     /**

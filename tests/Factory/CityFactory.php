@@ -30,6 +30,13 @@ class CityFactory extends BaseFactory
         'virtual_unique_stamp',
     ];
 
+    protected function initialize(): void
+    {
+        $this->getTable()->hasMany('TableWithoutModel', [
+            'foreignKey' => 'foreign_key',
+        ]);
+    }
+
     protected function getRootTableRegistryName(): string
     {
         return 'Cities';
