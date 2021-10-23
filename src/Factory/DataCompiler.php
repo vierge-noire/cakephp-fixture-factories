@@ -22,7 +22,6 @@ use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\Util;
 use InvalidArgumentException;
 
 class DataCompiler
@@ -353,7 +352,7 @@ class DataCompiler
     {
         $result = [];
         $cast = explode('.', $associationName);
-        $table = $this->getFactory()->getRootTableRegistry();
+        $table = $this->getFactory()->getTable();
         foreach ($cast as $ass) {
             $association = $table->getAssociation($ass);
             $result[] = $association->getProperty();
@@ -369,7 +368,7 @@ class DataCompiler
     public function getAssociationByPropertyName(string $propertyName)
     {
         try {
-            return $this->getFactory()->getRootTableRegistry()->getAssociation(Inflector::camelize($propertyName));
+            return $this->getFactory()->getTable()->getAssociation(Inflector::camelize($propertyName));
         } catch (InvalidArgumentException $e) {
             return false;
         }
@@ -418,11 +417,11 @@ class DataCompiler
      */
     public function generateArrayOfRandomPrimaryKeys(): array
     {
-        $primaryKeys = (array) $this->getFactory()->getRootTableRegistry()->getPrimaryKey();
+        $primaryKeys = (array)$this->getFactory()->getTable()->getPrimaryKey();
         $res = [];
         foreach ($primaryKeys as $pk) {
             $res[$pk] = $this->generateRandomPrimaryKey(
-                $this->getFactory()->getRootTableRegistry()->getSchema()->getColumnType($pk)
+                $this->getFactory()->getTable()->getSchema()->getColumnType($pk)
             );
         }
         return $res;
@@ -467,8 +466,14 @@ class DataCompiler
     public function setPrimaryKeyOffset($primaryKeyOffset)
     {
         if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
+            $primaryKey = $this->getFactory()->getTable()->getPrimaryKey();
+            if (!is_string($primaryKey)) {
+                throw new FixtureFactoryException(
+                    "The primary key assigned must be a string as $primaryKeyOffset is a string or an integer."
+                );
+            }
             $this->primaryKeyOffset = [
-                $this->getFactory()->getRootTableRegistry()->getPrimaryKey() => $primaryKeyOffset
+                $this->getFactory()->getTable()->getPrimaryKey() => $primaryKeyOffset
             ];
         } elseif (is_array($primaryKeyOffset)) {
             $this->primaryKeyOffset = $primaryKeyOffset;
@@ -483,14 +488,15 @@ class DataCompiler
      */
     private function updatePostgresSequence(array $primaryKeys)
     {
-        if ($this->getFactory()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
-            $tableName = $this->getFactory()->getRootTableRegistry()->getTable();
+        $table = $this->getFactory()->getTable();
+        if ($table->getConnection()->config()['driver'] === Postgres::class) {
+            $tableName = $table->getTable();
 
             foreach ($primaryKeys as $pk => $offset) {
-                $seq = $this->getFactory()->getRootTableRegistry()->getConnection()->execute("
+                $seq = $table->getConnection()->execute("
 		            SELECT pg_get_serial_sequence('$tableName','$pk')")->fetchAll()[0][0];
                 if ($seq !== null) {
-                    $this->getFactory()->getRootTableRegistry()->getConnection()->execute(
+                    $table->getConnection()->execute(
                         "SELECT setval('$seq', $offset);"
                     );
                 }
@@ -511,7 +517,7 @@ class DataCompiler
                 $this->getEnforcedFields(),
                 array_merge(
                     $this->getFactory()->getUniqueProperties(),
-                    (array)$this->getFactory()->getRootTableRegistry()->getPrimaryKey()
+                    (array)$this->getFactory()->getTable()->getPrimaryKey()
                 )
             )
         );

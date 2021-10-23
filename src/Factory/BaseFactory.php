@@ -149,9 +149,21 @@ abstract class BaseFactory
      */
     private function setUp(BaseFactory $factory, int $times)
     {
+        $factory->initialize();
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
         $factory->getDataCompiler()->collectAssociationsFromDefaultTemplate();
+    }
+
+    /**
+     * This method may be used to define associations
+     * missing in your model but useful to build factories
+     *
+     * @return void
+     */
+    protected function initialize(): void
+    {
+        // Add logic prior to generating the default template.
     }
 
     /**
@@ -286,19 +298,10 @@ abstract class BaseFactory
     public function getTable(): Table
     {
         if ($this->withModelEvents) {
-            return $this->getRootTableRegistry();
+            return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         } else {
             return $this->getEventCompiler()->getTable();
         }
-    }
-
-    /**
-     * The default table registry, the CakePHP one
-     * @return Table
-     */
-    public function getRootTableRegistry(): Table
-    {
-        return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
     }
 
     /**

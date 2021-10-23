@@ -20,7 +20,7 @@ use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
-use CakephpFixtureFactories\Util;
+use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 use ReflectionClass;
 
 /**
@@ -28,6 +28,8 @@ use ReflectionClass;
  */
 class FixtureFactoryTask extends SimpleBakeTask
 {
+    use FactoryAwareTrait;
+
     /**
      * path to Factory directory
      *
@@ -54,7 +56,7 @@ class FixtureFactoryTask extends SimpleBakeTask
 
     public function fileName($modelName): string
     {
-        return Util::getFactoryNameFromModelName($modelName) . '.php';
+        return $this->getFactoryFileName($modelName);
     }
 
     public function template(): string
@@ -259,7 +261,7 @@ class FixtureFactoryTask extends SimpleBakeTask
             'modelNameSingular' => Inflector::singularize($this->modelName),
             'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
-            'namespace' => Util::getFactoryNamespace($this->plugin),
+            'namespace' => $this->getFactoryNamespace($this->plugin),
         ];
         if ($this->param('methods')) {
             $associations = $this->getAssociations();
@@ -294,7 +296,7 @@ class FixtureFactoryTask extends SimpleBakeTask
 
         foreach($this->getTable()->associations() as $association) {
             $modelName = $association->getClassName() ?? $association->getName();
-            $factory = Util::getFactoryClassFromModelName($modelName);
+            $factory = $this->getFactoryClassName($modelName);
             switch($association->type()) {
                 case 'oneToOne':
                 case 'manyToOne':

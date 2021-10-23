@@ -65,7 +65,7 @@ class UniquenessJanitor
         $propertyIsUnique = function (string $property) use ($factory): bool {
             return in_array($property, array_merge(
                 $factory->getUniqueProperties(),
-                (array)$factory->getRootTableRegistry()->getPrimaryKey()
+                (array)$factory->getTable()->getPrimaryKey()
             ));
         };
 
