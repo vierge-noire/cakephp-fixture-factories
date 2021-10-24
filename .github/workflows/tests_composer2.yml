@@ -61,11 +61,11 @@ jobs:
       - name: Install dependencies
         run: |
           if [[ ${{ matrix.composer-type }} == 'lowest' ]]; then
-            composer update --prefer-dist --no-progress --no-suggest --prefer-stable --prefer-lowest
+            composer update --prefer-dist --no-progress --prefer-stable --prefer-lowest
           elif [[ ${{ matrix.composer-type }} == 'stable' ]]; then
-            composer update --prefer-dist --no-progress --no-suggest --prefer-stable
+            composer update --prefer-dist --no-progress --prefer-stable
           else
-            composer update --prefer-dist --no-progress --no-suggest
+            composer update --prefer-dist --no-progress
           fi
 
       - name: Run tests

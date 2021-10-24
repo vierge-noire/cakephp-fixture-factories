@@ -19,7 +19,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
-use Migrations\TestSuite\Migrator;
+use CakephpTestMigrator\Migrator;
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
@@ -193,4 +193,7 @@ Security::setSalt('a-long-but-not-random-value');
 
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
-(new Migrator())->run();
+Migrator::migrate([
+    ['connection' => 'test'],
+    ['plugin' => 'TestPlugin'],
+], ['verbose' => true]);
