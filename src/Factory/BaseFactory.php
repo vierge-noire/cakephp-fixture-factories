@@ -172,25 +172,6 @@ abstract class BaseFactory
     }
 
     /**
-     * Method to apply all model event listeners, both in the
-     * related TableRegistry as well as in the Behaviors
-     * This is vey bad practice. The main purpose of the factory is to
-     * generate data as fast and transparently as possible.
-     *
-     * @deprecated Use instead $this->listeningToBehaviors and $this->listeningToModelEvents
-     * @param array|callable|null|int $makeParameter Injected data
-     * @param int                     $times Number of entities created
-     * @return static
-     */
-    public static function makeWithModelEvents($makeParameter = [], $times = 1): BaseFactory
-    {
-        $factory = static::make($makeParameter, $times);
-        $factory->withModelEvents = true;
-
-        return $factory;
-    }
-
-    /**
      * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
      * @return static
      */
