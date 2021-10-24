@@ -13,12 +13,11 @@ declare(strict_types=1);
  */
 
 use Cake\Cache\Cache;
-use Cake\Chronos\Chronos;
 use Cake\Core\Configure;
+use Cake\Core\Plugin;
 use Cake\Datasource\ConnectionManager;
-use Cake\Log\Log;
 use Cake\Utility\Inflector;
-use Cake\Utility\Security;
+use CakephpTestMigrator\Migrator;
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
@@ -58,22 +57,9 @@ define('CONFIG', TEST_APP . 'config' . DS);
 
 require_once CORE_PATH . 'config/bootstrap.php';
 
-date_default_timezone_set('UTC');
-mb_internal_encoding('UTF-8');
-
 Configure::write('debug', true);
 Configure::write('App', [
     'namespace' => 'TestApp',
-    'encoding' => 'UTF-8',
-    'base' => false,
-    'baseUrl' => false,
-    'dir' => APP_DIR,
-    'webroot' => 'webroot',
-    'wwwRoot' => WWW_ROOT,
-    'fullBaseUrl' => 'http://localhost',
-    'imageBaseUrl' => 'img/',
-    'jsBaseUrl' => 'js/',
-    'cssBaseUrl' => 'css/',
     'paths' => [
         'plugins' => [TEST_APP . 'plugins' . DS],
         'templates' => [
@@ -81,7 +67,6 @@ Configure::write('App', [
             TEMPLATE_PATH_CAKE_4,
             TEMPLATE_PATH_CAKE_3,
         ],
-        'locales' => [TEST_APP . 'resources' . DS . 'locales' . DS],
     ],
 ]);
 
@@ -148,52 +133,12 @@ $dbConnection = [
     ]
 ];
 
-ConnectionManager::setConfig('default', $dbConnection);
 ConnectionManager::setConfig('test', $dbConnection);
-
-Configure::write('Session', [
-    'defaults' => 'php',
-]);
-
-Log::setConfig([
-    // 'queries' => [
-    //     'className' => 'Console',
-    //     'stream' => 'php://stderr',
-    //     'scopes' => ['queriesLog']
-    // ],
-    'debug' => [
-        'engine' => 'Cake\Log\Engine\FileLog',
-        'levels' => ['notice', 'info', 'debug'],
-        'file' => 'debug',
-        'path' => LOGS,
-    ],
-    'error' => [
-        'engine' => 'Cake\Log\Engine\FileLog',
-        'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
-        'file' => 'error',
-        'path' => LOGS,
-    ],
-]);
-
-Chronos::setTestNow(Chronos::now());
-Security::setSalt('a-long-but-not-random-value');
-
-//ini_set('intl.default_locale', 'en_US');
-//ini_set('session.gc_divisor', '1');
-
-// Fixate sessionid early on, as php7.2+
-// does not allow the sessionid to be set after stdout
-// has been written to.
-//session_id('cli');
-
-Inflector::rules('irregular', array(
-    'contacthrdata' => 'contacthrdatas',
-    'debttranche' => 'debttranches',
-    'tranche' => 'tranches',
-));
+$dbConnection['dummy_key'] = 'DummyKeyValue';
+ConnectionManager::setConfig('dummy', $dbConnection);
 
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
-\Cake\Core\Plugin::load('TestPlugin');
-\Cake\Core\Plugin::load('CakephpFixtureFactories');
-\CakephpTestMigrator\Migrator::migrate();
+Plugin::load('TestPlugin');
+Plugin::load('CakephpFixtureFactories');
+Migrator::migrate();
