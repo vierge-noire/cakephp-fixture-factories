@@ -20,6 +20,7 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
+use CakephpFixtureFactories\ORM\FactoryTableRegistry;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -682,17 +683,13 @@ class BaseFactoryAssociationsTest extends TestCase
 
     public function testCompileEntityForToOneAssociation()
     {
-        TableRegistry::getTableLocator()->get('Cities')->addAssociations([
-            'belongsTo' => [
-                'Countries'
-            ],
-        ]);
+        CityFactory::make()->getTable()->belongsTo('Countries');
         $name = 'FooCountry';
         $factories = [
-            CityFactory::makeWithModelEvents()->with('Country', compact('name')),
-            CityFactory::makeWithModelEvents()->with('Countries', compact('name')),
-            CityFactory::makeWithModelEvents()->with('Country')->with('Countries', compact('name')),
-            CityFactory::makeWithModelEvents()->with('Country', ['name' => 'Foo'])->with('Countries', compact('name')),
+            CityFactory::make()->with('Country', compact('name')),
+            CityFactory::make()->with('Countries', compact('name')),
+            CityFactory::make()->with('Country')->with('Countries', compact('name')),
+            CityFactory::make()->with('Country', ['name' => 'Foo'])->with('Countries', compact('name')),
         ];
 
         foreach ($factories as $factory) {
@@ -701,6 +698,7 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertSame(null, $entity->get('countries'));
         }
 
-        TableRegistry::getTableLocator()->clear();
+        FactoryTableRegistry::getTableLocator()->clear();
+        $this->assertSame(false, CityFactory::make()->getTable()->hasAssociation('Countries'));
     }
 }
