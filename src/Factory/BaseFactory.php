@@ -34,7 +34,7 @@ use function is_callable;
 abstract class BaseFactory
 {
     /**
-     * @var Generator|null
+     * @var \Faker\Generator|null
      */
     static private $faker;
     /**
@@ -56,7 +56,7 @@ abstract class BaseFactory
     protected $saveOptions = [
         'checkRules' => false,
         'atomic' => false,
-        'checkExisting' => false
+        'checkExisting' => false,
     ];
     /**
      * @var array Unique fields. Uniqueness applies only to persisted entities.
@@ -78,19 +78,20 @@ abstract class BaseFactory
      * and compiles it to produce the data feeding the
      * entities of the Factory
      *
-     * @var DataCompiler
+     * @var \CakephpFixtureFactories\Factory\DataCompiler
      */
     private $dataCompiler;
     /**
      * Helper to check and build data in associations
-     * @var AssociationBuilder
+     *
+     * @var \CakephpFixtureFactories\Factory\AssociationBuilder
      */
     private $associationBuilder;
     /**
      * Handles the events at the model and behavior level
      * for the table on which the factories will be built
      *
-     * @var EventCollector
+     * @var \CakephpFixtureFactories\Factory\EventCollector
      */
     private $eventCompiler;
 
@@ -106,6 +107,7 @@ abstract class BaseFactory
 
     /**
      * Table Registry the factory is building entities from
+     *
      * @return string
      */
     abstract protected function getRootTableRegistryName(): string;
@@ -144,31 +146,28 @@ abstract class BaseFactory
     /**
      * Collect the number of entities to be created
      * Apply the default template in the factory
-     * @param BaseFactory $factory
-     * @param int         $times
+     *
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
+     * @param int         $times Number of entities created
+     * @return void
      */
     private function setUp(BaseFactory $factory, int $times)
     {
+        $factory->initialize();
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
         $factory->getDataCompiler()->collectAssociationsFromDefaultTemplate();
     }
 
     /**
-     * Method to apply all model event listeners, both in the
-     * related TableRegistry as well as in the Behaviors
-     * This is vey bad practice. The main purpose of the factory is to
-     * generate data as fast and transparently as possible.
-     * @deprecated Use instead $this->listeningToBehaviors and $this->listeningToModelEvents
-     * @param array|callable|null|int $makeParameter
-     * @param int                     $times
-     * @return static
+     * This method may be used to define associations
+     * missing in your model but useful to build factories
+     *
+     * @return void
      */
-    public static function makeWithModelEvents($makeParameter = [], $times = 1): BaseFactory
+    protected function initialize(): void
     {
-        $factory = static::make($makeParameter, $times);
-        $factory->withModelEvents = true;
-        return $factory;
+        // Add logic prior to generating the default template.
     }
 
     /**
@@ -286,19 +285,10 @@ abstract class BaseFactory
     public function getTable(): Table
     {
         if ($this->withModelEvents) {
-            return $this->getRootTableRegistry();
+            return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         } else {
             return $this->getEventCompiler()->getTable();
         }
-    }
-
-    /**
-     * The default table registry, the CakePHP one
-     * @return Table
-     */
-    public function getRootTableRegistry(): Table
-    {
-        return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
     }
 
     /**

@@ -842,11 +842,7 @@ class BaseFactoryTest extends TestCase
     public function testSkipValidation()
     {
         $maxLength = CountriesTable::NAME_MAX_LENGTH;
-        $validator = new Validator();
-        $validator->maxLength('name', $maxLength);
-
         $CountriesTable = TableRegistry::getTableLocator()->get('Countries');
-
         $name = str_repeat('a', $maxLength + 1);
 
         $country = $CountriesTable->newEntity(compact('name'));
@@ -856,11 +852,6 @@ class BaseFactoryTest extends TestCase
         $country = CountryFactory::make(compact('name'))->getEntity();
         $this->assertFalse($country->hasErrors());
         $country = CountryFactory::make(compact('name'))->persist();
-        $this->assertInstanceOf(Country::class, $country);
-
-        $country = CountryFactory::makeWithModelEvents(compact('name'))->getEntity();
-        $this->assertFalse($country->hasErrors());
-        $country = CountryFactory::makeWithModelEvents(compact('name'))->persist();
         $this->assertInstanceOf(Country::class, $country);
     }
 

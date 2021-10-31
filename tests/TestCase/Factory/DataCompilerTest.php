@@ -17,12 +17,10 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use CakephpFixtureFactories\Util;
 use CakephpTestSuiteLight\SkipTablesTruncation;
 use TestApp\Model\Table\PremiumAuthorsTable;
 

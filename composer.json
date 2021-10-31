@@ -17,7 +17,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.1.0",
-        "cakephp/cakephp": "^3.7",
+        "cakephp/orm": "^3.7",
         "fakerphp/faker": "^1.15",
         "vierge-noire/cakephp-test-suite-light": "^1.1"
     },

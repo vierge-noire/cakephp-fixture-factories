@@ -20,6 +20,7 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\EventCollector;
+use CakephpFixtureFactories\ORM\FactoryTableRegistry;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -27,7 +28,6 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
-use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
@@ -143,19 +143,24 @@ class EventCollectorTest extends TestCase
             $entity['eventApplied'] = $applyEvent;
         });
 
+        // Event should apply
+        $country = $this->Countries->newEntity(compact('name'));
+        $this->assertSame($applyEvent, $country->get('eventApplied'));
+
+        $factory = CountryFactory::make();
+        $factory->getTable()->getEventManager()->on('Model.beforeMarshal', function (Event $event, \ArrayObject $entity) use ($applyEvent) {
+            $entity['eventApplied'] = $applyEvent;
+        });
+        $country = $factory->getEntity();
+        $this->assertSame($applyEvent, $country->get('eventApplied'));
+        FactoryTableRegistry::getTableLocator()->clear();
+
         // Event should be skipped
         $country = CountryFactory::make()->getEntity();
         $this->assertSame(null, $country->get('eventApplied'));
 
         $country = CountryFactory::make()->listeningToModelEvents('Model.beforeMarshal')->getEntity();
         $this->assertSame(null, $country->get('eventApplied'));
-
-        // Event should apply
-        $country = $this->Countries->newEntity(compact('name'));
-        $this->assertSame($applyEvent, $country->get('eventApplied'));
-
-        $country = CountryFactory::makeWithModelEvents()->getEntity();
-        $this->assertSame($applyEvent, $country->get('eventApplied'));
     }
 
     /**
@@ -173,9 +178,6 @@ class EventCollectorTest extends TestCase
         $country = $this->Countries->newEntity(compact('name'));
         $this->assertTrue($country->get('beforeMarshalTriggered'));
 
-        $country = CountryFactory::makeWithModelEvents()->getEntity();
-        $this->assertTrue($country->get('beforeMarshalTriggered'));
-
         $country = CountryFactory::make()->listeningToModelEvents('Model.beforeMarshal')->getEntity();
         $this->assertTrue($country->get('beforeMarshalTriggered'));
     }
@@ -190,9 +192,6 @@ class EventCollectorTest extends TestCase
 
         $article = ArticleFactory::make(compact('title'))->persist();
         $this->assertEquals(null, $article->get('slug'));
-
-        $article = ArticleFactory::makeWithModelEvents(compact('title'))->persist();
-        $this->assertEquals($slug, $article->get('slug'));
 
         $article = ArticleFactory::make(compact('title'))->listeningToBehaviors('Sluggable')->persist();
         $this->assertEquals($slug, $article->get('slug'));
