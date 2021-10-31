@@ -20,6 +20,7 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
+use CakephpFixtureFactories\ORM\FactoryTableRegistry;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -30,7 +31,6 @@ use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
-use TestApp\Model\Entity\Author;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Entity\PremiumAuthor;
@@ -335,7 +335,7 @@ class BaseFactoryAssociationsTest extends TestCase
                 return $q->order('Authors.name');
             })
             ->first();
-        
+
         $this->assertSame($name1, $article->authors[0]->name);
         $this->assertSame($name2, $article->authors[1]->name);
     }
@@ -599,7 +599,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame(4, count($country->cities));
         $this->assertSame(4, CityFactory::count());
 
-        if (CountryFactory::make()->getRootTableRegistry()->getConnection()->config()['driver'] === Postgres::class) {
+        if (CountryFactory::make()->getTable()->getConnection()->config()['driver'] === Postgres::class) {
             $this->assertSame($city1, CityFactory::get(1)->name);
             $this->assertSame($city2, CityFactory::get(2)->name);
             $this->assertSame($street1, AddressFactory::get(1)->street);
@@ -620,7 +620,6 @@ class BaseFactoryAssociationsTest extends TestCase
         $factory = CountryFactory::make()
             ->with('Cities')
             ->with('VirtualCities');
-
 
         $country = $factory->getEntity();
         $this->assertIsString($country->cities[0]->name);
@@ -686,17 +685,13 @@ class BaseFactoryAssociationsTest extends TestCase
 
     public function testCompileEntityForToOneAssociation()
     {
-        CityFactory::make()->getRootTableRegistry()->addAssociations([
-            'belongsTo' => [
-                'Countries'
-            ],
-        ]);
+        CityFactory::make()->getTable()->belongsTo('Countries');
         $name = 'FooCountry';
         $factories = [
-            CityFactory::makeWithModelEvents()->with('Country', compact('name')),
-            CityFactory::makeWithModelEvents()->with('Countries', compact('name')),
-            CityFactory::makeWithModelEvents()->with('Country')->with('Countries', compact('name')),
-            CityFactory::makeWithModelEvents()->with('Country', ['name' => 'Foo'])->with('Countries', compact('name')),
+            CityFactory::make()->with('Country', compact('name')),
+            CityFactory::make()->with('Countries', compact('name')),
+            CityFactory::make()->with('Country')->with('Countries', compact('name')),
+            CityFactory::make()->with('Country', ['name' => 'Foo'])->with('Countries', compact('name')),
         ];
 
         foreach ($factories as $factory) {
@@ -705,6 +700,7 @@ class BaseFactoryAssociationsTest extends TestCase
             $this->assertSame(null, $entity->get('countries'));
         }
 
-        TableRegistry::getTableLocator()->clear();
+        FactoryTableRegistry::getTableLocator()->clear();
+        $this->assertSame(false, CityFactory::make()->getTable()->hasAssociation('Countries'));
     }
 }

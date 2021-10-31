@@ -154,28 +154,21 @@ abstract class BaseFactory
      */
     protected function setUp(BaseFactory $factory, int $times): void
     {
+        $factory->initialize();
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
         $factory->getDataCompiler()->collectAssociationsFromDefaultTemplate();
     }
 
     /**
-     * Method to apply all model event listeners, both in the
-     * related TableRegistry as well as in the Behaviors
-     * This is vey bad practice. The main purpose of the factory is to
-     * generate data as fast and transparently as possible.
+     * This method may be used to define associations
+     * missing in your model but useful to build factories
      *
-     * @deprecated Use instead $this->listeningToBehaviors and $this->listeningToModelEvents
-     * @param array|callable|null|int $makeParameter Injected data
-     * @param int                     $times Number of entities created
-     * @return static
+     * @return void
      */
-    public static function makeWithModelEvents($makeParameter = [], $times = 1): BaseFactory
+    protected function initialize(): void
     {
-        $factory = static::make($makeParameter, $times);
-        $factory->withModelEvents = true;
-
-        return $factory;
+        // Add logic prior to generating the default template.
     }
 
     /**
@@ -297,20 +290,10 @@ abstract class BaseFactory
     public function getTable(): Table
     {
         if ($this->withModelEvents) {
-            return $this->getRootTableRegistry();
+            return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         } else {
             return $this->getEventCompiler()->getTable();
         }
-    }
-
-    /**
-     * The default table registry, the CakePHP one
-     *
-     * @return \Cake\ORM\Table
-     */
-    public function getRootTableRegistry(): Table
-    {
-        return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
     }
 
     /**

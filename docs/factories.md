@@ -135,8 +135,6 @@ You may save in your configuration file, under the key `TestFixtureGlobalBehavio
 ```
 
 Note that even if the behavior is located in a plugin, you should, according to CakePHP conventions, provide the name of the behavior only. Provide `BehaviorName` and not `SomeVendor/WithPluginName.BehaviorName`.
-
-The static method `makeWithModelEvents` is now deprecated and will be removed soon.
  
 ### Namespace
  

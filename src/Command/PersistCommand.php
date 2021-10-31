@@ -193,7 +193,7 @@ class PersistCommand extends Command
     {
         ConnectionManager::alias(
             $connection,
-            $factory->getRootTableRegistry()->getConnection()->configName()
+            $factory->getTable()->getConnection()->configName()
         );
     }
 
