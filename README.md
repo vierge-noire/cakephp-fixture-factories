@@ -4,10 +4,10 @@
 <h1 align="center">
 CakePHP Fixture Factories
 </h1>
-<p align="center">
+<h3 align="center">
 Read, write and run your tests faster.
 <br>On any PHP application.
-</p>
+</h3>
 
 ```php
 $articles = ArticleFactory::make(5)
@@ -17,7 +17,7 @@ $articles = ArticleFactory::make(5)
 
 ---
 
-<h2 align="center"> Installation </h2>
+## Installation
 CakePHP 4 and non-CakePHP applications 
 
 ```
@@ -32,9 +32,9 @@ PHP 7.0 is supported up to v1.1.* only.
 
 ---
 
-<h2 align="center"> Content </h2>
+## Content
 
-<div align="center">
+<div style="margin-left: 10px">
 
 ### [Setup - DB Cleaning](docs/setup.md)
 ### [Fixture Factories](docs/factories.md)
@@ -51,25 +51,25 @@ PHP 7.0 is supported up to v1.1.* only.
 ---
 
 
-### Resources
+## Resources
 
 [CakeFest 2021](https://www.youtube.com/watch?v=1WrWH2F_hWE) -
 [IPC-Berlin 2020](https://www.youtube.com/watch?v=yJ6EqAE2NEs) - 
 [CakeFest 2020](https://www.youtube.com/watch?v=PNA1Ck2-nVc&t=30s)
 
-### Contribute
+## Contribute
 
 The development branch is named `next` (CakePHP 4.x based). Feel free to send us your pull requests!
 
-### Support
+## Support
 Contact us at vierge.noire.info@gmail.com for professional assistance.
 
 You like our work? [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L3L52P9JA)
 
-### Authors
+## Authors
 Juan Pablo Ramirez and Nicolas Masson
 
-### License
+## License
 
 The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
 
