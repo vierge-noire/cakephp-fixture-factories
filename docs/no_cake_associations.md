@@ -1,7 +1,7 @@
 <h1 align="center">Associations for non-CakePHP apps</h1>
 
 Associations can be defined within the factories in the `initialize()` method.
-The `getTable()` provides public access to the model class used by the factories. The model
+The `getTable()` method provides public access to the model class used by the factories. The model
 class is generated automatically by CakePHP, based on the table name returned by the
 `getRootTableRegistryName` method.
 
@@ -17,11 +17,11 @@ protected function getRootTableRegistryName(): string
 }
 
 protected function initialize(): void
-    {
-        $this->getTable()
-            ->belongsTo('Country')
-            ->hasMany('Addresses');
-    }
+{
+    $this->getTable()
+        ->belongsTo('Country')
+        ->hasMany('Addresses');
+}
 ```
 
 Once this is defined, you may then call:
