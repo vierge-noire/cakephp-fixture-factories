@@ -22,12 +22,12 @@ ArticleFactory::make(5)->with('Authors[3].Address.City.Country')->persist();
 ## Installation
 CakePHP 4 and non-CakePHP applications 
 
-```css
+```
 composer require --dev vierge-noire/cakephp-fixture-factories "^2.5"
 ```
 
 CakePHP 3
-```css
+```
 composer require --dev vierge-noire/cakephp-fixture-factories "^1.0"
 ```
 PHP 7.0 is supported up to v1.1.* only.
