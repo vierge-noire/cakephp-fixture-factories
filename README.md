@@ -5,16 +5,16 @@
 CakePHP Fixture Factories
 </h1>
 <h3 align="center">
-Write and run your tests faster
+Write and run your tests faster.
 </h3>
 <h3 align="center">
-On any PHP application
+On any PHP application.
 </h3>
 
 ---
 
 ```php
-ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])->persist();
+ArticleFactory::make(5)->with('Authors[3].Address.City.Country')->persist();
 ```
 
 ---
@@ -71,6 +71,6 @@ Juan Pablo Ramirez and Nicolas Masson
 
 The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
 
-Copyright 2020 Juan Pablo Ramirez and Nicolas Masson
+Copyright 2021 Juan Pablo Ramirez and Nicolas Masson
 
 Licensed under The MIT License Redistributions of files must retain the above copyright notice.
