@@ -1,12 +1,36 @@
-## Setup
+<h1 align="center">Setup</h1>
 
-Once you have installed the package via composer...
+## Non-CakePHP apps
+For non-CakePHP applications, you may use the method proposed by your framework
+to manage the test database, or opt for the universal
+[test database cleaner](https://github.com/vierge-noire/test-database-cleaner).
 
-### Listeners
+You should define your DB connections in your test `bootstrap.php` file as described
+in the [cookbook](https://book.cakephp.org/4/en/orm/database-basics.html#configuration).
 
-Make sure you *replace* the native CakePHP listener by the following one inside your `phpunit.xml` (or `phpunit.xml.dist`) config file, per default located in the root folder of your application:
+## CakePHP apps
 
+To be able to bake your factories,
+load the CakephpFixtureFactories plugin in your `src/Application.php` file:
+```php
+protected function bootstrapCli(): void
+{
+    // Load more plugins here
+    $this->addPlugin('CakephpFixtureFactories');
+}
 ```
+
+**We recommend using migrations for managing the schema of your test DB with the [CakePHP Migrator tool.](https://book.cakephp.org/migrations/2/en/index.html#using-migrations-for-tests)**
+
+
+## CakePHP 3 or < 4.3
+For CakePHP anterior to 4.3 applications, you will need to use the [CakePHP test suite light plugin](https://github.com/vierge-noire/cakephp-test-suite-light#cakephp-test-suite-light)
+to clean-up the test database prior to each test.
+
+Make sure you *replace* the native CakePHP listener by the following one inside your `phpunit.xml` (or `phpunit.xml.dist`) config file,
+per default located in the root folder of your application:
+
+```xml
 <!-- Setup a listener for fixtures -->
      <listeners>
          <listener class="CakephpTestSuiteLight\FixtureInjector">
@@ -17,29 +41,16 @@ Make sure you *replace* the native CakePHP listener by the following one inside 
      </listeners>
 ``` 
 
-Between each test, the package will truncate all the test tables that have been used during the previous test.
+The following command will do that for you.
 
-The fixtures will be created in the test database(s) defined in your [configuration](https://book.cakephp.org/4/en/development/testing.html#test-database-setup).
-
-### Ignoring connections
-
-The package will empty the tables found in all test databases. If you wish to ignore a given connection, you may create a 
-`config/fixture_factories.php` file and provide the connections that should be ignored:
-
-```$xslt
-<?php
-
-return [   
-    'TestFixtureIgnoredConnections' => [
-        'test_foo_connection_to_be_ignored',
-        'test_bar_connection_to_be_ignored',
-        ...
-    ],
-];
+```css
+bin/cake fixture_factories_setup
 ```
 
-This can be useful for example if you have connections to a third party server in the cloud that should be ignored.
+You can specify a plugin (`-p`) and a specific file (`-f`), if different from `phpunit.xml.dist`.
 
-### Next
+Between each test, the package will truncate all the test tables that have been used during the previous test.
 
-Learn how migrations can be used for maintaining your test DB: [Migrations](migrator.md)
+**We recommend using migrations for maintaining your test DB with the [Migrator tool.](https://github.com/vierge-noire/cakephp-test-migrator)**
+
+
