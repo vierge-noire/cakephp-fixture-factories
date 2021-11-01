@@ -5,6 +5,8 @@ The fixture factories are closely related to the database. The package provides 
 run queries. All methods will by-pass the `beforeFind` event, enabling the direct inspection of your
 test database.
 
+These metods are meant to help performing assertions in the "Arrange" part of your tests. Do not use them in the "Act" part of your tests, e.g. to test finders.
+
 ## ArticleFactory::find()
 This method will return a query on the table related to the given factory. It takes as input the same parameters as the classic table `find()` method.
 More documentation on the `find` method [here](https://book.cakephp.org/4/en/orm/query-builder.html#namespace-Cake\ORM).
