@@ -16,6 +16,13 @@ namespace CakephpFixtureFactories\Test\Factory;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use Faker\Generator;
 
+/**
+ * Class AuthorFactory
+ * @method \TestApp\Model\Entity\Author getEntity()
+ * @method \TestApp\Model\Entity\Author[] getEntities()
+ * @method \TestApp\Model\Entity\Author|\TestApp\Model\Entity\Author[] persist()
+ * @method static \TestApp\Model\Entity\Author get(mixed $primaryKey, array $options = [])
+ */
 class AuthorFactory extends BaseFactory
 {
     protected function getRootTableRegistryName(): string

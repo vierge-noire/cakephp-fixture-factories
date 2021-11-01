@@ -24,12 +24,8 @@ class CitiesTable extends Table
     {
         $this->addBehavior('Timestamp');
 
-        $this->addAssociations([
-            'belongsTo' => [
-                'Country' => [
-                    'className' => 'Countries',
-                ],
-            ],
+        $this->belongsTo('Country', [
+            'className' => 'Countries',
         ]);
 
         $this->hasMany('Addresses');

@@ -20,6 +20,8 @@ class SubFolderScenario implements FixtureScenarioInterface
 {
     /**
      * Does nothing but proof that scenarios in subfolders are found
+     *
+     * @inheritDoc
      */
     public function load(...$args)
     {

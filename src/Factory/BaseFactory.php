@@ -154,28 +154,21 @@ abstract class BaseFactory
      */
     protected function setUp(BaseFactory $factory, int $times): void
     {
+        $factory->initialize();
         $factory->setTimes($times);
         $factory->setDefaultTemplate();
         $factory->getDataCompiler()->collectAssociationsFromDefaultTemplate();
     }
 
     /**
-     * Method to apply all model event listeners, both in the
-     * related TableRegistry as well as in the Behaviors
-     * This is vey bad practice. The main purpose of the factory is to
-     * generate data as fast and transparently as possible.
+     * This method may be used to define associations
+     * missing in your model but useful to build factories
      *
-     * @deprecated Use instead $this->listeningToBehaviors and $this->listeningToModelEvents
-     * @param array|callable|null|int $makeParameter Injected data
-     * @param int                     $times Number of entities created
-     * @return static
+     * @return void
      */
-    public static function makeWithModelEvents($makeParameter = [], $times = 1): BaseFactory
+    protected function initialize(): void
     {
-        $factory = static::make($makeParameter, $times);
-        $factory->withModelEvents = true;
-
-        return $factory;
+        // Add logic prior to generating the default template.
     }
 
     /**
@@ -297,24 +290,14 @@ abstract class BaseFactory
     public function getTable(): Table
     {
         if ($this->withModelEvents) {
-            return $this->getRootTableRegistry();
+            return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
         } else {
             return $this->getEventCompiler()->getTable();
         }
     }
 
     /**
-     * The default table registry, the CakePHP one
-     *
-     * @return \Cake\ORM\Table
-     */
-    public function getRootTableRegistry(): Table
-    {
-        return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
-    }
-
-    /**
-     * @return array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|false|null
+     * @return \Cake\Datasource\EntityInterface|array<\Cake\Datasource\EntityInterface>|\Cake\Datasource\ResultSetInterface
      * @throws \CakephpFixtureFactories\Error\PersistenceException if the entity/entities could not be saved.
      */
     public function persist()
@@ -325,25 +308,15 @@ abstract class BaseFactory
 
         try {
             if (count($entities) === 1) {
-                return $this->persistOne($entities[0]);
+                return $this->getTable()->saveOrFail($entities[0], $this->getSaveOptions());
             } else {
-                return $this->persistMany($entities);
+                return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
             }
         } catch (\Throwable $exception) {
             $factory = static::class;
             $message = $exception->getMessage();
             throw new PersistenceException("Error in Factory $factory.\n Message: $message \n");
         }
-    }
-
-    /**
-     * @param \Cake\Datasource\EntityInterface $entity Entity to persist.
-     * @return \Cake\Datasource\EntityInterface
-     * @throws \Cake\ORM\Exception\PersistenceFailedException When the entity couldn't be saved
-     */
-    protected function persistOne(EntityInterface $entity): EntityInterface
-    {
-        return $this->getTable()->saveOrFail($entity, $this->getSaveOptions());
     }
 
     /**
@@ -354,17 +327,6 @@ abstract class BaseFactory
         return array_merge($this->saveOptions, [
             'associated' => $this->getAssociated(),
         ]);
-    }
-
-    /**
-     * @param \Cake\Datasource\EntityInterface[] $entities Data to persist
-     * @return \Cake\Datasource\EntityInterface[]|\Cake\Datasource\ResultSetInterface|false False on failure, entities list on success.
-     * @throws \Exception
-     * @throws \Cake\ORM\Exception\PersistenceFailedException If an entity couldn't be saved.
-     */
-    protected function persistMany(array $entities)
-    {
-        return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
     }
 
     /**
@@ -535,7 +497,7 @@ abstract class BaseFactory
      * The data can be an array, an integer, an entity interface, a callable or a factory
      *
      * @param string $associationName Association name
-     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
+     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface $data Injected data
      * @return $this
      */
     public function with(string $associationName, $data = [])

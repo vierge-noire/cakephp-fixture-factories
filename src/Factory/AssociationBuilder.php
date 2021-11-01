@@ -132,7 +132,7 @@ class AssociationBuilder
         }
 
         $thisFactoryRegistryName = $this->getTable()->getRegistryAlias();
-        $associatedFactoryTable = $associatedFactory->getRootTableRegistry();
+        $associatedFactoryTable = $associatedFactory->getTable();
 
         $associatedAssociationName = Inflector::singularize($thisFactoryRegistryName);
 
@@ -145,7 +145,7 @@ class AssociationBuilder
      * Get the factory for the association
      *
      * @param string $associationName Association name
-     * @param array|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
+     * @param scalar[]|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
     public function getAssociatedFactory(string $associationName, $data = []): BaseFactory
@@ -156,9 +156,7 @@ class AssociationBuilder
         $times = $this->getTimeBetweenBrackets($firstAssociation);
         $this->removeBrackets($firstAssociation);
 
-        $table =
-            $this->getTable()->getAssociation($firstAssociation)->getClassName() ??
-            $this->getTable()->getAssociation($firstAssociation)->getName();
+        $table = $this->getTable()->getAssociation($firstAssociation)->getClassName();
 
         if (!empty($associations)) {
             $factory = $this->getFactoryFromTableName($table);
@@ -283,6 +281,6 @@ class AssociationBuilder
      */
     public function getTable(): Table
     {
-        return $this->getFactory()->getRootTableRegistry();
+        return $this->getFactory()->getTable();
     }
 }

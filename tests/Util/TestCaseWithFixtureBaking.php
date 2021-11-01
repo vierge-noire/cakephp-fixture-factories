@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace CakephpFixtureFactories\Test\TestCase\Helper;
+namespace CakephpFixtureFactories\Test\Util;
 
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
@@ -77,6 +77,7 @@ class TestCaseWithFixtureBaking extends TestCase
      */
     public static function tearDownAfterClass(): void
     {
+        /** @psalm-suppress InternalMethod */
         $test = new self();
         $test->setUp();
         $test->bake([], ['methods' => true, 'all' => true]);

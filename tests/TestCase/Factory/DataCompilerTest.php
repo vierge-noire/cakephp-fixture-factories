@@ -17,7 +17,6 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\PersistenceException;
-use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
@@ -99,7 +98,6 @@ class DataCompilerTest extends TestCase
     public function testGenerateArrayOfRandomPrimaryKeys()
     {
         $res = $this->articleDataCompiler->generateArrayOfRandomPrimaryKeys();
-        $this->assertTrue(is_array($res));
         $this->assertTrue(is_int($res['id']));
         $this->assertSame(1, count($res));
     }
@@ -107,7 +105,6 @@ class DataCompilerTest extends TestCase
     public function testCreatePrimaryKeyOffset()
     {
         $res = $this->articleDataCompiler->createPrimaryKeyOffset();
-        $this->assertTrue(is_array($res));
         $this->assertTrue(is_int($res['id']));
         $this->assertSame(1, count($res));
 
@@ -161,7 +158,7 @@ class DataCompilerTest extends TestCase
 
     /**
      * @dataProvider dataForGetModifiedUniqueFields
-     * @param BaseFactory $factory
+     * @param array $injectedData
      * @param array $expected
      */
     public function testGetModifiedUniqueFields(array $injectedData, array $expected)
