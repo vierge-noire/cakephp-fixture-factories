@@ -6,8 +6,10 @@ test database with a reusable set of data.
 Use the `CakephpFixtureFactories\Scenario\ScenarioAwareTrait`
 in your test and load your scenario with the `loadFixtureScenario()` method. You can either provide the
 fully qualified name of the scenario class, or place your scenarios under the `App\Test\Scenario` namespace.
+
+
 Example:
-```$xslt
+```php
 $authors = $this->loadFixtureScenario('NAustralianAuthors', 3);
 ```
 will persist 3 authors associated to the country Australia, as defined [in this example scenario](tests/Scenario/NAustralianAuthorsScenario.php).
