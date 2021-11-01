@@ -70,64 +70,6 @@ If a field is required in the database, it will have to be populated in the `set
 ## Locale
 
 The factories will generate data in the locale of your application, if the latter is supported by faker.
-
-## Validation / Behaviors
-
-With the aim of persisting data in the database as straightforwardly as possible, all validations and rules
-are deactivated when creating CakePHP entities and persisting them to the database. Validation and rules may be reactivated / customized by overwriting
-the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
- 
-## Model events and behaviors
-
-Per default, *all model events* of a factory's root table and their behaviors are switched off *except those of the timestamp behavior*.
-
-The intention is to create fixtures as fast and transparently as possible without interfering with the model events.
-
-### Model events
-
-It is however possible to activate an event model with the method `listeningToModelEvents`.
-
-This can be made on the fly:
-```php
-$article = ArticleFactory::make()->listeningToModelEvents('Model.beforeMarshal')->getEntity();
-```
-or per default in the factory's `initialize()` method:
-```php
-protected function initialize(): void
-{
-      $this->listeningToModelEvents([
-        'Model.beforeMarshal',
-        'Model.beforeSave',
-      ]);
-}
-```
-
-Note that you can provide either a single event, or an array of events. You will find a list of all model events [here](https://book.cakephp.org/4/en/orm/table-objects.html#event-list).
-
-### Behavior events
-
-It is possible to activate the model events of a behavior in the same way with the method `listeningToBehaviors`.
-
-This can be made on the fly:
-```php
-$article = ArticleFactory::make()->listeningToBehaviors('Sluggable')->getEntity();
-```
-or per default in the factory's `setDefaultTemplate` method.
-
-Additionally, you can declare a behavior globally. This can be useful for behaviors that impact a large amount of tables
-and for which not nullable fields need to be populated.
-
-You may save in your configuration file, under the key `TestFixtureGlobalBehaviors`, all the behaviors that will be listened to, provided that the root table itself is listening to them.
-
-```php
-use Cake\Core\Configure;
-
-Configure::write('TestFixtureGlobalBehaviors', [
-    'SomeBehaviorUsedInMultipleTables',
-]);
-```
-
-Note that even if the behavior is located in a plugin, you should, according to CakePHP conventions, provide the name of the behavior only. Provide `BehaviorName` and not `SomeVendor/WithPluginName.BehaviorName`.
  
 ## Namespace
  
@@ -185,3 +127,63 @@ CityFactory::make(5)->with('Country', ['myPrimaryKey' => 1])->persist();
 ```
 will behave the  same as if the primary key `myPrimaryKey` had been defined unique. In short, the factories
 do the job for you.
+
+## Validation / Behaviors
+
+This and the following sub-sections address to CakePHP applications.
+
+With the aim of persisting data in the database as straightforwardly as possible, all validations and rules
+are deactivated when creating CakePHP entities and persisting them to the database. Validation and rules may be reactivated / customized by overwriting
+the properties `$marshallerOptions` and `$saveOptions` in the factory concerned.
+
+## Model events and behaviors
+
+Per default, *all model events* of a factory's root table and their behaviors are switched off *except those of the timestamp behavior*.
+
+The intention is to create fixtures as fast and transparently as possible without interfering with the model events.
+
+### Model events
+
+It is however possible to activate an event model with the method `listeningToModelEvents`.
+
+This can be made on the fly:
+```php
+$article = ArticleFactory::make()->listeningToModelEvents('Model.beforeMarshal')->getEntity();
+```
+or per default in the factory's `initialize()` method:
+```php
+protected function initialize(): void
+{
+      $this->listeningToModelEvents([
+        'Model.beforeMarshal',
+        'Model.beforeSave',
+      ]);
+}
+```
+
+Note that you can provide either a single event, or an array of events. You will find a list of all model events [here](https://book.cakephp.org/4/en/orm/table-objects.html#event-list).
+
+### Behavior events
+
+It is possible to activate the model events of a behavior in the same way with the method `listeningToBehaviors`.
+
+This can be made on the fly:
+```php
+$article = ArticleFactory::make()->listeningToBehaviors('Sluggable')->getEntity();
+```
+or per default in the factory's `setDefaultTemplate` method.
+
+Additionally, you can declare a behavior globally. This can be useful for behaviors that impact a large amount of tables
+and for which not nullable fields need to be populated.
+
+You may save in your configuration file, under the key `TestFixtureGlobalBehaviors`, all the behaviors that will be listened to, provided that the root table itself is listening to them.
+
+```php
+use Cake\Core\Configure;
+
+Configure::write('TestFixtureGlobalBehaviors', [
+    'SomeBehaviorUsedInMultipleTables',
+]);
+```
+
+Note that even if the behavior is located in a plugin, you should, according to CakePHP conventions, provide the name of the behavior only. Provide `BehaviorName` and not `SomeVendor/WithPluginName.BehaviorName`.

@@ -5,14 +5,16 @@
 CakePHP Fixture Factories
 </h1>
 <h3 align="center">
-Read, write and run your tests faster.
-<br>On any PHP application.
+Write and run your tests faster
+</h3>
+<h3 align="center">
+On any PHP application
 </h3>
 
+---
+
 ```php
-$articles = ArticleFactory::make(5)
-    ->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])
-    ->persist();
+ArticleFactory::make(5)->with('Authors[3].Address.City.Country', ['name' => 'Kenya'])->persist();
 ```
 
 ---
@@ -34,19 +36,15 @@ PHP 7.0 is supported up to v1.1.* only.
 
 ## Content
 
-<div style="margin-left: 10px">
-
-### [Setup - DB Cleaning](docs/setup.md)
-### [Fixture Factories](docs/factories.md)
-### [Test Fixtures](docs/examples.md)
-### [Associations](docs/examples.md)
-### [Associations for non-CakePHP apps](docs/examples.md)
-### [Scenarios](docs/scenarios.md)
-### [Queries](docs/queries.md)
-### [Bake command](docs/bake.md)
-### [Persist command](docs/commands.md)
-
-</div>
+* ### [Setup - DB Cleaning](docs/setup.md)
+* ### [Fixture Factories](docs/factories.md)
+* ### [Test Fixtures](docs/examples.md)
+* ### [Associations](docs/examples.md)
+* ### [Associations for non-CakePHP apps](docs/examples.md)
+* ### [Scenarios](docs/scenarios.md)
+* ### [Queries](docs/queries.md)
+* ### [Bake command](docs/bake.md)
+* ### [Persist command](docs/commands.md)
 
 ---
 
