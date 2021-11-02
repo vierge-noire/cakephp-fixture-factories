@@ -27,7 +27,7 @@ protected function bootstrapCli(): void
 For CakePHP anterior to 4.3 applications, you will need to use the [CakePHP test suite light plugin](https://github.com/vierge-noire/cakephp-test-suite-light#cakephp-test-suite-light)
 to clean-up the test database prior to each test.
 
-Make sure you *replace* the native CakePHP listener by the following one inside your `phpunit.xml` (or `phpunit.xml.dist`) config file,
+Make sure you **replace** the native CakePHP listener by the following one inside your `phpunit.xml` (or `phpunit.xml.dist`) config file,
 per default located in the root folder of your application:
 
 ```xml
