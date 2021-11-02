@@ -12,7 +12,72 @@ Example:
 ```php
 $authors = $this->loadFixtureScenario('NAustralianAuthors', 3);
 ```
-will persist 3 authors associated to the country Australia, as defined [in this example scenario](tests/Scenario/NAustralianAuthorsScenario.php).
+will persist 3 authors associated to the country Australia, as defined here:
+
+```php
+
+use CakephpFixtureFactories\Scenario\FixtureScenarioInterface;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use TestApp\Model\Entity\Author;
+
+class NAustralianAuthorsScenario implements FixtureScenarioInterface
+{
+    const COUNTRY_NAME = 'Australia';
+
+    /**
+     * @param int $n the number of authors
+     * @return Author|Author[]
+     */
+    public function load($n = 1, ...$args)
+    {
+        return AuthorFactory::make($n)->fromCountry(self::COUNTRY_NAME)->persist();
+    }
+}
+
+```
 
 Scenarios should implement the `CakephpFixtureFactories\Scenario\FixtureScenarioInterface` class.
-[This test](tests/TestCase/Scenario/FixtureScenarioTest.php) provides an example on how to use scenarios.
+This test provides an example on how to use scenarios:
+
+```php
+
+namespace CakephpFixtureFactories\Test\TestCase\Scenario;
+
+use Cake\ORM\Query;
+use Cake\TestSuite\TestCase;
+use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Scenario\NAustralianAuthorsScenario;
+use TestApp\Model\Entity\Author;
+
+class FixtureScenarioTest extends TestCase
+{
+    use ScenarioAwareTrait;
+
+    public function testLoadScenario()
+    {
+        /** @var Author[] $authors */
+        $authors = $this->loadFixtureScenario(NAustralianAuthorsScenario::class, 3) ?? [];
+        
+        $this->assertSame(3, $this->countAustralianAuthors());
+        
+        foreach ($authors as $author) {
+            $this->assertInstanceOf(Author::class, $author);
+            $this->assertSame(
+                NAustralianAuthorsScenario::COUNTRY_NAME,
+                $author->address->city->country->name
+            );
+        }
+    }
+
+    private function countAustralianAuthors(): int
+    {
+        return AuthorFactory::find()
+            ->innerJoinWith('Address.City.Country', function (Query $q) {
+                return $q->where(['Country.name' => NAustralianAuthorsScenario::COUNTRY_NAME]);
+            })
+            ->count();
+    }
+}
+
+```
