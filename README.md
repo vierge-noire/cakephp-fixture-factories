@@ -5,10 +5,7 @@
 CakePHP Fixture Factories
 </h1>
 <h3 align="center">
-Write and run your tests faster.
-</h3>
-<h3 align="center">
-On any PHP application.
+Write and run your tests faster. On any PHP application.
 </h3>
 
 ---
