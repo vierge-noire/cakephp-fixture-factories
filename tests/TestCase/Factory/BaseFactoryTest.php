@@ -17,7 +17,6 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Inflector;
-use Cake\Validation\Validator;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
@@ -583,12 +582,9 @@ class BaseFactoryTest extends TestCase
              ];
         })->persist();
 
-        $articlesTable = TableRegistry::getTableLocator()->get('Articles');
-        $articles = $articlesTable->find();
-
         $this->assertSame($id, $article->id);
-        $this->assertSame(1, $articles->count());
-        $this->assertSame($id, $articles->firstOrFail()->get('id'));
+        $this->assertSame(1, ArticleFactory::count());
+        $this->assertSame($id, ArticleFactory::find()->firstOrFail()->get('id'));
     }
 
     public function testPatchingWithAssociationPluginToApp()
@@ -727,10 +723,7 @@ class BaseFactoryTest extends TestCase
             ->withCity(['name' => $secondCity])
             ->withCity(['name' => $thirdCity])
             ->persist();
-        $this->assertEquals(
-            1,
-            TableRegistry::getTableLocator()->get('cities')->find()->count()
-        );
+        $this->assertEquals(1, CityFactory::count());
         $this->assertEquals($thirdCity, $address->city->name);
     }
 
@@ -801,7 +794,7 @@ class BaseFactoryTest extends TestCase
                 ['amount' => $amount2],
             ])->persist();
 
-        $this->assertSame(2, TableRegistry::getTableLocator()->get('Bills')->find()->count());
+        $this->assertSame(2, BillFactory::count());
         $this->assertEquals($amount1, $customer->bills[0]->amount);
         $this->assertEquals($amount2, $customer->bills[1]->amount);
     }
@@ -817,7 +810,7 @@ class BaseFactoryTest extends TestCase
                 ['amount' => $amount2],
             ], $times)->persist();
 
-        $this->assertSame(2 * $times, TableRegistry::getTableLocator()->get('Bills')->find()->count());
+        $this->assertSame(2 * $times, BillFactory::count());
         $this->assertEquals($amount1, $customer->bills[0]->amount);
         $this->assertEquals($amount2, $customer->bills[1]->amount);
         $this->assertEquals($amount1, $customer->bills[2]->amount);
@@ -841,7 +834,7 @@ class BaseFactoryTest extends TestCase
     {
         ArticleFactory::make()->setTimes($times)->persist();
 
-        $this->assertSame($times, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+        $this->assertSame($times, ArticleFactory::count());
     }
 
     /**
