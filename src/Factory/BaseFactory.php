@@ -351,11 +351,15 @@ abstract class BaseFactory
 
     /**
      * Assigns the values of $data to the $keys of the entities generated
-     * @param array $data
+     *
+     * @param array|\Cake\Datasource\EntityInterface $data Data to inject
      * @return $this
      */
-    public function patchData(array $data): self
+    public function patchData($data)
     {
+        if ($data instanceof EntityInterface) {
+            $data = $data->toArray();
+        }
         $this->getDataCompiler()->collectFromPatch($data);
         return $this;
     }
@@ -523,9 +527,8 @@ abstract class BaseFactory
         // Remove the brackets in the association
         $associationName = $this->getAssociationBuilder()->removeBrackets($associationName);
 
-        $this->getAssociationBuilder()->processToOneAssociation($associationName, $factory);
-
-        $this->getDataCompiler()->collectAssociation($associationName, $factory);
+        $isToOne = $this->getAssociationBuilder()->processToOneAssociation($associationName, $factory);
+        $this->getDataCompiler()->collectAssociation($associationName, $factory, $isToOne);
 
         $this->getAssociationBuilder()->collectAssociatedFactory($associationName, $factory);
 
