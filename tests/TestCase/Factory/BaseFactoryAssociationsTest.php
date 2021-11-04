@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -11,32 +12,34 @@ declare(strict_types=1);
  * @since         1.0.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-use Cake\Core\Configure;
-use Cake\Database\Driver\Postgres;
-use Cake\ORM\Query;
-use Cake\ORM\TableRegistry;
-use Cake\TestSuite\TestCase;
-use Cake\Utility\Hash;
-use CakephpFixtureFactories\Error\AssociationBuilderException;
-use CakephpFixtureFactories\ORM\FactoryTableRegistry;
-use CakephpFixtureFactories\Test\Factory\AddressFactory;
-use CakephpFixtureFactories\Test\Factory\ArticleFactory;
-use CakephpFixtureFactories\Test\Factory\AuthorFactory;
-use CakephpFixtureFactories\Test\Factory\BillFactory;
-use CakephpFixtureFactories\Test\Factory\CityFactory;
-use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use Exception;
+use Cake\ORM\Query;
+use Cake\Utility\Hash;
+use Cake\Core\Configure;
+use Cake\TestSuite\TestCase;
+use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
-use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
+use TestPlugin\Model\Entity\Bill;
+use Cake\Database\Driver\Postgres;
+use TestPlugin\Model\Entity\Customer;
 use TestApp\Model\Entity\PremiumAuthor;
 use TestApp\Model\Table\PremiumAuthorsTable;
-use TestPlugin\Model\Entity\Bill;
-use TestPlugin\Model\Entity\Customer;
+use CakephpFixtureFactories\ORM\FactoryTableRegistry;
+use CakephpFixtureFactories\Test\Factory\BillFactory;
+use CakephpFixtureFactories\Test\Factory\CityFactory;
+use CakephpFixtureFactories\Test\Factory\CatFactory;
+use CakephpFixtureFactories\Test\Factory\DogFactory;
+use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpFixtureFactories\Test\Factory\AddressFactory;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use CakephpFixtureFactories\Error\AssociationBuilderException;
 
 class BaseFactoryAssociationsTest extends TestCase
 {
@@ -49,6 +52,30 @@ class BaseFactoryAssociationsTest extends TestCase
     {
         Configure::delete('TestFixtureNamespace');
     }
+
+    public function testMultipleDeepAssociationWithCircular()
+    {
+        $country = CountryFactory::make()->persist();
+        $city = CityFactory::make()->with('Country', $country)->persist();
+        $cat = CatFactory::make()->with('Country', $country)->persist();
+        $dog = DogFactory::make()->with('Country', $country)->persist();
+
+        $this->assertSame($country->id, $city->country_id);
+        $this->assertSame($country->id, $cat->country->id);
+        $this->assertSame($country->id, $dog->country->id);
+
+        AddressFactory::make()
+            ->with('City', $city)
+            ->with('Rooms', [
+                'Cats' => $cat,
+                'Dogs' => $dog,
+            ])
+            ->persist();
+
+        $this->assertSame(1, CityFactory::count());
+        $this->assertSame(1, CountryFactory::count());
+    }
+
 
     public function testWithMultipleAssociations()
     {
@@ -379,7 +406,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $countryNotExpected = 'Bar';
         CountryFactory::make(['name' => $countryExpected])
             ->with('Cities', CityFactory::make()
-            ->with('Country', ['name' => $countryNotExpected]))
+                ->with('Country', ['name' => $countryNotExpected]))
             ->persist();
 
         $this->assertSame(1, CityFactory::count());
@@ -480,7 +507,7 @@ class BaseFactoryAssociationsTest extends TestCase
             ['street' => $street1],
             ['street' => $street2],
         ])->with('City', CityFactory::make(['country_id' => $country->id])->without('Country'))
-        ->persist();
+            ->persist();
 
         $country = CountryFactory::get($country->id, [
             'contain' => 'Cities.Addresses',
@@ -593,8 +620,8 @@ class BaseFactoryAssociationsTest extends TestCase
 
         // Make sure that all was correctly persisted
         $country = CountryFactory::get($country->id, [
-                'contain' => 'Cities',
-            ]);
+            'contain' => 'Cities',
+        ]);
 
         $this->assertSame(4, count($country->cities));
         $this->assertSame(4, CityFactory::count());
