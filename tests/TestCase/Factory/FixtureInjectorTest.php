@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 
@@ -62,7 +61,7 @@ class FixtureInjectorTest extends TestCase
     public function testCreateFactoryInTheDataProvider(ArticleFactory $factory)
     {
         $factory->persist();
-        $this->assertSame(10, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+        $this->assertSame(10, ArticleFactory::count());
     }
 
     /**
@@ -76,6 +75,6 @@ class FixtureInjectorTest extends TestCase
     public function testCreateFactoryInTheDataProvider2(int $n, ArticleFactory $factory)
     {
         $factory->persist();
-        $this->assertSame($n, TableRegistry::getTableLocator()->get('Articles')->find()->count());
+        $this->assertSame($n, ArticleFactory::count());
     }
 }

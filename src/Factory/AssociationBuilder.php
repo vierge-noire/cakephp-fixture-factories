@@ -94,12 +94,14 @@ class AssociationBuilder
     /**
      * @param string      $associationName Name of the association
      * @param \CakephpFixtureFactories\Factory\BaseFactory $associationFactory Factory
-     * @return void
+     * @return bool
      */
-    public function processToOneAssociation(string $associationName, BaseFactory $associationFactory): void
+    public function processToOneAssociation(string $associationName, BaseFactory $associationFactory): bool
     {
         $this->validateToOneAssociation($associationName, $associationFactory);
         $this->removeAssociationForToOneFactory($associationName, $associationFactory);
+
+        return $this->associationIsToOne($this->getAssociation($associationName));
     }
 
     /**
@@ -127,17 +129,11 @@ class AssociationBuilder
      */
     public function removeAssociationForToOneFactory(string $associationName, BaseFactory $associatedFactory): void
     {
-        if ($this->associationIsToOne($this->getAssociation($associationName))) {
-            return;
-        }
-
-        $thisFactoryRegistryName = $this->getTable()->getRegistryAlias();
-        $associatedFactoryTable = $associatedFactory->getTable();
-
-        $associatedAssociationName = Inflector::singularize($thisFactoryRegistryName);
-
-        if ($associatedFactoryTable->hasAssociation($associatedAssociationName)) {
-            $associatedFactory->without($associatedAssociationName);
+        if ($this->associationIsToMany($this->getAssociation($associationName))) {
+            $associatedAssociationName = Inflector::singularize($this->getTable()->getRegistryAlias());
+            if ($associatedFactory->getTable()->hasAssociation($associatedAssociationName)) {
+                $associatedFactory->without($associatedAssociationName);
+            }
         }
     }
 
