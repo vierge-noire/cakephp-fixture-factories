@@ -100,10 +100,25 @@ class DataCompiler
     /**
      * @param string $associationName Association name
      * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Collected factory
+     * @param bool $isToOne is the association a toOne
      * @return void
      */
-    public function collectAssociation(string $associationName, BaseFactory $factory): void
+    public function collectAssociation(string $associationName, BaseFactory $factory, bool $isToOne): void
     {
+        if ($isToOne) {
+            $associationFieldName = Inflector::underscore(Inflector::singularize($associationName));
+            if (
+                $this->dataFromInstantiation instanceof EntityInterface &&
+                $this->dataFromInstantiation->has($associationFieldName)
+            ) {
+                $factory->patchData($this->dataFromInstantiation->get($associationFieldName));
+            } elseif (
+                is_array($this->dataFromInstantiation) &&
+                isset($this->dataFromInstantiation[$associationFieldName])
+            ) {
+                $factory->patchData($this->dataFromInstantiation[$associationFieldName]);
+            }
+        }
         if (isset($this->dataFromAssociations[$associationName])) {
             $this->dataFromAssociations[$associationName][] = $factory;
         } else {
