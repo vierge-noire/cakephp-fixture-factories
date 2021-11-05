@@ -17,7 +17,6 @@ use Cake\Datasource\EntityInterface;
 use Cake\I18n\I18n;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use CakephpFixtureFactories\Error\PersistenceException;
 use Faker\Factory;
 use Faker\Generator;
@@ -62,10 +61,6 @@ abstract class BaseFactory
      * @var array Unique fields. Uniqueness applies only to persisted entities.
      */
     protected $uniqueProperties = [];
-    /**
-     * @var bool
-     */
-    protected $withModelEvents = false;
     /**
      * The number of records the factory should create
      *
@@ -289,11 +284,7 @@ abstract class BaseFactory
      */
     public function getTable(): Table
     {
-        if ($this->withModelEvents) {
-            return TableRegistry::getTableLocator()->get($this->getRootTableRegistryName());
-        } else {
-            return $this->getEventCompiler()->getTable();
-        }
+        return $this->getEventCompiler()->getTable();
     }
 
     /**
