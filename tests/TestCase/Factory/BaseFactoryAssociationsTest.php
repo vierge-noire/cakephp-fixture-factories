@@ -688,4 +688,59 @@ class BaseFactoryAssociationsTest extends TestCase
         FactoryTableRegistry::getTableLocator()->clear();
         $this->assertSame(false, CityFactory::make()->getTable()->hasAssociation('Countries'));
     }
+
+    public function testDoNotRecreateHasOneAssociationWhenInjectingEntity_OneLevelDepth()
+    {
+        $city = CityFactory::make()->with('Country')->persist();
+        $cityCountryId = $city->country_id;
+        $cityCountryName = $city->country->name;
+
+        CityFactory::make($city)->persist();
+
+        $this->assertSame($cityCountryId, $city->country_id);
+        $this->assertSame($cityCountryName, $city->country->name);
+        $this->assertSame(1, CountryFactory::count());
+        $this->assertSame(1, CityFactory::count());
+    }
+
+    public function testDoNotRecreateHasOneAssociationWhenInjectingEntity_TwoLevelDepth()
+    {
+        $city = CityFactory::make()->with('Country')->persist();
+        $cityCountryId = $city->country_id;
+        $cityCountryName = $city->country->name;
+
+        AddressFactory::make()->with('City', $city)->persist();
+
+        $this->assertSame($cityCountryId, $city->country_id);
+        $this->assertSame($cityCountryName, $city->country->name);
+        $this->assertSame(1, CountryFactory::count());
+        $this->assertSame(1, CityFactory::count());
+        $this->assertSame(1, AddressFactory::count());
+    }
+
+    public function testDoNotRecreateHasOneAssociationWhenInjectingEntity_ThreeLevelDepth()
+    {
+        $address = AddressFactory::make()->with('City.Country')->persist();
+
+        AuthorFactory::make()->with('Address', $address)->persist();
+
+        $this->assertSame(1, CountryFactory::count());
+        $this->assertSame(1, CityFactory::count());
+        $this->assertSame(1, AddressFactory::count());
+        $this->assertSame(1, AuthorFactory::count());
+    }
+
+    public function testDoNotRecreateHasManyAssociationWhenInjectingEntity_OneLevelDepth()
+    {
+        $country = CountryFactory::make()->with('Cities')->persist();
+        $cityId = $country->cities[0]->id;
+        $cityName = $country->cities[0]->name;
+
+        CountryFactory::make($country)->persist();
+
+        $this->assertSame($cityId, $country->cities[0]->id);
+        $this->assertSame($cityName, $country->cities[0]->name);
+        $this->assertSame(1, CountryFactory::count());
+        $this->assertSame(1, CityFactory::count());
+    }
 }
