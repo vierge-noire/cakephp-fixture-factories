@@ -119,12 +119,11 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
     /** @dataProvider dataForClassName */
     public function testLoadAssociationOnTheFly_HasMany_With_Magic_Persist($className)
     {
-        $factory = CityFactory::make();
-        $factory->getTable()->hasMany('Addresses', compact('className'));
+        CityFactory::make()->getTable()->hasMany('Addresses', compact('className'));
 
         $name = 'Foo';
         $n = 2;
-        $city = $factory->with("Addresses[$n]", compact('name'))->persist();
+        $city = CityFactory::make()->with("Addresses[$n]", compact('name'))->persist();
 
         $addresses = $city->addresses;
         foreach ($addresses as $address) {
