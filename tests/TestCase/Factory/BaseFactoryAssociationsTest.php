@@ -16,7 +16,6 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\Core\Configure;
 use Cake\Database\Driver\Postgres;
 use Cake\ORM\Query;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
@@ -91,16 +90,10 @@ class BaseFactoryAssociationsTest extends TestCase
         }
 
         $expectedAuthors = $nAuthors * ($mArticles * 2 + 1);
-        $this->assertSame(
-            $expectedAuthors,
-            AuthorFactory::count()
-        );
+        $this->assertSame($expectedAuthors, AuthorFactory::count());
 
         $expectedArticles = 1 + ($nAuthors * $mArticles);
-        $this->assertSame(
-            $expectedArticles,
-            ArticleFactory::count()
-        );
+        $this->assertSame($expectedArticles, ArticleFactory::count());
     }
 
     public function testSaveMultipleInArray()
@@ -289,15 +282,9 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertInstanceOf(Bill::class, $article->bills[0]);
         $this->assertInstanceOf(Customer::class, $article->bills[0]->customer);
 
-        $this->assertSame(
-            $n,
-            BillFactory::count()
-        );
+        $this->assertSame($n, BillFactory::count());
 
-        $this->assertSame(
-            $n,
-            CustomerFactory::count()
-        );
+        $this->assertSame($n, CustomerFactory::count());
     }
 
     public function testSaveMultipleHasManyAssociationAndTimesWithBrackets()
