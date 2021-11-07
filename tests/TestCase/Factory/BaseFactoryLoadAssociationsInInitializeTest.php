@@ -39,6 +39,13 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         Configure::delete('TestFixtureNamespace');
     }
 
+    public function setUp(): void
+    {
+        parent::setUp();
+        // Clear the association created on the fly
+        FactoryTableRegistry::getTableLocator()->clear();
+    }
+
     public function tearDown(): void
     {
         parent::tearDown();

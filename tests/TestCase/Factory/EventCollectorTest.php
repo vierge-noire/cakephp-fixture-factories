@@ -199,7 +199,7 @@ class EventCollectorTest extends TestCase
     {
         $behavior = 'Foo';
         $EventManager = new EventCollector('Bar');
-        $EventManager->listeningToBehaviors('Foo');
+        $EventManager->listeningToBehaviors(['Foo']);
 
         $expected = [
             'SomeBehaviorUsedInMultipleTables',

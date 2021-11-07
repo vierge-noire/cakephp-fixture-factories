@@ -31,7 +31,7 @@ use Cake\ORM\TableRegistry;
  *
  * Class FactoryTableRegistry
  *
- * @package CakephpFixtureFactories\ORM\TableRegistry
+ * @internal
  */
 class FactoryTableRegistry extends TableRegistry
 {
