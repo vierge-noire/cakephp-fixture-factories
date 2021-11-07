@@ -77,8 +77,7 @@ class EventCollectorTest extends TestCase
     {
         Configure::write('TestFixtureGlobalBehaviors', ['Sluggable']);
 
-        $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventCollector($factoryMock, 'Foo');
+        $EventManager = new EventCollector('Foo');
 
         $this->assertSame(
             ['Sluggable', 'Timestamp'],
@@ -88,8 +87,7 @@ class EventCollectorTest extends TestCase
 
     public function testSetBehaviorEmpty()
     {
-        $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventCollector($factoryMock, 'Foo');
+        $EventManager = new EventCollector('Foo');
 
         $expected = [
             'SomeBehaviorUsedInMultipleTables',
@@ -200,9 +198,8 @@ class EventCollectorTest extends TestCase
     public function testSetBehaviorOnTheFly()
     {
         $behavior = 'Foo';
-        $factoryMock = $this->createMock(BaseFactory::class);
-        $EventManager = new EventCollector($factoryMock, 'Bar');
-        $EventManager->listeningToBehaviors('Foo');
+        $EventManager = new EventCollector('Bar');
+        $EventManager->listeningToBehaviors(['Foo']);
 
         $expected = [
             'SomeBehaviorUsedInMultipleTables',
@@ -227,12 +224,11 @@ class EventCollectorTest extends TestCase
      */
     public function testApplyOrIgnoreEventInBehaviorsOnTheFlyWithCountries()
     {
-        $name = "Some Country";
-        $slug = "Some-Country";
+        $name = 'Some Country';
+        $slug = 'Some-Country';
 
         $country = CountryFactory::make(compact('name'))->persist();
         $this->assertNull($country->get('slug'));
-
 
         $country = CountryFactory::make(compact('name'))
             ->listeningToBehaviors('Sluggable')

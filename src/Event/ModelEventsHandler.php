@@ -19,6 +19,11 @@ use Cake\ORM\Table;
 use CakephpFixtureFactories\Factory\EventCollector;
 use CakephpFixtureFactories\ORM\Locator\FactoryTableLocator;
 
+/**
+ * Class ModelEventsHandler
+ *
+ * @internal
+ */
 class ModelEventsHandler
 {
     /**
@@ -62,14 +67,13 @@ class ModelEventsHandler
 
     public static function handle(Table $table, array $listeningModelEvents = [], array $listeningBehaviors = [])
     {
-        $handler = new static($listeningModelEvents, $listeningBehaviors);
-        $handler->ignoreModelEvents($table);
+        (new static($listeningModelEvents, $listeningBehaviors))->ignoreModelEvents($table);
     }
 
     /**
      * @param Table $table
      */
-    public function ignoreModelEvents(Table $table)
+    private function ignoreModelEvents(Table $table)
     {
         foreach (self::$ormEvents as $ormEvent) {
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {

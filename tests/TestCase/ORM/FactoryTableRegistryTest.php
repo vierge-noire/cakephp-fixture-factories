@@ -16,6 +16,7 @@ namespace CakephpFixtureFactories\Test\TestCase\ORM;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\ORM\FactoryTableRegistry;
+use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use TestApp\Model\Table\AddressesTable;
 use TestApp\Model\Table\ArticlesTable;
@@ -84,5 +85,16 @@ class FactoryTableRegistryTest extends TestCase
 
         $CountryFactory = CountryFactory::make();
         $this->assertSame($expectedPluginsLoaded, $CountryFactory->getTable()->behaviors()->loaded());
+    }
+
+    public function testDoNotTouchTheRegularTableRegistry()
+    {
+        TableRegistry::getTableLocator()->clear();
+        CityFactory::make()->withCountry()->persist();
+
+        $this->assertFalse(TableRegistry::getTableLocator()->exists('Cities'));
+        $this->assertFalse(TableRegistry::getTableLocator()->exists('Countries'));
+        $this->assertTrue(FactoryTableRegistry::getTableLocator()->exists('Cities'));
+        $this->assertTrue(FactoryTableRegistry::getTableLocator()->exists('Countries'));
     }
 }
