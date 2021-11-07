@@ -57,7 +57,7 @@ $city = CityFactory::make()
     ->with('Country', ['name' => 'India'])
     ->getEntity();
 ```
-which will set the country where the city is created, and provide 4 random addresses.
+which will set the city's country, and provide 4 random addresses.
 
 You will find described in the cookbook [HERE](https://book.cakephp.org/4/en/orm/associations.html) how to define your associations.
 Non CakePHP applications will not need to create any table objects, but rather use the `getTable()` public method.
