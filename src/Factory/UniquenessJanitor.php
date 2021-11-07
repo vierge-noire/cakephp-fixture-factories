@@ -17,6 +17,11 @@ namespace CakephpFixtureFactories\Factory;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Error\UniquenessException;
 
+/**
+ * Class UniquenessJanitor
+ *
+ * @internal
+ */
 class UniquenessJanitor
 {
     /**

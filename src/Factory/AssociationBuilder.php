@@ -24,6 +24,11 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
 
+/**
+ * Class AssociationBuilder
+ *
+ * @internal
+ */
 class AssociationBuilder
 {
     use FactoryAwareTrait {

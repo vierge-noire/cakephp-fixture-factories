@@ -18,6 +18,11 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\Factory\DataCompiler;
 
+/**
+ * Class FactoryTableBeforeSave
+ *
+ * @internal
+ */
 final class FactoryTableBeforeSave
 {
     /**
@@ -194,7 +199,7 @@ final class FactoryTableBeforeSave
     }
 
     /**
-     * @param \Cake\Datasource\EntityInterface $entity The class's entitiy.
+     * @param \Cake\Datasource\EntityInterface $entity The class's entity.
      * @return void
      */
     public function setEntity(EntityInterface $entity): void
