@@ -17,6 +17,11 @@ namespace CakephpFixtureFactories\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
 
+/**
+ * Class ModelEventsHandler
+ *
+ * @internal
+ */
 class ModelEventsHandler
 {
     /**
@@ -73,15 +78,14 @@ class ModelEventsHandler
      */
     public static function handle(Table $table, array $listeningModelEvents = [], array $listeningBehaviors = []): void
     {
-        $handler = new static($listeningModelEvents, $listeningBehaviors);
-        $handler->ignoreModelEvents($table);
+        (new static($listeningModelEvents, $listeningBehaviors))->ignoreModelEvents($table);
     }
 
     /**
      * @param \Cake\ORM\Table $table Table
      * @return void
      */
-    public function ignoreModelEvents(Table $table): void
+    private function ignoreModelEvents(Table $table): void
     {
         foreach (self::$ormEvents as $ormEvent) {
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {

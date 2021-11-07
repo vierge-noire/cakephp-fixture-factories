@@ -18,10 +18,20 @@ use Cake\Core\Configure;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\ORM\FactoryTableRegistry;
 
+/**
+ * Class EventCollector
+ *
+ * @internal
+ */
 class EventCollector
 {
     public const MODEL_EVENTS = 'CakephpFixtureFactoriesListeningModelEvents';
     public const MODEL_BEHAVIORS = 'CakephpFixtureFactoriesListeningBehaviors';
+
+    /**
+     * @var \Cake\ORM\Table|null
+     */
+    private $table;
 
     /**
      * @var array
@@ -62,6 +72,10 @@ class EventCollector
      */
     public function getTable(): Table
     {
+        if (isset($this->table)) {
+            return $this->table;
+        }
+
         $options = [
             self::MODEL_EVENTS => $this->getListeningModelEvents(),
             self::MODEL_BEHAVIORS => $this->getListeningBehaviors(),
@@ -70,11 +84,11 @@ class EventCollector
         try {
             $table = FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, $options);
         } catch (\RuntimeException $exception) {
-            FactoryTableRegistry::getTableLocator()->clear();
+            FactoryTableRegistry::getTableLocator()->remove($this->rootTableRegistryName);
             $table = FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, $options);
         }
 
-        return $table;
+        return $this->table = $table;
     }
 
     /**
@@ -86,12 +100,12 @@ class EventCollector
     }
 
     /**
-     * @param array|string $activeBehaviors Behaviors the factory will listen to
+     * @param array $activeBehaviors Behaviors the factory will listen to
      * @return array
      */
-    public function listeningToBehaviors($activeBehaviors): array
+    public function listeningToBehaviors(array $activeBehaviors): array
     {
-        $activeBehaviors = (array)$activeBehaviors;
+        unset($this->table);
 
         return $this->listeningBehaviors = array_merge($this->defaultListeningBehaviors, $activeBehaviors);
     }
@@ -100,9 +114,11 @@ class EventCollector
      * @param array $activeModelEvents Events the factory will listen to
      * @return array
      */
-    public function listeningToModelEvents($activeModelEvents): array
+    public function listeningToModelEvents(array $activeModelEvents): array
     {
-        return $this->listeningModelEvents = (array)$activeModelEvents;
+        unset($this->table);
+
+        return $this->listeningModelEvents = $activeModelEvents;
     }
 
     /**
