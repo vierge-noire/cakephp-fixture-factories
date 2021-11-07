@@ -13,27 +13,38 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\ORM;
 
+use Cake\Core\Configure;
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\Event\ModelEventsHandler;
 use CakephpFixtureFactories\Factory\EventCollector;
 
+/**
+ * Class FactoryTableLocator
+ *
+ * @internal
+ */
 class FactoryTableLocator extends TableLocator
 {
     protected function _create(array $options): Table
     {
-        $cloneTable = parent::_create($options);
+        $table = parent::_create($options);
+
+        $defaultBehaviors = (array)Configure::read('TestFixtureGlobalBehaviors', []);
+        $defaultBehaviors[] = 'Timestamp';
+
+        $behaviors = array_merge($options[EventCollector::MODEL_BEHAVIORS] ?? [], $defaultBehaviors);
 
         ModelEventsHandler::handle(
-            $cloneTable,
+            $table,
             $options[EventCollector::MODEL_EVENTS] ?? [],
-            $options[EventCollector::MODEL_BEHAVIORS] ?? []
+            $behaviors
         );
 
-        $cloneTable->getEventManager()->on('Model.beforeSave', function ($event, $entity, $options) use ($cloneTable) {
-            FactoryTableBeforeSave::handle($cloneTable, $entity);
+        $table->getEventManager()->on('Model.beforeSave', function ($event, $entity, $options) use ($table) {
+            FactoryTableBeforeSave::handle($table, $entity);
         });
 
-        return $cloneTable;
+        return $table;
     }
 }

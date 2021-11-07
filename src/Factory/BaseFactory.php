@@ -17,6 +17,7 @@ use Cake\Datasource\EntityInterface;
 use Cake\I18n\I18n;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
 use Faker\Factory;
 use Faker\Generator;
@@ -97,7 +98,7 @@ abstract class BaseFactory
     {
         $this->dataCompiler = new DataCompiler($this);
         $this->associationBuilder = new AssociationBuilder($this);
-        $this->eventCompiler = new EventCollector($this, $this->getRootTableRegistryName());
+        $this->eventCompiler = new EventCollector($this->getRootTableRegistryName());
     }
 
     /**
@@ -416,19 +417,31 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array|string $activeBehaviors
+     * @param string[]|string $activeBehaviors Behaviors listened to by the factory
+     * @return self
+     * @throws \CakephpFixtureFactories\Error\FixtureFactoryException on argument passed error
      */
     public function listeningToBehaviors($activeBehaviors)
     {
+        $activeBehaviors = (array)$activeBehaviors;
+        if (empty($activeBehaviors)) {
+            throw new FixtureFactoryException('Expecting a non empty string or an array of string.');
+        }
         $this->getEventCompiler()->listeningToBehaviors($activeBehaviors);
         return $this;
     }
 
     /**
-     * @param array|string $activeModelEvents
+     * @param string[]|string $activeModelEvents Model events listened to by the factory
+     * @return self
+     * @throws \CakephpFixtureFactories\Error\FixtureFactoryException on argument passed error
      */
     public function listeningToModelEvents($activeModelEvents)
     {
+        $activeModelEvents = (array)$activeModelEvents;
+        if (empty($activeModelEvents)) {
+            throw new FixtureFactoryException('Expecting a non empty string or an array of string.');
+        }
         $this->getEventCompiler()->listeningToModelEvents($activeModelEvents);
         return $this;
     }
@@ -565,7 +578,7 @@ abstract class BaseFactory
      */
     public static function find(string $type = 'all', array $options = []): Query
     {
-        return self::make()->getTable()->find($type, $options);
+        return (new static())->getTable()->find($type, $options);
     }
 
     /**
@@ -578,7 +591,7 @@ abstract class BaseFactory
      */
     public static function get($primaryKey, array $options = []): EntityInterface
     {
-        return self::make()->getTable()->get($primaryKey, $options);
+        return (new static())->getTable()->get($primaryKey, $options);
     }
 
     /**
