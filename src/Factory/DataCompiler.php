@@ -23,6 +23,11 @@ use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
 use InvalidArgumentException;
 
+/**
+ * Class DataCompiler
+ *
+ * @internal
+ */
 class DataCompiler
 {
     public const MODIFIED_UNIQUE_PROPERTIES = '___data_compiler__modified_unique_properties';

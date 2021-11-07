@@ -110,7 +110,11 @@ class InitialMigration extends AbstractMigration
                 'null' => false,
             ])
             ->addIndex('country_id')
-            ->addTimestamps('created', 'modified')
+            // These fields should not be set by the DB by default
+            // They are used to test that the TimeStampBehavior is
+            // correctly applied by default.
+            ->addColumn('created', 'timestamp', ['null' => true])
+            ->addColumn('modified', 'timestamp', ['null' => true])
             ->create();
 
         $this->table('countries')
@@ -123,7 +127,11 @@ class InitialMigration extends AbstractMigration
                 'limit' => 128,
                 'null' => true,
             ])
-            ->addTimestamps('created', 'modified')
+            // These fields should not be set by the DB by default
+            // They are used to test that the TimeStampBehavior is
+            // correctly applied by default.
+            ->addColumn('created', 'timestamp', ['null' => true])
+            ->addColumn('modified', 'timestamp', ['null' => true])
             ->create();
 
         $this->table('authors')
