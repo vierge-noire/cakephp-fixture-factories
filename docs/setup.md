@@ -16,7 +16,9 @@ load the CakephpFixtureFactories plugin in your `src/Application.php` file:
 protected function bootstrapCli(): void
 {
     // Load more plugins here
-    $this->addPlugin('CakephpFixtureFactories');
+    if (Configure::read('debug')) {
+        $this->addPlugin('CakephpFixtureFactories');
+    }
 }
 ```
 
