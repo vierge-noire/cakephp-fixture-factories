@@ -1,4 +1,4 @@
-<h1 align="center">Fixture Factories</h1>
+<h1 style="text-align: center">Fixture Factories</h1>
 
 A factory is a class that extends the `CakephpFixtureFactories\Factory\BaseFactory`. It should implement the following two methods:
 * `getRootTableRegistryName()`  which indicates the model, or the table name in PascalCase, where the factory will insert its fixtures;
