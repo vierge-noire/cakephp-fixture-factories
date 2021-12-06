@@ -1,6 +1,6 @@
-<h1 align="center">Bake command</h1>
+<h1 style="text-align: center">Bake command</h1>
 
-We recommend you to use the bake command in order create your factories.
+We recommend you to create your factories with the bake command.
 
 
 Make sure to add:

@@ -1,4 +1,4 @@
-<h1 align="center">Associations for non-CakePHP apps</h1>
+<h1 style="text-align: center">Associations for non-CakePHP apps</h1>
 
 Associations can be defined within the factories in the `initialize()` method.
 The `getTable()` method provides public access to the model class used by the factories. If not defined in your application

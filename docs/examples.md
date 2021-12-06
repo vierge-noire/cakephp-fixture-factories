@@ -1,4 +1,4 @@
-<h1 align="center">Test Fixtures</h1>
+<h1 style="text-align: center">Test Fixtures</h1>
 
 Here are some examples of how to use the fixture factories.
 
