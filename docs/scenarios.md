@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Scenarios</h1>
+<h1 align="center">Scenarios</h1>
 
 You can create scenarios that will persist a multitude of test fixtures. This can be useful to seed your
 test database with a reusable set of data.

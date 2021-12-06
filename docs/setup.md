@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Setup</h1>
+<h1 align="center">Setup</h1>
 
 ## Non-CakePHP apps
 For non-CakePHP applications, you may use the method proposed by your framework
