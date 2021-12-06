@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Associations</h1>
+<h1 align="center">Associations</h1>
 
 If your application is not using CakePHP, or if you want to add
 associations within your factories, please take a look at the [Associations for non-CakePHP apps](./no_cake_associations.md) section

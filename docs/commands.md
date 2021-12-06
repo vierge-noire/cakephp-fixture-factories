@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Persist command</h1>
+<h1 align="center">Persist command</h1>
 
 
 Factories can also conveniently populate your database in order to test your application on the browser.

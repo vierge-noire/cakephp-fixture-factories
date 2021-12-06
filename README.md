@@ -1,10 +1,10 @@
-<p style="text-align: center">
+<p align="center">
     <a href="https://vierge-noire.github.io/" target="_blank"><img src="https://vierge-noire.github.io/images/fixture_factories.svg" alt="ff-logo" width="150"  /></a>
 </p>
-<h1 style="text-align: center">
+<h1 align="center">
 CakePHP Fixture Factories
 </h1>
-<h3 style="text-align: center">
+<h3 align="center">
 Write and run your tests faster. On any PHP application.
 </h3>
 

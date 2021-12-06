@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Queries</h1>
+<h1 align="center">Queries</h1>
 
 
 The fixture factories are closely related to the database. The package provides several methods to conveniently
