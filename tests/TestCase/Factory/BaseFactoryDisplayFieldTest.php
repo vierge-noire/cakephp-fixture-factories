@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
+use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -41,6 +42,16 @@ use function is_int;
 
 class BaseFactoryDisplayFieldTest extends TestCase
 {
+    public static function setUpBeforeClass()
+    {
+        Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
+    }
+
+    public static function tearDownAfterClass()
+    {
+        Configure::delete('TestFixtureNamespace');
+    }
+
     public function testUseDisplayFieldIfFieldIsNotSpecified()
     {
         $title = 'Some title';
