@@ -114,7 +114,7 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param array|callable|null|int|\Cake\Datasource\EntityInterface $makeParameter Injected data
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|string $makeParameter Injected data
      * @param int                     $times Number of entities created
      * @return static
      */
@@ -125,13 +125,13 @@ abstract class BaseFactory
             $times = $makeParameter;
         } elseif (is_null($makeParameter)) {
             $factory = static::makeFromNonCallable();
-        } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface) {
+        } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface || is_string($makeParameter)) {
             $factory = static::makeFromNonCallable($makeParameter);
         } elseif (is_callable($makeParameter)) {
             $factory = static::makeFromCallable($makeParameter);
         } else {
             throw new InvalidArgumentException('
-                ::make only accepts an array, an integer, an EntityInterface or a callable as first parameter.
+                ::make only accepts an array, an integer, an EntityInterface, a string or a callable as first parameter.
             ');
         }
 
@@ -502,7 +502,7 @@ abstract class BaseFactory
      * The data can be an array, an integer, an entity interface, a callable or a factory
      *
      * @param string $associationName Association name
-     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface $data Injected data
+     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|string $data Injected data
      * @return $this
      */
     public function with(string $associationName, $data = [])
