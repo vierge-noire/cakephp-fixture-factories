@@ -228,16 +228,8 @@ class DataCompiler
     private function setDisplayFieldToInjectedString(string $data): array
     {
         $displayField = $this->getFactory()->getTable()->getDisplayField();
-        if (is_string($displayField)) {
-            return [$displayField => $data];
-        }
 
-        $factory = get_class($this->getFactory());
-        $table = get_class($this->getFactory()->getTable());
-        throw new FixtureFactoryException(
-            'The display field of a table must be a string when injecting a string into its factory. ' .
-            "You injected '$data' in $factory but $table's display field is not a string."
-        );
+        return [$displayField => $data];
     }
 
     /**
