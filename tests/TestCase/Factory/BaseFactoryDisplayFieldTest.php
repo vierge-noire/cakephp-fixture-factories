@@ -87,12 +87,4 @@ class BaseFactoryDisplayFieldTest extends TestCase
             $this->assertSame($city, $country->cities[$i]->name);
         }
     }
-
-    public function testUseDisplayFieldErrorIfDisplyFieldNotAString()
-    {
-        CountryFactory::make()->getTable()->setDisplayField(['foo', 'bar']);
-
-        $this->expectException(FixtureFactoryException::class);
-        CountryFactory::make('Some country')->persist();
-    }
 }
