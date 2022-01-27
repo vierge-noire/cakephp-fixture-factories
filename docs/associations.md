@@ -33,7 +33,8 @@ will create an article, with an author having itself an address in Kenya.
 
 The second parameter of the method with can be:
 * an array of field and their values
-* an integer: the number
+* a string (or an array of strings), which will be assigned to the tables display field
+* an integer: the number of assoviated entities created
 * a factory
 
 Ultimately, the square bracket notation provides a mean to specify the number of associated
@@ -57,6 +58,15 @@ This can be useful if your business logic uses hard coded values, or constants.
 
 Note that when an association has the same name as a virtual field,
 the virtual field will overwrite the data prepared by the associated factory.
+
+Similarly to the `make` method, it is possible to inject a string into an associated factory:
+```php
+$country = CountryFactory::make()->with('Cities', 'Nairobi')->persist();
+````
+or
+```php
+$country = CountryFactory::make()->with('Cities', ['Nairobi', 'Mombasa'])->persist();
+```
 
 ## Factory injection
 
