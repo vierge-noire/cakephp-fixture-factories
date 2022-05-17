@@ -76,6 +76,11 @@ trait FactoryAwareTrait
      */
     public static function getFactoryNameFromModelName(string $modelName): string
     {
+        if (strpos($modelName, '\\') !== false) {
+            [, $modelName] = namespaceSplit($modelName);
+            $modelName = str_replace('Table', '', $modelName);
+        }
+
         return str_replace('/', '\\', Inflector::classify($modelName)) . 'Factory';
     }
 
