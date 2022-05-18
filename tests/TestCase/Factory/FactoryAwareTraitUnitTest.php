@@ -56,6 +56,7 @@ class FactoryAwareTraitUnitTest extends TestCase
             ['pine_apple', 'PineAppleFactory', 'PineAppleFactory.php'],
             ['Fruits/PineApple', 'Fruits\\PineAppleFactory', 'Fruits'.DIRECTORY_SEPARATOR.'PineAppleFactory.php'],
             ['Food/Fruits/PineApple', 'Food\\Fruits\\PineAppleFactory', 'Food'.DIRECTORY_SEPARATOR.'Fruits'.DIRECTORY_SEPARATOR.'PineAppleFactory.php'],
+            ['Table\Apples', 'AppleFactory', 'AppleFactory.php'],
         ];
     }
 

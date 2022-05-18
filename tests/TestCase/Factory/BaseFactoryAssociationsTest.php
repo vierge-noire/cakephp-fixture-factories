@@ -27,6 +27,7 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use CakephpFixtureFactories\Test\Factory\SubDirectory\SubCityFactory;
 use Exception;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
@@ -744,5 +745,15 @@ class BaseFactoryAssociationsTest extends TestCase
         $this->assertSame($cityName, $country->cities[0]->name);
         $this->assertSame(1, CountryFactory::count());
         $this->assertSame(1, CityFactory::count());
+    }
+
+    public function testAssociationsInSubFolders()
+    {
+        $name = 'Foo';
+        $country = CountryFactory::make()
+            ->with('Cities', SubCityFactory::make(compact('name')))
+            ->getEntity();
+
+        $this->assertSame($name, $country->cities[0]->name);
     }
 }
