@@ -17,14 +17,14 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.2",
-        "cakephp/orm": "^4.0",
+        "cakephp/orm": "^4.2",
         "fakerphp/faker": "^1.15",
         "vierge-noire/cakephp-test-suite-light": "^2.1"
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
         "cakephp/cakephp-codesniffer": "^4.0",
-        "cakephp/migrations": "^3.0",
+        "cakephp/migrations": "^3.1",
         "josegonzalez/dotenv": "dev-master",
         "phpstan/phpstan": "^0.12.48@dev",
         "phpunit/phpunit": "^8.0",
