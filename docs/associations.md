@@ -34,7 +34,7 @@ will create an article, with an author having itself an address in Kenya.
 The second parameter of the method with can be:
 * an array of field and their values
 * a string (or an array of strings), which will be assigned to the tables display field
-* an integer: the number of assoviated entities created
+* an integer: the number of associated entities created
 * a factory
 
 Ultimately, the square bracket notation provides a mean to specify the number of associated

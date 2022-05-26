@@ -36,6 +36,7 @@ use TestApp\Model\Entity\Country;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Entity\Bill;
+use TestPlugin\Model\Table\BillsTable;
 use function count;
 use function is_array;
 use function is_int;
@@ -86,5 +87,26 @@ class BaseFactoryDisplayFieldTest extends TestCase
         foreach ($cities as $i => $city) {
             $this->assertSame($city, $country->cities[$i]->name);
         }
+    }
+
+    /**
+     * It is important here to use the BillFactory in order to
+     * cover the case where a factory is listening to some Model Events / Behavior
+     * which resets the factories table.
+     *
+     * @see BillsTable::initialize()
+     */
+    public function testUseDisplayFieldErrorIfDisplayFieldAnArray()
+    {
+        $this->expectException(FixtureFactoryException::class);
+        BillFactory::make('Some bill')->persist();
+    }
+
+    public function testDisplayFieldIsUndefined()
+    {
+        CountryFactory::make()->getTable()->setDisplayField(null);
+        $this->assertSame('name', CountryFactory::make()->getTable()->getDisplayField());
+        $country = CountryFactory::make('Foo')->getEntity();
+        $this->assertSame('Foo', $country->name);
     }
 }

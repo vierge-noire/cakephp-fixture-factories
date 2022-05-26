@@ -34,6 +34,10 @@ class BillsTable extends Table
             ],
         ]);
 
+        // Since the display field is an array, the injection of string in the
+        // BillFactory is prohibited.
+        $this->setDisplayField(['street', 'amount']);
+
         parent::initialize($config);
     }
 
