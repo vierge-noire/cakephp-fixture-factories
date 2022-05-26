@@ -101,12 +101,4 @@ class BaseFactoryDisplayFieldTest extends TestCase
         $this->expectException(FixtureFactoryException::class);
         BillFactory::make('Some bill')->persist();
     }
-
-    public function testDisplayFieldIsUndefined()
-    {
-        CountryFactory::make()->getTable()->setDisplayField(null);
-        $this->assertSame('name', CountryFactory::make()->getTable()->getDisplayField());
-        $country = CountryFactory::make('Foo')->getEntity();
-        $this->assertSame('Foo', $country->name);
-    }
 }
