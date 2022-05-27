@@ -230,7 +230,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $n = 10;
         $country = 'Foo';
         $path = 'BusinessAddress.City.Country';
-        $authors = AuthorFactory::make($n)->with($country)->persist();
+        $authors = AuthorFactory::make($n)->with($path, $country)->persist();
 
         for ($i = 0; $i < $n; $i++) {
             $this->assertInstanceOf(Country::class, $authors[$i]->business_address->city->country);
