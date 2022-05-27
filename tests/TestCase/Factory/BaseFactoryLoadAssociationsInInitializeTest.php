@@ -174,7 +174,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $factory->getTable()->belongsToMany('ParallelArticles', [
             'className' => $className,
             'joinTable' => 'articles_authors',
-            'targetForeignKey' => 'article_id'
+            'targetForeignKey' => 'article_id',
         ]);
 
         $name = 'Foo';

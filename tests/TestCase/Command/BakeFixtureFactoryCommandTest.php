@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Command;
 
 use Cake\Console\Exception\StopException;
-use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Test\Util\TestCaseWithFixtureBaking;
 use TestApp\Model\Entity\Address;
@@ -81,7 +80,7 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
             'toOne' => [],
             'oneToMany' => [
                 'Bills' => 'TestPlugin\Test\Factory\BillFactory',
-                'ArticlesAuthors' => 'TestApp\Test\Factory\ArticlesAuthorFactory'
+                'ArticlesAuthors' => 'TestApp\Test\Factory\ArticlesAuthorFactory',
             ],
             'manyToMany' => [
                 'Authors' => 'TestApp\Test\Factory\AuthorFactory',

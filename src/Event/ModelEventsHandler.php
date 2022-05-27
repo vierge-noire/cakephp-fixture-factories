@@ -72,13 +72,11 @@ class ModelEventsHandler
 
     /**
      * @param \Cake\ORM\Table $table Table
-     * @param array $listeningModelEvents Events listened to
-     * @param array $listeningBehaviors Behaviors listened to
      * @return void
      */
-    public static function handle(Table $table, array $listeningModelEvents = [], array $listeningBehaviors = []): void
+    public function handle(Table $table): void
     {
-        (new static($listeningModelEvents, $listeningBehaviors))->ignoreModelEvents($table);
+        $this->ignoreModelEvents($table);
     }
 
     /**

@@ -28,9 +28,7 @@ use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use CakephpFixtureFactories\Test\Factory\SubDirectory\SubCityFactory;
-use Exception;
 use TestApp\Model\Entity\Address;
-use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Entity\PremiumAuthor;
@@ -232,9 +230,7 @@ class BaseFactoryAssociationsTest extends TestCase
         $n = 10;
         $country = 'Foo';
         $path = 'BusinessAddress.City.Country';
-        $authors = AuthorFactory::make($n)->with($path, [
-            'name' => $country,
-        ])->persist();
+        $authors = AuthorFactory::make($n)->with($country)->persist();
 
         for ($i = 0; $i < $n; $i++) {
             $this->assertInstanceOf(Country::class, $authors[$i]->business_address->city->country);
@@ -313,11 +309,11 @@ class BaseFactoryAssociationsTest extends TestCase
     {
         $name1 = 'Bar';
         $name2 = 'Foo';
-        AuthorFactory::make(['name' => $name1])
-            ->with('Articles.Authors', ['name' => $name2])
+        AuthorFactory::make($name1)
+            ->with('Articles.Authors', $name2)
             ->persist();
 
-        /** @var Article $article */
+        /** @var \TestApp\Model\Entity\Article $article */
         $article = ArticleFactory::find()
             ->contain('Authors', function ($q) {
                 return $q->order('Authors.name');
@@ -365,9 +361,9 @@ class BaseFactoryAssociationsTest extends TestCase
     {
         $countryExpected = 'Foo';
         $countryNotExpected = 'Bar';
-        CountryFactory::make(['name' => $countryExpected])
+        CountryFactory::make($countryExpected)
             ->with('Cities', CityFactory::make()
-            ->with('Country', ['name' => $countryNotExpected]))
+            ->with('Country', $countryNotExpected))
             ->persist();
 
         $this->assertSame(1, CityFactory::count());
@@ -405,7 +401,8 @@ class BaseFactoryAssociationsTest extends TestCase
         $nArticles = rand(3, 10);
         $authorName = 'Foo';
         $article = ArticleFactory::make()
-            ->with('Authors', AuthorFactory::make(['name' => 'Foo'])->with('Articles', $nArticles))
+            ->with('Authors', AuthorFactory::make('Foo')
+            ->with('Articles', $nArticles))
             ->persist();
 
         $authorsAssociatedToArticle = AuthorFactory::find()
@@ -520,8 +517,8 @@ class BaseFactoryAssociationsTest extends TestCase
         $city2 = 'B city';
 
         $country = CountryFactory::make()
-            ->with('Cities', ['name' => $city1])
-            ->with('Cities', ['name' => $city2])
+            ->with('Cities', $city1)
+            ->with('Cities', $city2)
             ->persist();
 
         // Make sure that all was correctly persisted
@@ -601,7 +598,6 @@ class BaseFactoryAssociationsTest extends TestCase
      * associated factory
      *
      * @see Country::_getVirtualCities()
-     * @throws Exception
      */
     public function testAssociationWithVirtualFieldNamedIdentically()
     {

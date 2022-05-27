@@ -14,13 +14,12 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-
-use Cake\Datasource\EntityInterface;
 use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\UniquenessException;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\UniquenessJanitor;
+use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 
 class UniquenessJanitorTest extends TestCase
 {
@@ -48,9 +47,7 @@ class UniquenessJanitorTest extends TestCase
      */
     public function testSanitizeEntityArrayOnPrimary(array $uniqueProperties, bool $expectException)
     {
-        $factoryStub = $this->getMockBuilder(BaseFactory::class)->disableOriginalConstructor()->getMock();
-        $factoryStub->method('getUniqueProperties')->willReturn($uniqueProperties);
-
+        $factoryStub = ArticleFactory::make()->setUniqueProperties($uniqueProperties);
         $entities = [
             new Entity(['property_1' => 'foo', 'property_2' => 'foo']),
             new Entity(['property_1' => 'foo', 'property_2' => 'dah']),
@@ -71,8 +68,9 @@ class UniquenessJanitorTest extends TestCase
     {
         $associatedData = [
             ['property_1' => 'foo', 'property_2' => 'foo'],
-            ['property_1' => 'foo', 'property_2' => 'dah']
+            ['property_1' => 'foo', 'property_2' => 'dah'],
         ];
+
         return [
             [[], $associatedData],
             [['property_1'], [$associatedData[0]]],
@@ -89,7 +87,7 @@ class UniquenessJanitorTest extends TestCase
      * @Then the second one will be ignored.
      *
      * @dataProvider dataForSanitizeEntityArrayOnAssociation
-     * @param EntityInterface[] $uniqueProperties
+     * @param array $uniqueProperties
      * @param array $expectOutput
      */
     public function testSanitizeEntityArrayOnAssociation(array $uniqueProperties, array $expectOutput)
@@ -97,6 +95,7 @@ class UniquenessJanitorTest extends TestCase
         $factoryStub = $this->getMockBuilder(BaseFactory::class)->disableOriginalConstructor()->getMock();
         $factoryStub->method('getUniqueProperties')->willReturn($uniqueProperties);
 
+        $factoryStub = ArticleFactory::make()->setUniqueProperties($uniqueProperties);
         $associations = [
             new Entity(['property_1' => 'foo', 'property_2' => 'foo']),
             new Entity(['property_1' => 'foo', 'property_2' => 'dah']),

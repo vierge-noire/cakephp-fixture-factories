@@ -181,7 +181,7 @@ class AssociationBuilderTest extends TestCase
         $expected = [
             'City' => CityFactory::make()->getMarshallerOptions() + [
                 'associated' => [
-                    'Country' =>  CountryFactory::make()->getMarshallerOptions(),
+                    'Country' => CountryFactory::make()->getMarshallerOptions(),
                 ],
             ],
         ];

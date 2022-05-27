@@ -39,7 +39,7 @@ class ModelEventsHandlerTest extends TestCase
     public function testBeforeMarshalOnTableHandled()
     {
         $Countries = TableRegistry::getTableLocator()->get('Countries');
-        ModelEventsHandler::handle($Countries);
+        (new ModelEventsHandler([], []))->handle($Countries);
         $country = $Countries->newEntity(['name' => 'Foo']);
         $this->assertNull($country->get('beforeMarshalTriggered'));
     }
@@ -47,7 +47,7 @@ class ModelEventsHandlerTest extends TestCase
     public function testBeforeMarshalOnTableHandledPermissive()
     {
         $Countries = TableRegistry::getTableLocator()->get('Countries');
-        ModelEventsHandler::handle($Countries, ['Model.beforeMarshal']);
+        (new ModelEventsHandler(['Model.beforeMarshal'], []))->handle($Countries);
         $country = $Countries->newEntity(['name' => 'Foo']);
         $this->assertTrue($country->get('beforeMarshalTriggered'));
     }
@@ -63,7 +63,8 @@ class ModelEventsHandlerTest extends TestCase
     public function testBeforeSaveInBehaviorOnTableHandled()
     {
         $Articles = TableRegistry::getTableLocator()->get('Articles');
-        ModelEventsHandler::handle($Articles);
+        (new ModelEventsHandler([], []))->handle($Articles);
+
         $article = $Articles->newEntity(['title' => 'Foo']);
         $Articles->saveOrFail($article);
         $this->assertNull($article->get('beforeSaveInBehaviorTriggered'));
@@ -72,7 +73,8 @@ class ModelEventsHandlerTest extends TestCase
     public function testBeforeSaveInBehaviorOnTableHandledPermissive()
     {
         $Articles = TableRegistry::getTableLocator()->get('Articles');
-        ModelEventsHandler::handle($Articles, [], ['Sluggable']);
+        (new ModelEventsHandler([], ['Sluggable']))->handle($Articles);
+
         $article = $Articles->newEntity(['title' => 'Foo']);
         $Articles->saveOrFail($article);
         $this->assertTrue($article->get('beforeSaveInBehaviorTriggered'));

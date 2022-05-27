@@ -16,4 +16,5 @@ namespace TestPlugin\Model\Table;
 use Cake\ORM\Table;
 
 abstract class AbstractPluginTable extends Table
-{}
+{
+}

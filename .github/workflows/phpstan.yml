@@ -1,4 +1,4 @@
-name: PHPStan / Code sniffer
+name: Static analysis
 
 on:
   push:

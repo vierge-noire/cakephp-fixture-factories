@@ -92,7 +92,8 @@ class BaseFactoryHiddenPropertiesTest extends TestCase
      */
     public function testHiddenPropertyInBelongsToManyAssociation(int $n, bool $persist)
     {
-        $factory = AuthorFactory::make()->with('Articles',
+        $factory = AuthorFactory::make()->with(
+            'Articles',
             ArticleFactory::make($n)->withHiddenBiography(self::DUMMY_HIDDEN_PARAGRAPH)
         );
 
@@ -112,7 +113,8 @@ class BaseFactoryHiddenPropertiesTest extends TestCase
      */
     public function testHiddenPropertyInBelongsToAssociation(int $n, bool $persist)
     {
-        $factory = BillFactory::make($n)->with('Article',
+        $factory = BillFactory::make($n)->with(
+            'Article',
             ArticleFactory::make()->withHiddenBiography(self::DUMMY_HIDDEN_PARAGRAPH)
         );
 

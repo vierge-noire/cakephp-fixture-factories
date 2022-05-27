@@ -48,7 +48,7 @@ class PersistCommandTest extends TestCase
         parent::setUp();
 
         $this->command = new PersistCommand();
-        $this->io  = new ConsoleIo();
+        $this->io = new ConsoleIo();
         $this->io->level(ConsoleIo::QUIET);
     }
 
