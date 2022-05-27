@@ -88,17 +88,4 @@ class BaseFactoryDisplayFieldTest extends TestCase
             $this->assertSame($city, $country->cities[$i]->name);
         }
     }
-
-    /**
-     * It is important here to use the BillFactory in order to
-     * cover the case where a factory is listening to some Model Events / Behavior
-     * which resets the factories table.
-     *
-     * @see BillsTable::initialize()
-     */
-    public function testUseDisplayFieldErrorIfDisplayFieldAnArray()
-    {
-        $this->expectException(FixtureFactoryException::class);
-        BillFactory::make('Some bill')->persist();
-    }
 }
