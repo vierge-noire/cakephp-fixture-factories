@@ -44,8 +44,9 @@ class ArticlesTable extends Table
     public function findPublished(Query $query, array $options): Query
     {
         $query->where([
-            $this->aliasField('published') => 1
+            $this->aliasField('published') => 1,
         ]);
+
         return $query;
     }
 }

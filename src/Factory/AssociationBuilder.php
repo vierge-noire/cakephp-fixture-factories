@@ -146,7 +146,7 @@ class AssociationBuilder
      * Get the factory for the association
      *
      * @param string $associationName Association name
-     * @param scalar[]|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
+     * @param array|int|string|callable|\CakephpFixtureFactories\Factory\BaseFactory|\CakephpFixtureFactories\Factory\BaseFactory[]|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
     public function getAssociatedFactory(string $associationName, $data = []): BaseFactory

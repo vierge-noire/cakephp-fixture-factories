@@ -83,7 +83,7 @@ Cache::setConfig([
     ],
 ]);
 
-$loadEnv = function(string $fileName) {
+$loadEnv = function (string $fileName) {
     if (file_exists($fileName)) {
         $dotenv = new \josegonzalez\Dotenv\Loader($fileName);
         $dotenv->parse()
@@ -130,7 +130,7 @@ $dbConnection = [
     'migrations' => [
         ['connection' => 'test'],
         ['plugin' => 'TestPlugin'],
-    ]
+    ],
 ];
 
 ConnectionManager::setConfig('test', $dbConnection);

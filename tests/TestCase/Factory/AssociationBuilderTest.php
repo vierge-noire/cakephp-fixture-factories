@@ -188,9 +188,9 @@ class AssociationBuilderTest extends TestCase
         $expected = [
             'City' => CityFactory::make()->getMarshallerOptions() + [
                 'associated' => [
-                    'Country' =>  CountryFactory::make()->getMarshallerOptions(),
-                ]
-            ]
+                    'Country' => CountryFactory::make()->getMarshallerOptions(),
+                ],
+            ],
         ];
         $this->assertSame($expected, $AddressFactory->getAssociated());
     }

@@ -29,7 +29,6 @@ class DocumentationExamplesTest extends TestCase
         $result = ArticleFactory::find('published')
             ->find('list')
             ->toArray();
-
         $expected = [
             $articles[0]->id => $articles[0]->title,
             $articles[1]->id => $articles[1]->title,

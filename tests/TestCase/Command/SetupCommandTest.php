@@ -50,7 +50,7 @@ class SetupCommandTest extends TestCase
     public function setUp()
     {
         $this->setupCommand = new SetupCommand();
-        $this->io  = new ConsoleIo();
+        $this->io = new ConsoleIo();
     }
 
     public function tearDown()

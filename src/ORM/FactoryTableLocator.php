@@ -35,11 +35,8 @@ class FactoryTableLocator extends TableLocator
 
         $behaviors = array_merge($options[EventCollector::MODEL_BEHAVIORS] ?? [], $defaultBehaviors);
 
-        ModelEventsHandler::handle(
-            $table,
-            $options[EventCollector::MODEL_EVENTS] ?? [],
-            $behaviors
-        );
+        (new ModelEventsHandler($options[EventCollector::MODEL_EVENTS] ?? [], $behaviors))
+            ->handle($table);
 
         $table->getEventManager()->on('Model.beforeSave', function ($event, $entity, $options) use ($table) {
             FactoryTableBeforeSave::handle($table, $entity);

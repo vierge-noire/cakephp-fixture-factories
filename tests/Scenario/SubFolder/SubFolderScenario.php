@@ -13,7 +13,6 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\Scenario\SubFolder;
 
-
 use CakephpFixtureFactories\Scenario\FixtureScenarioInterface;
 
 class SubFolderScenario implements FixtureScenarioInterface

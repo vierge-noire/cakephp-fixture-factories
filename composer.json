@@ -25,7 +25,7 @@
         "cakephp/bake": "^1.5",
         "cakephp/migrations": "^2.3",
         "josegonzalez/dotenv": "dev-master",
-        "phpstan/phpstan": "0.12.x-dev",
+        "phpstan/phpstan": "^1.0",
         "phpunit/phpunit": "^6.1",
         "vierge-noire/cakephp-test-migrator": "^1.1"
     },

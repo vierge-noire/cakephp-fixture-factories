@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Test\TestCase\ORM;
 
-
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\DataCompiler;
 use CakephpFixtureFactories\ORM\FactoryTableBeforeSave;

@@ -31,13 +31,12 @@ use CakephpFixtureFactories\Test\Factory\CustomerFactory;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
-use TestApp\Model\Table\CountriesTable;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
 class EventCollectorTest extends TestCase
 {
     /**
-     * @var CountriesTable
+     * @var \TestApp\Model\Table\CountriesTable
      */
     private $Countries;
 
@@ -55,7 +54,7 @@ class EventCollectorTest extends TestCase
 
     public function setUp()
     {
-        /** @var CountriesTable $Countries */
+        /** @var \TestApp\Model\Table\CountriesTable $Countries */
         $Countries = TableRegistry::getTableLocator()->get('Countries');
         $this->Countries = $Countries;
 

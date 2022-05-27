@@ -1,4 +1,4 @@
-name: PHPStan
+name: Static analysis
 
 on:
   push:
