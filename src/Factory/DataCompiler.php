@@ -35,6 +35,9 @@ class DataCompiler
     public const IS_ASSOCIATED = '___data_compiler__is_associated';
 
     private $dataFromDefaultTemplate = [];
+    /**
+     * @var array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|callable
+     */
     private $dataFromInstantiation = [];
     private $dataFromPatch = [];
     private $dataFromAssociations = [];
@@ -61,7 +64,7 @@ class DataCompiler
     /**
      * Data passed in the instantiation by array
      *
-     * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data.
+     * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|string $data Injected data.
      * @return void
      */
     public function collectFromInstantiation($data)
@@ -149,14 +152,14 @@ class DataCompiler
 
         if (is_array($this->dataFromInstantiation) && isset($this->dataFromInstantiation[0])) {
             $compiledTemplateData = [];
-            foreach ($this->dataFromInstantiation as $entity) {
-                if ($entity instanceof BaseFactory) {
-                    foreach ($entity->getEntities() as $subEntity) {
+            foreach ($this->dataFromInstantiation as $data) {
+                if ($data instanceof BaseFactory) {
+                    foreach ($data->getEntities() as $subEntity) {
                         $compiledTemplateData[] = $this->compileEntity($subEntity, $setPrimaryKey);
                         $setPrimaryKey = false;
                     }
                 } else {
-                    $compiledTemplateData[] = $this->compileEntity($entity, $setPrimaryKey);
+                    $compiledTemplateData[] = $this->compileEntity($data, $setPrimaryKey);
                     // Only the first entity gets its primary key set.
                     $setPrimaryKey = false;
                 }
@@ -169,12 +172,15 @@ class DataCompiler
     }
 
     /**
-     * @param array|callable|\Cake\Datasource\EntityInterface $injectedData Data from the injection.
+     * @param array|callable|\Cake\Datasource\EntityInterface|string $injectedData Data from the injection.
      * @param bool $setPrimaryKey Set the primary key if this entity is alone or the first of an array.
      * @return \Cake\Datasource\EntityInterface
      */
     public function compileEntity($injectedData = [], bool $setPrimaryKey = false): EntityInterface
     {
+        if (is_string($injectedData)) {
+            $injectedData = $this->setDisplayFieldToInjectedString($injectedData);
+        }
         if ($injectedData instanceof EntityInterface) {
             $entity = $injectedData;
         } else {
@@ -209,6 +215,21 @@ class DataCompiler
             $data,
             $this->getFactory()->getMarshallerOptions()
         );
+    }
+
+    /**
+     * When injecting a string as data, the compiler should understand that this is the value that
+     * should a assigned to the display field of the table.
+     *
+     * @param string $data data injected
+     * @return string[]
+     * @throws \CakephpFixtureFactories\Error\FixtureFactoryException if the display field of the factory's table is not a string
+     */
+    private function setDisplayFieldToInjectedString(string $data): array
+    {
+        $displayField = $this->getFactory()->getTable()->getDisplayField();
+
+        return [$displayField => $data];
     }
 
     /**
