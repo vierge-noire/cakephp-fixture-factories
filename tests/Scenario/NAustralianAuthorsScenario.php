@@ -24,7 +24,7 @@ class NAustralianAuthorsScenario implements FixtureScenarioInterface
      * @param mixed $args the number of authors
      * @return \TestApp\Model\Entity\Author|\TestApp\Model\Entity\Author[]
      */
-    public function load($n = 1, ...$args)
+    public function load(...$args)
     {
         $n = $args[0];
 
