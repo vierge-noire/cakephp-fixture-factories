@@ -39,7 +39,7 @@ PHP 7.0 is supported up to v1.1.* only.
 * ### [Setup - DB Cleaning](docs/setup.md)
 * ### [Fixture Factories](docs/factories.md)
 * ### [Test Fixtures](docs/examples.md)
-* ### [Associations](docs/examples.md)
+* ### [Associations](docs/associations.md)
 * ### [Associations for non-CakePHP apps](docs/no_cake_associations.md)
 * ### [Scenarios](docs/scenarios.md)
 * ### [Queries](docs/queries.md)
