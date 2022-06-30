@@ -167,4 +167,21 @@ class DataCompilerTest extends TestCase
         $dataCompiler->compileEntity($injectedData);
         $this->assertSame($dataCompiler->getModifiedUniqueFields(), $expected);
     }
+
+    public function testCompileEntityWithoutSetters()
+    {
+        $value = 'Foo';
+        $dataCompiler = new DataCompiler(AuthorFactory::make()->without('Address'));
+        $dataCompiler->setSkippedSetters(['field_with_setter_1']);
+        /** @var \TestApp\Model\Entity\Author $author */
+        $author = $dataCompiler->compileEntity([
+            'field_with_setter_1' => $value,
+            'field_with_setter_2' => $value,
+            'field_with_setter_3' => $value,
+        ]);
+
+        $this->assertSame($value, $author->get("field_with_setter_1"));
+        $this->assertSame($author->prependPrefixToField($value), $author->get("field_with_setter_2"));
+        $this->assertSame($author->prependPrefixToField($value), $author->get("field_with_setter_3"));
+    }
 }
