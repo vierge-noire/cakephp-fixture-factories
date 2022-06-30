@@ -44,6 +44,7 @@ class DataCompiler
     private $dataFromDefaultAssociations = [];
     private $primaryKeyOffset = [];
     private $enforcedFields = [];
+    private $skippedSetters = [];
 
     static private $inPersistMode = false;
 
@@ -210,6 +211,8 @@ class DataCompiler
      */
     private function patchEntity(EntityInterface $entity, array $data): EntityInterface
     {
+        $this->setDataWithoutSetters($entity, $data);
+
         return empty($data) ? $entity : $this->getFactory()->getTable()->patchEntity(
             $entity,
             $data,
@@ -233,6 +236,23 @@ class DataCompiler
     }
 
     /**
+     * Sets fields individually skipping the setters
+     *
+     * @param \Cake\Datasource\EntityInterface $entity entity build
+     * @param array $data data to set
+     * @return void
+     */
+    private function setDataWithoutSetters(EntityInterface $entity, array &$data)
+    {
+        foreach ($data as $field => $value) {
+            if (in_array($field, $this->skippedSetters)) {
+                $entity->set($field, $value, ['setter' => false]);
+                unset($data[$field]);
+            }
+        }
+    }
+
+    /**
      * Step 1: Create an entity from the default template.
      *
      * @return \Cake\Datasource\EntityInterface
@@ -243,8 +263,10 @@ class DataCompiler
         if (is_callable($data)) {
             $data = $data($this->getFactory()->getFaker());
         }
+        $entityClassName = $this->getFactory()->getTable()->getEntityClass();
+        $entity = new $entityClassName();
 
-        return $this->getFactory()->getTable()->newEntity($data, $this->getFactory()->getMarshallerOptions());
+        return $this->patchEntity($entity, $data);
     }
 
     /**
@@ -606,5 +628,16 @@ class DataCompiler
             array_keys($fields),
             $this->enforcedFields
         );
+    }
+
+    /**
+     * Sets the fields which setters should be skipped
+     *
+     * @param array $skippedSetters setters to skip
+     * @return void
+     */
+    public function setSkippedSetters(array $skippedSetters): void
+    {
+        $this->skippedSetters = $skippedSetters;
     }
 }

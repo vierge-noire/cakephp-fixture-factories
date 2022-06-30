@@ -63,6 +63,10 @@ abstract class BaseFactory
      */
     protected $uniqueProperties = [];
     /**
+     * @var array Fields on which the setters should be skipped.
+     */
+    protected $skippedSetters = [];
+    /**
      * The number of records the factory should create
      *
      * @var int
@@ -260,9 +264,13 @@ abstract class BaseFactory
      */
     protected function toArray(): array
     {
+        $dataCompiler = $this->getDataCompiler();
+        // Casts the default property to array
+        $this->skipSetterFor($this->skippedSetters);
+        $dataCompiler->setSkippedSetters($this->skippedSetters);
         $entities = [];
         for ($i = 0; $i < $this->times; $i++) {
-            $compiledData = $this->getDataCompiler()->getCompiledTemplateData();
+            $compiledData = $dataCompiler->getCompiledTemplateData();
             if (is_array($compiledData)) {
                 $entities = array_merge($entities, $compiledData);
             } else {
@@ -564,6 +572,26 @@ abstract class BaseFactory
                 $data
             )
         );
+
+        return $this;
+    }
+
+    /**
+     * Per default setters defined in entities are applied.
+     * Here the user may define a list of fields for which setters should be ignored
+     *
+     * @param string|string[]|mixed $skippedSetters Field or list of fields for which setters ought to be skipped
+     * @return $this
+     * @throws \CakephpFixtureFactories\Error\FixtureFactoryException is no string or array is passed
+     */
+    public function skipSetterFor($skippedSetters)
+    {
+        if (!is_string($skippedSetters) && !is_array($skippedSetters)) {
+            throw new FixtureFactoryException(
+                'BaseFactory::skipSettersFor() accepts an array of string or a string as argument.'
+            );
+        }
+        $this->skippedSetters = (array)$skippedSetters;
 
         return $this;
     }
