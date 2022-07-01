@@ -581,17 +581,22 @@ abstract class BaseFactory
      * Here the user may define a list of fields for which setters should be ignored
      *
      * @param string|string[]|mixed $skippedSetters Field or list of fields for which setters ought to be skipped
+     * @param bool $merge Merge the first argument with the setters already skipped. False by default.
      * @return $this
      * @throws \CakephpFixtureFactories\Error\FixtureFactoryException is no string or array is passed
      */
-    public function skipSetterFor($skippedSetters)
+    public function skipSetterFor($skippedSetters, bool $merge = false)
     {
         if (!is_string($skippedSetters) && !is_array($skippedSetters)) {
             throw new FixtureFactoryException(
                 'BaseFactory::skipSettersFor() accepts an array of string or a string as argument.'
             );
         }
-        $this->skippedSetters = (array)$skippedSetters;
+        $skippedSetters = (array)$skippedSetters;
+        if ($merge) {
+            $skippedSetters = array_unique(array_merge($this->skippedSetters, $skippedSetters));
+        }
+        $this->skippedSetters = $skippedSetters;
 
         return $this;
     }

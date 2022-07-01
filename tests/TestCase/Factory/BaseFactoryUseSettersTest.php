@@ -105,6 +105,22 @@ class BaseFactoryUseSettersTest extends TestCase
         }
     }
 
+    public function testSettersAreSkippedDefinedOnTwoAuthorsWithMerge()
+    {
+        $value = 'Foo';
+        $authors = AuthorFactory::make([
+            'field_with_setter_1' => $value,
+            'field_with_setter_2' => $value,
+            'field_with_setter_3' => $value,
+        ], 2)->skipSetterFor('field_with_setter_2', true)->getEntities();
+
+        foreach ($authors as $author) {
+            $this->assertSame($value, $author->get("field_with_setter_1"));
+            $this->assertSame($value, $author->get("field_with_setter_2"));
+            $this->assertSame($author->prependPrefixToField($value), $author->get("field_with_setter_3"));
+        }
+    }
+
     public function testSettersAreSkippedOnAssociatedAuthor()
     {
         $value = 'Foo';
