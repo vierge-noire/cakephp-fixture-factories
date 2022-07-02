@@ -22,6 +22,7 @@ use Cake\ORM\Entity;
  */
 class Author extends Entity
 {
+    public const SET_FIELD_PREFIX = 'set_field_prefix_';
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -31,15 +32,25 @@ class Author extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
-        'name' => true,
-        'address_id' => true,
-        'business_address_id' => true,
-        'biography' => true,
-        'created' => true,
-        'modified' => true,
-        'address' => true,
-        'business_address' => true,
-        'articles' => true,
-    ];
+    protected $_accessible = ['*' => false];
+
+    protected function _setFieldWithSetter_1(string $value): string
+    {
+        return $this->prependPrefixToField($value);
+    }
+
+    protected function _setFieldWithSetter_2(string $value): string
+    {
+        return $this->prependPrefixToField($value);
+    }
+
+    protected function _setFieldWithSetter_3(string $value): string
+    {
+        return $this->prependPrefixToField($value);
+    }
+
+    public function prependPrefixToField(string $value): string
+    {
+        return self::SET_FIELD_PREFIX . $value;
+    }
 }
