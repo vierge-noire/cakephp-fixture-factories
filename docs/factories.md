@@ -84,6 +84,35 @@ use Cake\Core\Configure;
 Configure::write('TestFixtureNamespace', 'MyApp\Test\Factory');
 ```
 
+## Setters
+
+By default, each entity's setters are applied. You may deactivate one or several setters by default
+by defining the protected property `skippedSetters` of a given factory. You may also __overwrite__ this set of setters
+with the public method `skipSettersFor`.
+
+```php
+namespace App\Test\Factory;
+... 
+class UserFactory extends BaseFactory
+{
+    protected $skippedSetters = [
+        'password',
+    ];
+...
+}
+```
+
+or 
+
+```php
+UserFactory::make([
+    'username' => 'foo@bar.com',
+    'password' => 'secret',
+])->skipSetterFor('password')->getEntity();
+```
+
+This can be useful for setters with heavy computation costs, such as hashing. 
+
 ## Property uniqueness
 
 It is not rare to have to create entities associated with an entity that should remain
@@ -111,7 +140,7 @@ will be cautious whenever the property `name` is set by the developer.
 
 Running
 ```php
-CityFactory::make(5)->with('Country', ['name' => 'Foo'])->persist();
+CityFactory::make(5)->with('Country', 'Foo')->persist();
 ```
 will create 5 cities all associated to one unique country. If you perform that same operation again,
 you will have 10 cities, all associated to one single country.

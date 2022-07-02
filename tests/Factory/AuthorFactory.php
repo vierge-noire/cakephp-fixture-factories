@@ -25,6 +25,10 @@ use Faker\Generator;
  */
 class AuthorFactory extends BaseFactory
 {
+    protected $skippedSetters = [
+        'field_with_setter_1',
+    ];
+
     protected function getRootTableRegistryName(): string
     {
         return 'Authors';
@@ -36,6 +40,9 @@ class AuthorFactory extends BaseFactory
             ->setDefaultData(function (Generator $faker) {
                 return [
                     'name' => $faker->name,
+                    'field_with_setter_1' => $faker->word,
+                    'field_with_setter_2' => $faker->word,
+                    'field_with_setter_3' => $faker->word,
                 ];
             })
             ->withAddress();

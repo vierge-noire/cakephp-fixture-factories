@@ -63,6 +63,10 @@ abstract class BaseFactory
      */
     protected $uniqueProperties = [];
     /**
+     * @var array Fields on which the setters should be skipped.
+     */
+    protected $skippedSetters = [];
+    /**
      * The number of records the factory should create
      *
      * @var int
@@ -114,7 +118,7 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param array|callable|null|int|\Cake\Datasource\EntityInterface $makeParameter Injected data
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|string $makeParameter Injected data
      * @param int                     $times Number of entities created
      * @return static
      */
@@ -125,13 +129,13 @@ abstract class BaseFactory
             $times = $makeParameter;
         } elseif (is_null($makeParameter)) {
             $factory = static::makeFromNonCallable();
-        } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface) {
+        } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface || is_string($makeParameter)) {
             $factory = static::makeFromNonCallable($makeParameter);
         } elseif (is_callable($makeParameter)) {
             $factory = static::makeFromCallable($makeParameter);
         } else {
             throw new InvalidArgumentException('
-                ::make only accepts an array, an integer, an EntityInterface or a callable as first parameter.
+                ::make only accepts an array, an integer, an EntityInterface, a string or a callable as first parameter.
             ');
         }
 
@@ -264,9 +268,13 @@ abstract class BaseFactory
      */
     protected function toArray(): array
     {
+        $dataCompiler = $this->getDataCompiler();
+        // Casts the default property to array
+        $this->skipSetterFor($this->skippedSetters);
+        $dataCompiler->setSkippedSetters($this->skippedSetters);
         $entities = [];
         for ($i = 0; $i < $this->times; $i++) {
-            $compiledData = $this->getDataCompiler()->getCompiledTemplateData();
+            $compiledData = $dataCompiler->getCompiledTemplateData();
             if (is_array($compiledData)) {
                 $entities = array_merge($entities, $compiledData);
             } else {
@@ -502,7 +510,7 @@ abstract class BaseFactory
      * The data can be an array, an integer, an entity interface, a callable or a factory
      *
      * @param string $associationName Association name
-     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface $data Injected data
+     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|string $data Injected data
      * @return $this
      */
     public function with(string $associationName, $data = [])
@@ -556,6 +564,31 @@ abstract class BaseFactory
                 $data
             )
         );
+
+        return $this;
+    }
+
+    /**
+     * Per default setters defined in entities are applied.
+     * Here the user may define a list of fields for which setters should be ignored
+     *
+     * @param string|string[]|mixed $skippedSetters Field or list of fields for which setters ought to be skipped
+     * @param bool $merge Merge the first argument with the setters already skipped. False by default.
+     * @return $this
+     * @throws \CakephpFixtureFactories\Error\FixtureFactoryException is no string or array is passed
+     */
+    public function skipSetterFor($skippedSetters, bool $merge = false)
+    {
+        if (!is_string($skippedSetters) && !is_array($skippedSetters)) {
+            throw new FixtureFactoryException(
+                'BaseFactory::skipSettersFor() accepts an array of string or a string as argument.'
+            );
+        }
+        $skippedSetters = (array)$skippedSetters;
+        if ($merge) {
+            $skippedSetters = array_unique(array_merge($this->skippedSetters, $skippedSetters));
+        }
+        $this->skippedSetters = $skippedSetters;
 
         return $this;
     }

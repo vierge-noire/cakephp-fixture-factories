@@ -39,6 +39,15 @@ $articles = ArticleFactory::make([
 ])->getEntities();
 ```
 
+When injecting a single string in the factory, the latter will assign the injected string to the
+[display field](https://book.cakephp.org/4/en/orm/retrieving-data-and-resultsets.html#finding-key-value-pairs) of the factory's table:
+```php
+$articles = ArticleFactory::make('Foo')->getEntity();
+$articles = ArticleFactory::make('Foo', 3)->getEntities();
+$articles = ArticleFactory::make(['Foo', 'Bar', 'Baz'])->getEntities();
+```
+
+
 In order to persist the data generated, use the method `persist` instead of `getEntity` resp. `getEntities`:
 ```php
 $articles = ArticleFactory::make(3)->persist();
