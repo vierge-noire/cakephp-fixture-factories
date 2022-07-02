@@ -211,7 +211,7 @@ class DataCompiler
      */
     private function patchEntity(EntityInterface $entity, array $data): EntityInterface
     {
-        $this->setDataWithoutSetters($entity, $data);
+        $data = $this->setDataWithoutSetters($entity, $data);
 
         return empty($data) ? $entity : $this->getFactory()->getTable()->patchEntity(
             $entity,
@@ -236,13 +236,16 @@ class DataCompiler
     }
 
     /**
-     * Sets fields individually skipping the setters
+     * Sets fields individually skipping the setters.
+     * CakePHP does not offer to skipp setters on a patchEntity/newEntity
+     * Therefore fields which skipped setters should be set individually,
+     * and removed from the dat parched.
      *
      * @param \Cake\Datasource\EntityInterface $entity entity build
      * @param array $data data to set
-     * @return void
+     * @return array $data without the fields for which the setters are ignored
      */
-    private function setDataWithoutSetters(EntityInterface $entity, array &$data)
+    private function setDataWithoutSetters(EntityInterface $entity, array $data): array
     {
         foreach ($data as $field => $value) {
             if (in_array($field, $this->skippedSetters)) {
@@ -250,6 +253,8 @@ class DataCompiler
                 unset($data[$field]);
             }
         }
+
+        return $data;
     }
 
     /**
