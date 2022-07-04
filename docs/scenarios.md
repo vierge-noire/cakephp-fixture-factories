@@ -12,7 +12,7 @@ Example:
 ```php
 $authors = $this->loadFixtureScenario('NAustralianAuthors', 3);
 ```
-will persist 3 authors associated to the country Australia, as defined [in this example scenario](tests/Scenario/NAustralianAuthorsScenario.php).
+will persist 3 authors associated to the country Australia, as defined [in this example scenario](../tests/Scenario/NAustralianAuthorsScenario.php).
 
 Scenarios should implement the `CakephpFixtureFactories\Scenario\FixtureScenarioInterface` class.
-[This test](tests/TestCase/Scenario/FixtureScenarioTest.php) provides an example on how to use scenarios.
+[This test](../tests/TestCase/Scenario/FixtureScenarioTest.php) provides an example on how to use scenarios.
