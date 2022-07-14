@@ -185,4 +185,10 @@ class DataCompilerTest extends TestCase
         $this->assertSame($author->prependPrefixToField($value), $author->get("field_with_setter_2"));
         $this->assertSame($author->prependPrefixToField($value), $author->get("field_with_setter_3"));
     }
+
+    public function testEntityHasRegistryAlias()
+    {
+        $country = CountryFactory::make()->getEntity();
+        $this->assertSame('Countries', $country->getSource());
+    }
 }
