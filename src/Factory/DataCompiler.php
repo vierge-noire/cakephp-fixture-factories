@@ -282,7 +282,7 @@ class DataCompiler
             $data = $data($this->getFactory()->getFaker());
         }
         $entityClassName = $this->getFactory()->getTable()->getEntityClass();
-        $entity = new $entityClassName();
+        $entity = new $entityClassName([], ['source' => $this->getFactory()->getTable()->getRegistryAlias()]);
 
         return $this->patchEntity($entity, $data);
     }

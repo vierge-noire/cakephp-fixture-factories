@@ -55,6 +55,9 @@
         "cs-fix": "vendor/bin/phpcbf --colors -p -s --extensions=php src/ tests/TestApp/tests/Factory"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
