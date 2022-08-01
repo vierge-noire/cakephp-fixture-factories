@@ -126,7 +126,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function getModelPath()
     {
-        if (isset($this->plugin)) {
+        if (!empty($this->plugin)) {
             $path = $this->_pluginPath($this->plugin) . APP_DIR . DS . $this->pathToTableDir;
         } else {
             $path = APP . $this->pathToTableDir;
