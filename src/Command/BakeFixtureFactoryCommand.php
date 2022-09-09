@@ -31,19 +31,15 @@ class BakeFixtureFactoryCommand extends BakeCommand
     use FactoryAwareTrait;
 
     /**
-     * path to Factory directory
-     *
-     * @var string
-     */
-    public $pathFragment = 'tests' . DS . 'Factory' . DS;
-    /**
      * @var string path to the Table dir
      */
     public $pathToTableDir = 'Model' . DS . 'Table' . DS;
+
     /**
      * @var string
      */
     private $modelName;
+
     /**
      * @var \Cake\ORM\Table
      */
