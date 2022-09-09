@@ -110,10 +110,13 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function getPath(Arguments $args): string
     {
+        $outputDir = Configure::read('FixtureFactories.testFixtureOutputDir', 'Factory/');
+        $outputDir = rtrim($outputDir, DS) . '/';
+
         if ($this->plugin) {
-            $path = $this->_pluginPath($this->plugin) . $this->pathFragment;
+            $path = $this->_pluginPath($this->plugin) . 'tests/' . $outputDir;
         } else {
-            $path = TESTS . 'Factory' . DS;
+            $path = TESTS . $outputDir;
         }
 
         return str_replace('/', DS, $path);
