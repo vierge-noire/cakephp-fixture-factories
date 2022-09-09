@@ -24,6 +24,9 @@ protected function bootstrapCli(): void
 
 **We recommend using migrations for managing the schema of your test DB with the [CakePHP Migrator tool.](https://book.cakephp.org/migrations/2/en/index.html#using-migrations-for-tests)**
 
+## CakePHP 4.4+
+For CakePHP 4.4 or higher applications, add the `TruncateDirtyTables` trait to the top of your test classes to automatically truncate dirty tables after each test runs.
+No modification to your PHPUnit configuration is required when using the trait.
 
 ## CakePHP 3 or < 4.3
 For CakePHP anterior to 4.3 applications, you will need to use the [CakePHP test suite light plugin](https://github.com/vierge-noire/cakephp-test-suite-light#cakephp-test-suite-light)
