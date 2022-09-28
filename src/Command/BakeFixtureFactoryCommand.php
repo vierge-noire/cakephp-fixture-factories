@@ -93,8 +93,6 @@ class BakeFixtureFactoryCommand extends BakeCommand
         } catch (\Exception $e) {
             $io->warning("The table $tableName could not be found... in " . $this->getModelPath());
             $io->abort($e->getMessage());
-
-            return false;
         }
 
         return $this;
@@ -265,8 +263,6 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
         if (!$this->setTable($modelName, $io)) {
             $io->abort("$modelName not found...");
-
-            return self::CODE_SUCCESS;
         }
 
         $renderer = new TemplateRenderer('CakephpFixtureFactories');

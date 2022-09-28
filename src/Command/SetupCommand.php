@@ -78,8 +78,6 @@ class SetupCommand extends Command
 
         if (!file_exists($path)) {
             $io->abort("The phpunit config file $path could not be found.");
-
-            return '';
         } else {
             return $path;
         }
