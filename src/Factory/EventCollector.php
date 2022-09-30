@@ -134,7 +134,7 @@ class EventCollector
      */
     protected function setDefaultListeningBehaviors(): void
     {
-        $defaultBehaviors = (array)Configure::read('TestFixtureGlobalBehaviors', []);
+        $defaultBehaviors = (array)Configure::read('FixtureFactories.testFixtureGlobalBehaviors', []);
         $defaultBehaviors[] = 'Timestamp';
         $this->defaultListeningBehaviors = $defaultBehaviors;
         $this->listeningBehaviors = $defaultBehaviors;

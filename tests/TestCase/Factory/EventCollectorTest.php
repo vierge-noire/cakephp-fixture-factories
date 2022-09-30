@@ -43,14 +43,14 @@ class EventCollectorTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
-        Configure::write('TestFixtureGlobalBehaviors', 'SomeBehaviorUsedInMultipleTables');
+        Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
+        Configure::write('FixtureFactories.testFixtureGlobalBehaviors', 'SomeBehaviorUsedInMultipleTables');
     }
 
     public static function tearDownAfterClass(): void
     {
-        Configure::delete('TestFixtureNamespace');
-        Configure::delete('TestFixtureGlobalBehaviors');
+        Configure::delete('FixtureFactories.testFixtureNamespace');
+        Configure::delete('FixtureFactories.testFixtureGlobalBehaviors');
     }
 
     public function setUp(): void
@@ -64,7 +64,7 @@ class EventCollectorTest extends TestCase
 
     public function tearDown(): void
     {
-        Configure::delete('TestFixtureGlobalBehaviors');
+        Configure::delete('FixtureFactories.testFixtureGlobalBehaviors');
         unset($this->Countries);
 
         parent::tearDown();
@@ -75,7 +75,7 @@ class EventCollectorTest extends TestCase
      */
     public function testSetDefaultListeningBehaviors()
     {
-        Configure::write('TestFixtureGlobalBehaviors', ['Sluggable']);
+        Configure::write('FixtureFactories.testFixtureGlobalBehaviors', ['Sluggable']);
 
         $EventManager = new EventCollector('Foo');
 
@@ -258,7 +258,7 @@ class EventCollectorTest extends TestCase
         $this->assertNull($country->get($field));
 
         // The behavior should apply
-        Configure::write('TestFixtureGlobalBehaviors', ['SomePlugin']);
+        Configure::write('FixtureFactories.testFixtureGlobalBehaviors', ['SomePlugin']);
         $country = CountryFactory::make()->persist();
         $this->assertTrue($country->get($field));
     }

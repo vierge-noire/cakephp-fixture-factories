@@ -40,7 +40,7 @@ class PersistCommandTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
+        Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
     }
 
     public function setUp(): void
