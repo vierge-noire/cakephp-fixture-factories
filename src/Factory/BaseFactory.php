@@ -297,7 +297,7 @@ abstract class BaseFactory
     }
 
     /**
-     * @return \Cake\Datasource\EntityInterface|array<\Cake\Datasource\EntityInterface>|\Cake\Datasource\ResultSetInterface
+     * @return \Cake\Datasource\EntityInterface|iterable<\Cake\Datasource\EntityInterface>|\Cake\Datasource\ResultSetInterface
      * @throws \CakephpFixtureFactories\Error\PersistenceException if the entity/entities could not be saved.
      */
     public function persist()
