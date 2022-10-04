@@ -32,10 +32,13 @@ use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Table\CountriesTable;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 use TestPlugin\Model\Behavior\SomePluginBehavior;
 
 class EventCollectorTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     /**
      * @var CountriesTable
      */

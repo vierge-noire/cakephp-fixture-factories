@@ -5,12 +5,10 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
-use CakephpTestSuiteLight\SkipTablesTruncation;
 
 class FactoryAwareTraitUnitTest extends TestCase
 {
     use FactoryAwareTrait;
-    use SkipTablesTruncation;
 
     public function getFactoryNamespaceData(): array
     {

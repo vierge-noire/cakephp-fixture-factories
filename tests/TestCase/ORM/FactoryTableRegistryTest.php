@@ -23,11 +23,14 @@ use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\AuthorsTable;
 use TestApp\Model\Table\CitiesTable;
 use TestApp\Model\Table\CountriesTable;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 use TestPlugin\Model\Table\BillsTable;
 use TestPlugin\Model\Table\CustomersTable;
 
 class FactoryTableRegistryTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public function setUp(): void
     {
         TableRegistry::getTableLocator()->clear();

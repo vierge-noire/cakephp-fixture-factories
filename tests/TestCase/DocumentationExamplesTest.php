@@ -18,9 +18,12 @@ use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use Faker\Generator;
 use TestApp\Model\Entity\Article;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 
 class DocumentationExamplesTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public function testArticlesFindPublished()
     {
         $articles = ArticleFactory::make(['published' => 1], 3)->persist();

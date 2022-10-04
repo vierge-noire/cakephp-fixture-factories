@@ -15,9 +15,12 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 
 class FixtureInjectorTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     /**
      * For each of the data provided, their should be
      * 10 Articles found, which is the last value given to times

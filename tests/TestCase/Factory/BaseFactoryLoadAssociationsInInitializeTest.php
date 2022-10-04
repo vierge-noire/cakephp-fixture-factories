@@ -25,10 +25,13 @@ use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\TableWithoutModelFactory;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Country;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 use function count;
 
 class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

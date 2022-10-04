@@ -16,9 +16,12 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 
 class BaseFactoryTimestampBehaviorTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     /**
      * The countries and cities tables do not have default timestamp.
      * We test here that the TimestampBehavior is well activated.

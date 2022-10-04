@@ -25,9 +25,12 @@ use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 
 class AssociationBuilderTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

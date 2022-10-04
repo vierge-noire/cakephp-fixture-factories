@@ -24,10 +24,12 @@ use CakephpFixtureFactories\Test\Scenario\NAustralianAuthorsScenario;
 use CakephpFixtureFactories\Test\Scenario\SubFolder\SubFolderScenario;
 use CakephpFixtureFactories\Test\Scenario\TenAustralianAuthorsScenario;
 use TestApp\Model\Entity\Author;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 
 class FixtureScenarioTest extends TestCase
 {
     use ScenarioAwareTrait;
+    use TruncateDirtyTablesTrait;
 
     public static function setUpBeforeClass(): void
     {

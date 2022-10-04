@@ -35,11 +35,14 @@ use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Entity\PremiumAuthor;
 use TestApp\Model\Table\PremiumAuthorsTable;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 use TestPlugin\Model\Entity\Bill;
 use TestPlugin\Model\Entity\Customer;
 
 class BaseFactoryAssociationsTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

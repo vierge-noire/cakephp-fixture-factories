@@ -20,10 +20,13 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 
 
 class BaseFactoryMakeWithEntityTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

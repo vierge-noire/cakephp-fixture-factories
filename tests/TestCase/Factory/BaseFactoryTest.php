@@ -33,6 +33,7 @@ use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
 use TestApp\Model\Table\ArticlesTable;
 use TestApp\Model\Table\CountriesTable;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 use TestPlugin\Model\Entity\Bill;
 use function count;
 use function is_array;
@@ -40,6 +41,8 @@ use function is_int;
 
 class BaseFactoryTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public function dataForTestConnectionInDataProvider()
     {
         return [

@@ -139,4 +139,10 @@ ConnectionManager::setConfig('dummy', $dbConnection);
 
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
+
 Migrator::migrate();
+\TestDatabaseCleaner\ConnectionRegistry::addConnection(
+    'test',
+    ConnectionManager::get('test')->getDriver()->getConnection(),
+    ['phinxlog', 'test_plugin_phinxlog']
+);

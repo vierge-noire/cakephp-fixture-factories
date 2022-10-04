@@ -18,8 +18,7 @@
     "require": {
         "php": ">=7.2",
         "cakephp/orm": "^4.2",
-        "fakerphp/faker": "^1.15",
-        "vierge-noire/cakephp-test-suite-light": "^2.1"
+        "fakerphp/faker": "^1.15"
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
@@ -29,6 +28,7 @@
         "phpstan/phpstan": "^1.0",
         "phpunit/phpunit": "^8.0",
         "vierge-noire/cakephp-test-migrator": "^2.1",
+        "vierge-noire/test-database-cleaner": "dev-#1-make-the-package-fully-framework-agnostic",
         "vimeo/psalm": "^4.0"
     },
     "autoload": {

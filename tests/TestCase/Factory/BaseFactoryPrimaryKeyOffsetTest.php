@@ -20,9 +20,12 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use TestApp\Model\Entity\Country;
+use TestDatabaseCleaner\TruncateDirtyTablesTrait;
 
 class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
+    use TruncateDirtyTablesTrait;
+
     public function dataForTestSetPrimaryKeyOffset()
     {
         return [
@@ -36,7 +39,7 @@ class BaseFactoryPrimaryKeyOffsetTest extends TestCase
      * @dataProvider dataForTestSetPrimaryKeyOffset
      * @param int $cityOffset
      */
-    public function testSetPrimaryKeyOffset(int $cityOffset)
+    public function testSetPrimaryKeyOffsetInFactory(int $cityOffset)
     {
         $n = 10;
         $cities = CityFactory::make($n)
