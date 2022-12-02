@@ -125,14 +125,14 @@ abstract class BaseFactory
     public static function make($makeParameter = [], int $times = 1): BaseFactory
     {
         if (is_numeric($makeParameter)) {
-            $factory = static::makeFromNonCallable();
+            $factory = self::makeFromNonCallable();
             $times = $makeParameter;
         } elseif (is_null($makeParameter)) {
-            $factory = static::makeFromNonCallable();
+            $factory = self::makeFromNonCallable();
         } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface || is_string($makeParameter)) {
-            $factory = static::makeFromNonCallable($makeParameter);
+            $factory = self::makeFromNonCallable($makeParameter);
         } elseif (is_callable($makeParameter)) {
-            $factory = static::makeFromCallable($makeParameter);
+            $factory = self::makeFromCallable($makeParameter);
         } else {
             throw new InvalidArgumentException('
                 ::make only accepts an array, an integer, an EntityInterface, a string or a callable as first parameter.
@@ -297,7 +297,7 @@ abstract class BaseFactory
     }
 
     /**
-     * @return \Cake\Datasource\EntityInterface|array<\Cake\Datasource\EntityInterface>|\Cake\Datasource\ResultSetInterface
+     * @return \Cake\Datasource\EntityInterface|iterable<\Cake\Datasource\EntityInterface>|\Cake\Datasource\ResultSetInterface
      * @throws \CakephpFixtureFactories\Error\PersistenceException if the entity/entities could not be saved.
      */
     public function persist()

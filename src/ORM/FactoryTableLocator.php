@@ -33,7 +33,7 @@ class FactoryTableLocator extends TableLocator
     {
         $table = parent::_create($options);
 
-        $defaultBehaviors = (array)Configure::read('TestFixtureGlobalBehaviors', []);
+        $defaultBehaviors = (array)Configure::read('FixtureFactories.testFixtureGlobalBehaviors', []);
         $defaultBehaviors[] = 'Timestamp';
 
         $behaviors = array_merge($options[EventCollector::MODEL_BEHAVIORS] ?? [], $defaultBehaviors);

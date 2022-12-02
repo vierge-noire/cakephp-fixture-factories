@@ -24,12 +24,16 @@ protected function bootstrapCli(): void
 
 **We recommend using migrations for managing the schema of your test DB with the [CakePHP Migrator tool.](https://book.cakephp.org/migrations/2/en/index.html#using-migrations-for-tests)**
 
+## Table Truncation
 
-## CakePHP 3 or < 4.3
+Generated fixtures usually must be removed from the database in between tests in order to avoid collisions between entities, which can cause unexpected test results.
+There are several ways to manage this behavior when using fixtures and fixture factories.
+
+### CakePHP 3 or < 4.3
 For CakePHP anterior to 4.3 applications, you will need to use the [CakePHP test suite light plugin](https://github.com/vierge-noire/cakephp-test-suite-light#cakephp-test-suite-light)
-to clean-up the test database prior to each test.
+to clean up the test database prior to each test.
 
-Make sure you **replace** the native CakePHP listener by the following one inside your `phpunit.xml` (or `phpunit.xml.dist`) config file,
+Make sure you **replace** the native CakePHP listener with the following one inside your `phpunit.xml` (or `phpunit.xml.dist`) config file,
 per default located in the root folder of your application:
 
 ```xml
@@ -43,7 +47,7 @@ per default located in the root folder of your application:
      </listeners>
 ``` 
 
-The following command will do that for you.
+*Hint: The following command will make the required changes for you:*
 
 ```css
 bin/cake fixture_factories_setup
@@ -53,6 +57,21 @@ You can specify a plugin (`-p`) and a specific file (`-f`), if different from `p
 
 Between each test, the package will truncate all the test tables that have been used during the previous test.
 
-**We recommend using migrations for maintaining your test DB with the [Migrator tool.](https://github.com/vierge-noire/cakephp-test-migrator)**
+### CakePHP 4.3+
+CakePHP 4.3 ships with [Fixture State Managers](https://book.cakephp.org/4/en/development/testing.html#fixture-state-managers) and provides the `TruncateStrategy`
+(truncate all tables after test run) as well as the `TransactionStrategy` (create a transaction and roll it back after each test run).
+
+The [CakePHP test suite light plugin](https://github.com/vierge-noire/cakephp-test-suite-light#cakephp-test-suite-light) provides the `TriggerStrategy` 
+which will set up a trigger in your database to clean up the tables after each test run. **We recommend using this fixture strategy alongside this plugin.**
+
+To use it, add this to the top of each test case that manages fixtures:
+```php
+use TruncateDirtyTables
+``` 
+
+No modification to your PHPUnit configuration is required when using the trait.
+
+**We recommend using migrations for managing the schema of your test DB with the [CakePHP Migrator tool.](https://book.cakephp.org/migrations/2/en/index.html#using-migrations-for-tests)**
+
 
 

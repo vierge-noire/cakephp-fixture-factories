@@ -76,12 +76,12 @@ The factories will generate data in the locale of your application, if the latte
 Assuming your application namespace in `App`, factories should be placed in the `App\Test\Factory` namespace of your application.
 Or for a plugin Foo, in `Foo\Test\Factory`.
  
-You may change that by setting in your configuration the key `TestFixtureNamespace` to the desired namespace. E.g.
+You may change that by setting in your configuration the key `FixtureFactories.testFixtureNamespace` to the desired namespace. E.g.
 in `tests\bootstrap.php` or in the `setUp()` method of a test case:
 ```php
 use Cake\Core\Configure;
 
-Configure::write('TestFixtureNamespace', 'MyApp\Test\Factory');
+Configure::write('FixtureFactories.testFixtureNamespace', 'MyApp\Test\Factory');
 ```
 
 ## Setters
@@ -205,12 +205,12 @@ or per default in the factory's `setDefaultTemplate` method.
 Additionally, you can declare a behavior globally. This can be useful for behaviors that impact a large amount of tables
 and for which not nullable fields need to be populated.
 
-You may save in your configuration file, under the key `TestFixtureGlobalBehaviors`, all the behaviors that will be listened to, provided that the root table itself is listening to them.
+You may save in your configuration file, under the key `FixtureFactories.testFixtureGlobalBehaviors`, all the behaviors that will be listened to, provided that the root table itself is listening to them.
 
 ```php
 use Cake\Core\Configure;
 
-Configure::write('TestFixtureGlobalBehaviors', [
+Configure::write('FixtureFactories.testFixtureGlobalBehaviors', [
     'SomeBehaviorUsedInMultipleTables',
 ]);
 ```

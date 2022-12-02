@@ -31,19 +31,15 @@ class BakeFixtureFactoryCommand extends BakeCommand
     use FactoryAwareTrait;
 
     /**
-     * path to Factory directory
-     *
-     * @var string
-     */
-    public $pathFragment = 'tests' . DS . 'Factory' . DS;
-    /**
      * @var string path to the Table dir
      */
     public $pathToTableDir = 'Model' . DS . 'Table' . DS;
+
     /**
      * @var string
      */
     private $modelName;
+
     /**
      * @var \Cake\ORM\Table
      */
@@ -97,8 +93,6 @@ class BakeFixtureFactoryCommand extends BakeCommand
         } catch (\Exception $e) {
             $io->warning("The table $tableName could not be found... in " . $this->getModelPath());
             $io->abort($e->getMessage());
-
-            return false;
         }
 
         return $this;
@@ -110,10 +104,13 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function getPath(Arguments $args): string
     {
+        $outputDir = Configure::read('FixtureFactories.testFixtureOutputDir', 'Factory/');
+        $outputDir = rtrim($outputDir, DS) . '/';
+
         if ($this->plugin) {
-            $path = $this->_pluginPath($this->plugin) . $this->pathFragment;
+            $path = $this->_pluginPath($this->plugin) . 'tests/' . $outputDir;
         } else {
-            $path = TESTS . 'Factory' . DS;
+            $path = TESTS . $outputDir;
         }
 
         return str_replace('/', DS, $path);
@@ -266,8 +263,6 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
         if (!$this->setTable($modelName, $io)) {
             $io->abort("$modelName not found...");
-
-            return self::CODE_SUCCESS;
         }
 
         $renderer = new TemplateRenderer('CakephpFixtureFactories');

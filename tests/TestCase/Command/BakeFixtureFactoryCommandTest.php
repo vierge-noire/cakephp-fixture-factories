@@ -13,24 +13,26 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Command;
 
-use Cake\Console\Exception\StopException;
-use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
-use CakephpFixtureFactories\Factory\BaseFactory;
-use CakephpFixtureFactories\Test\Util\TestCaseWithFixtureBaking;
+use Cake\Core\Configure;
+use Cake\Console\Arguments;
+use TestApp\Model\Entity\City;
+use TestApp\Model\Entity\Author;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
-use TestApp\Model\Entity\Author;
-use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Country;
+use TestPlugin\Model\Entity\Bill;
+use TestApp\Test\Factory\CityFactory;
+use TestPlugin\Model\Entity\Customer;
+use TestApp\Test\Factory\AuthorFactory;
 use TestApp\Test\Factory\AddressFactory;
 use TestApp\Test\Factory\ArticleFactory;
-use TestApp\Test\Factory\AuthorFactory;
-use TestApp\Test\Factory\CityFactory;
 use TestApp\Test\Factory\CountryFactory;
-use TestPlugin\Model\Entity\Bill;
-use TestPlugin\Model\Entity\Customer;
 use TestPlugin\Test\Factory\BillFactory;
+use Cake\Console\Exception\StopException;
 use TestPlugin\Test\Factory\CustomerFactory;
+use CakephpFixtureFactories\Factory\BaseFactory;
+use CakephpFixtureFactories\Command\BakeFixtureFactoryCommand;
+use CakephpFixtureFactories\Test\Util\TestCaseWithFixtureBaking;
 
 /**
  * @see BakeFixtureFactoryCommand
@@ -61,6 +63,18 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     {
         $name = 'Model';
         $this->assertSame('ModelFactory.php', $this->FactoryCommand->getFactoryFileName($name));
+    }
+
+    public function testGetPath()
+    {
+        $args = new Arguments([], [], []);
+
+        $path = $this->FactoryCommand->getPath($args);
+        Configure::write('FixtureFactories.testFixtureOutputDir', 'my/custom/path');
+        $customPath = $this->FactoryCommand->getPath($args);
+
+        $this->assertStringEndsWith('tests' . DS . 'TestApp' . DS . 'tests' . DS . 'Factory' . DS, $path);
+        $this->assertStringEndsWith('tests' . DS . 'TestApp' . DS . 'tests' . DS . 'my' . DS . 'custom' . DS . 'path' . DS, $customPath);
     }
 
     public function testGetTableListInApp()

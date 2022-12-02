@@ -31,12 +31,12 @@ class FixtureScenarioTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        Configure::write('TestFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
+        Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
     }
 
     public static function tearDownAfterClass(): void
     {
-        Configure::delete('TestFixtureNamespace');
+        Configure::delete('FixtureFactories.testFixtureNamespace');
     }
 
     public function scenarioNames(): array
