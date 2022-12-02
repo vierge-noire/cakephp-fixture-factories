@@ -27,7 +27,7 @@
         "cakephp/migrations": "^3.1",
         "josegonzalez/dotenv": "dev-master",
         "phpstan/phpstan": "^0.12.48@dev",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "^8.5.31",
         "vierge-noire/cakephp-test-migrator": "^2.1",
         "vimeo/psalm": "^4.0"
     },
