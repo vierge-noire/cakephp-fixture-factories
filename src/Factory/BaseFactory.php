@@ -229,6 +229,20 @@ abstract class BaseFactory
     }
 
     /**
+     * Produce one entity from the present factory with primary key generated
+     *
+     * @return \Cake\Datasource\EntityInterface
+     */
+    public function getEntityWithId(): EntityInterface
+    {
+        $this->getDataCompiler()->startPersistMode();
+        $entity = $this->getEntity();
+        $this->getDataCompiler()->endPersistMode();
+
+        return $entity;
+    }
+
+    /**
      * Produce a set of entities from the present factory
      *
      * @return \Cake\Datasource\EntityInterface[]
@@ -236,6 +250,20 @@ abstract class BaseFactory
     public function getEntities(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * Produce a set of entities from the present factory with primary keys generated
+     *
+     * @return \Cake\Datasource\EntityInterface[]
+     */
+    public function getEntitiesWithId(): array
+    {
+        $this->getDataCompiler()->startPersistMode();
+        $entities = $this->getEntities();
+        $this->getDataCompiler()->endPersistMode();
+
+        return $entities;
     }
 
     /**

@@ -871,4 +871,17 @@ class BaseFactoryTest extends TestCase
         $country = CountryFactory::make($n)->getEntities();
         $this->assertSame($n, count($country));
     }
+
+    public function testGetEntityWithId()
+    {
+        $country = CountryFactory::make()->getEntityWithId();
+        $this->assertGreaterThan(0, $country->id);
+    }
+
+    public function testGetEntitiesWithId()
+    {
+        $countries = CountryFactory::make(2)->getEntitiesWithId();
+        $this->assertGreaterThan(0, $countries[0]->id);
+        $this->assertGreaterThan(0, $countries[1]->id);
+    }
 }
