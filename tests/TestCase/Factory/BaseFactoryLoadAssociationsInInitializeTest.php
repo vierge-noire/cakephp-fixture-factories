@@ -63,8 +63,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $this->assertSame(1, count($city->get('table_without_model')));
         $tableWithoutModel = $city->get('table_without_model')[0];
         $this->assertInstanceOf(Entity::class, $tableWithoutModel);
-        /** @phpstan-ignore-next-line */
-        $this->assertSame($name, $tableWithoutModel->name);
+        $this->assertSame($name, $tableWithoutModel->get('name'));
     }
 
     public function testLoadAssociationInInitialize_Get_Entities()
