@@ -66,7 +66,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $this->assertSame(1, count($city->get('table_without_model')));
         $tableWithoutModel = $city->get('table_without_model')[0];
         $this->assertInstanceOf(Entity::class, $tableWithoutModel);
-        $this->assertSame($name, $tableWithoutModel->name);
+        $this->assertSame($name, $tableWithoutModel->get('name'));
     }
 
     public function testLoadAssociationInInitialize_Get_Entities()
@@ -80,7 +80,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $this->assertSame($n, count($city->get('table_without_model')));
         foreach ($city->get('table_without_model') as $entity) {
             $this->assertInstanceOf(Entity::class, $entity);
-            $this->assertSame($name, $entity->name);
+            $this->assertSame($name, $entity->get('name'));
         }
     }
 
@@ -94,7 +94,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $this->assertSame(1, count($city->get('table_without_model')));
         $tableWithoutModel = $city->get('table_without_model')[0];
         $this->assertInstanceOf(Entity::class, $tableWithoutModel);
-        $this->assertSame($name, $tableWithoutModel->name);
+        $this->assertSame($name, $tableWithoutModel->get('name'));
         $this->assertSame($city->id, $tableWithoutModel->get('foreign_key'));
         $this->assertSame(1, TableWithoutModelFactory::count());
         $this->assertSame(1, CountryFactory::count());
@@ -115,7 +115,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
 
         $hasOneTableWithoutModel = $city->get('has_one_table_without_model');
         $this->assertInstanceOf(Entity::class, $hasOneTableWithoutModel);
-        $this->assertSame($name, $hasOneTableWithoutModel->name);
+        $this->assertSame($name, $hasOneTableWithoutModel->get('name'));
         $this->assertSame($city->id, $hasOneTableWithoutModel->get('foreign_key'));
         $this->assertSame(1, TableWithoutModelFactory::count());
         $this->assertSame(1, CountryFactory::count());
