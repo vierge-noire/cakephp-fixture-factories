@@ -530,6 +530,12 @@ class DataCompiler
             case 'string':
                 $res = $this->getFactory()->getFaker()->uuid();
                 break;
+            case 'tinyinteger':
+                $res = mt_rand(0, intval('127'));
+                break;
+            case 'smallinteger':
+                $res = mt_rand(0, intval('32767'));
+                break;
             case 'biginteger':
                 $res = mt_rand(0, intval('9223372036854775807'));
                 break;
