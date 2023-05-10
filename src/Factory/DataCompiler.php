@@ -53,6 +53,11 @@ class DataCompiler
     private $factory;
 
     /**
+     * @var bool
+     */
+    private $setPrimaryKey = true;
+
+    /**
      * DataCompiler constructor.
      *
      * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Master factory
@@ -200,7 +205,7 @@ class DataCompiler
             $entity->set(self::MODIFIED_UNIQUE_PROPERTIES, $this->getModifiedUniqueFields());
         }
 
-        if ($setPrimaryKey) {
+        if ($setPrimaryKey && $this->setPrimaryKey) {
             $this->setPrimaryKey($entity);
         }
 
@@ -579,6 +584,14 @@ class DataCompiler
                 "$primaryKeyOffset must be an integer, a string or an array of format ['primaryKey1' => value, ...]"
             );
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function disablePrimaryKeyOffset(): void
+    {
+        $this->setPrimaryKey = false;
     }
 
     /**

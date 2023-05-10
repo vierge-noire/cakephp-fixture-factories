@@ -16,15 +16,15 @@
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.2",
-        "cakephp/orm": "^4.2",
+        "php": ">=7.4",
+        "cakephp/orm": "^4.3",
         "fakerphp/faker": "^1.15",
         "vierge-noire/cakephp-test-suite-light": "^2.1"
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
         "cakephp/cakephp-codesniffer": "^4.0",
-        "cakephp/migrations": "^3.1",
+        "cakephp/migrations": "^3.7",
         "josegonzalez/dotenv": "dev-master",
         "phpstan/phpstan": "^1.0",
         "phpunit/phpunit": "^8.5.31",
