@@ -16,9 +16,16 @@ use Migrations\AbstractMigration;
 
 class InitialMigration extends AbstractMigration
 {
+    public $autoId = false;
+
     public function up()
     {
         $this->table('authors')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
             ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
                 'limit' => 128,
@@ -55,6 +62,11 @@ class InitialMigration extends AbstractMigration
             ->create();
 
         $this->table('articles')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
             ->addPrimaryKey(['id'])
             ->addColumn('title', 'string', [
                 'limit' => 128,
@@ -77,6 +89,12 @@ class InitialMigration extends AbstractMigration
             ->create();
 
         $this->table('articles_authors')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
+            ->addPrimaryKey(['id'])
             ->addColumn('author_id', 'integer', [
                 'limit' => 11,
                 'null' => false,
@@ -94,6 +112,11 @@ class InitialMigration extends AbstractMigration
             ->create();
 
         $this->table('addresses')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
             ->addPrimaryKey(['id'])
             ->addColumn('street', 'string', [
                 'limit' => 128,
@@ -108,6 +131,11 @@ class InitialMigration extends AbstractMigration
             ->create();
 
         $this->table('cities')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
             ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
                 'limit' => 128,
@@ -130,6 +158,11 @@ class InitialMigration extends AbstractMigration
             ->create();
 
         $this->table('countries')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
             ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
                 'limit' => 128,

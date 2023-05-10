@@ -16,9 +16,16 @@ use Migrations\AbstractMigration;
 
 class TableWithoutModelMigration extends AbstractMigration
 {
+    public $autoId = false;
+
     public function up()
     {
         $this->table('table_without_model')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
             ->addPrimaryKey(['id'])
             ->addColumn('name', 'string', [
                 'limit' => 128,
