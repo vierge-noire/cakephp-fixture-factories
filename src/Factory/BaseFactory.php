@@ -463,6 +463,18 @@ abstract class BaseFactory
     }
 
     /**
+     * Will not set primary key when saving the entity, instead SQL engine can handle that.
+     *
+     * @return self
+     */
+    public function disablePrimaryKeyOffset(): self
+    {
+        $this->getDataCompiler()->disablePrimaryKeyOffset();
+
+        return $this;
+    }
+
+    /**
      * Get the fields that are declared are unique.
      * This should include the uniqueness of the fields in your schema.
      *

@@ -16,6 +16,8 @@ use Migrations\AbstractMigration;
 
 class CreateBills extends AbstractMigration
 {
+    public $autoId = false;
+
     /**
      * Change Method.
      *
@@ -27,6 +29,11 @@ class CreateBills extends AbstractMigration
     public function up()
     {
         $this->table('bills')
+            ->addColumn('id', 'integer', [
+                'autoIncrement' => true,
+                'limit' => 11,
+                'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
+            ])
             ->addPrimaryKey(['id'])
             ->addColumn('customer_id', 'integer', [
                 'limit' => 11,

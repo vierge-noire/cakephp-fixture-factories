@@ -256,7 +256,9 @@ class BaseFactoryUniqueEntitiesTest extends TestCase
 
         $this->assertSame(1, CityFactory::count());
         $this->assertSame($nCountries, CountryFactory::count());
-        $cityId = CityFactory::find()->first()->id;
+        /** @var \TestApp\Model\Entity\City $city */
+        $city = CityFactory::find()->first();
+        $cityId = $city->id;
         foreach ($countries as $country) {
             $this->assertSame($virtual_unique_stamp, $country->cities[0]->virtual_unique_stamp);
             $this->assertSame($cityId, $country->cities[0]->id);
