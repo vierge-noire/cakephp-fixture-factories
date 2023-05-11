@@ -16,8 +16,8 @@
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.4",
-        "cakephp/orm": "^4.3",
+        "php": ">=7.2",
+        "cakephp/orm": "^4.2",
         "fakerphp/faker": "^1.15",
         "vierge-noire/cakephp-test-suite-light": "^2.1"
     },
