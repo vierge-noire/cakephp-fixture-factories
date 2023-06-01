@@ -56,6 +56,10 @@ class InitialMigration extends AbstractMigration
                 'default' => null,
                 'null' => true,
             ])
+            ->addColumn('json_field', 'string', [
+                'default' => null,
+                'null' => true,
+            ])
             ->addIndex('address_id')
             ->addIndex('business_address_id')
             ->addTimestamps('created', 'modified')

@@ -13,6 +13,7 @@ use Cake\ORM\Entity;
  * @property int $address_id
  * @property int|null $business_address_id
  * @property string|null $biography
+ * @property string|null $json_field
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime|null $modified
  *

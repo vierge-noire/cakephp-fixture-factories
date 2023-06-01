@@ -116,3 +116,19 @@ $articles = ArticleFactory::make(function(ArticleFactory $factory, Generator $fa
    ];
 }, 3)->persist();
 ```
+
+### Dot notation for array fields
+
+You might come across fields storing data in array format, with a given default value set in your factories.
+It is possible to overwrite only a part of the array using the dot notation.
+
+Considering for example that the field `array_field` stores an array with keys `key1`and `key2`, you can
+overwrite the value of `key2` only and keep the default value of `key1` as follows: 
+
+```php
+use App\Test\Factory\ArticleFactory;
+...
+$article = ArticleFactory::make(['array_field.key2' => 'newValue'])->persist();
+// or
+$article = ArticleFactory::make()->setField('array_field.key2', 'newValue')->persist();
+```

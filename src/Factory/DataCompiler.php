@@ -18,6 +18,7 @@ use Cake\Database\Driver\Postgres;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
@@ -222,8 +223,13 @@ class DataCompiler
     private function patchEntity(EntityInterface $entity, array $data): EntityInterface
     {
         $data = $this->setDataWithoutSetters($entity, $data);
+        if (empty($data)) {
+            return $entity;
+        }
 
-        return empty($data) ? $entity : $this->getFactory()->getTable()->patchEntity(
+        $data = $this->castArrayNotation($entity, $data);
+
+        return $this->getFactory()->getTable()->patchEntity(
             $entity,
             $data,
             $this->getFactory()->getMarshallerOptions()
@@ -231,8 +237,38 @@ class DataCompiler
     }
 
     /**
+     * Detect if a field.subvalue is found in the patch data.
+     * If so, merge recursively with the existing data
+     *
+     * @param \Cake\Datasource\EntityInterface $entity entity to patch
+     * @param array $data data to patch
+     * @return array
+     * @throws \CakephpFixtureFactories\Error\FixtureFactoryException if an array notation is merged with a string, or a non array
+     */
+    private function castArrayNotation(EntityInterface $entity, array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (!strpos($key, '.')) {
+                continue;
+            }
+            $subData = Hash::expand([$key => $value]);
+            $rootKey = array_key_first($subData);
+            $entityValue = $entity->get($rootKey) ?? [];
+            if (!is_array($entityValue)) {
+                throw new FixtureFactoryException(
+                    "Value $entityValue cannot be merged with array notation $key => $value"
+                );
+            }
+            $data[$rootKey] = array_replace_recursive($entityValue, $subData[$rootKey]);
+            unset($data[$key]);
+        }
+
+        return $data;
+    }
+
+    /**
      * When injecting a string as data, the compiler should understand that this is the value that
-     * should a assigned to the display field of the table.
+     * should be assigned to the display field of the table.
      *
      * @param string $data data injected
      * @return string[]
@@ -257,7 +293,7 @@ class DataCompiler
      * Sets fields individually skipping the setters.
      * CakePHP does not offer to skipp setters on a patchEntity/newEntity
      * Therefore fields which skipped setters should be set individually,
-     * and removed from the dat parched.
+     * and removed from the data patched.
      *
      * @param \Cake\Datasource\EntityInterface $entity entity build
      * @param array $data data to set
