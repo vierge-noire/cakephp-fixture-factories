@@ -17,3 +17,7 @@ This method will return the number of entries in the table of the given factory.
 ## ArticleFactory::get()
 This method will return an entity based on its primary key.
 More documentation on the `get` method [here](https://book.cakephp.org/4/en/orm/retrieving-data-and-resultsets.html#getting-a-single-entity-by-primary-key).
+
+## ArticleFactory::firstOrFail($condition)
+This method will return an entity based on the optional conditions passed as parameter.
+More documentation on the `firstOrFail` method [here](https://book.cakephp.org/4/en/orm/query-builder.html#getting-results).

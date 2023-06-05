@@ -35,6 +35,8 @@ class AuthorsTable extends Table
             ],
         ]);
 
+        $this->getSchema()->setColumnType('json_field', 'json');
+
         parent::initialize($config);
     }
 }

@@ -22,9 +22,15 @@ use Faker\Generator;
  * @method \TestApp\Model\Entity\Author[] getEntities()
  * @method \TestApp\Model\Entity\Author|\TestApp\Model\Entity\Author[] persist()
  * @method static \TestApp\Model\Entity\Author get(mixed $primaryKey, array $options = [])
+ * @method static \TestApp\Model\Entity\Author firstOrFail($conditions = null)
  */
 class AuthorFactory extends BaseFactory
 {
+    public const JSON_FIELD_DEFAULT_VALUE = [
+        'subField1' => 'subFieldValue1',
+        'subField2' => 'subFieldValue2',
+    ];
+
     protected $skippedSetters = [
         'field_with_setter_1',
     ];
@@ -43,6 +49,7 @@ class AuthorFactory extends BaseFactory
                     'field_with_setter_1' => $faker->word,
                     'field_with_setter_2' => $faker->word,
                     'field_with_setter_3' => $faker->word,
+                    'json_field' => self::JSON_FIELD_DEFAULT_VALUE,
                 ];
             })
             ->withAddress();
