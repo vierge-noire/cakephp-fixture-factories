@@ -641,4 +641,16 @@ abstract class BaseFactory
     {
         return self::find()->count();
     }
+
+    /**
+     * Count the factory's related table entries without before find.
+     *
+     * @param \Cake\Database\ExpressionInterface|\Closure|array|string|null $conditions The conditions to filter on.
+     * @return \Cake\Datasource\EntityInterface|array The first result from the ResultSet.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When there is no first record.
+     */
+    public static function firstOrFail($conditions = null)
+    {
+        return self::find()->where($conditions)->firstOrFail();
+    }
 }

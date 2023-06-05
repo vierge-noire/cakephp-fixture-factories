@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
@@ -55,5 +56,38 @@ class BaseFactoryStaticFinderTest extends TestCase
         $this->assertSame($n, ArticleFactory::find()->count());
         $this->assertSame(0, ArticleFactory::find('published')->count());
         $this->assertSame($n, ArticleFactory::count());
+    }
+
+    public function testBaseFactoryStaticFirstOrFail()
+    {
+        $articles = ArticleFactory::make([
+            ['title' => 'title 1'],
+            ['title' => 'title 2'],
+        ])->persist();
+
+        $firstArticleId = $articles[0]['id'];
+
+        $retrievedArticle = ArticleFactory::firstOrFail(['title' => 'title 1']);
+        $this->assertSame($firstArticleId, $retrievedArticle->id);
+        $this->assertSame(2, ArticleFactory::count());
+    }
+
+    public function testBaseFactoryStaticFirstOrFail_No_Parameters()
+    {
+        $article = ArticleFactory::make()->persist();
+
+        $retrievedArticle = ArticleFactory::firstOrFail();
+        $this->assertSame($article->id, $retrievedArticle->id);
+    }
+
+    public function testBaseFactoryStaticFirstOrFailNotFound()
+    {
+        ArticleFactory::make([
+            ['title' => 'title 1'],
+            ['title' => 'title 2'],
+        ])->persist();
+
+        $this->expectException(RecordNotFoundException::class);
+        ArticleFactory::firstOrFail(['title' => 'title 3']);
     }
 }
