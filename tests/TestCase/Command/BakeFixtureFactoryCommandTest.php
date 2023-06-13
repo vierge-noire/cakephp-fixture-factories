@@ -274,11 +274,11 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $this->assertInstanceOf(Customer::class, $customer);
     }
 
-    public function dataForTestThisTableShouldBeBaked()
+    public static function dataForTestThisTableShouldBeBaked()
     {
         return [
             ['Cities', null, true],
-            ['Cities', true, false],
+            ['Cities', null, false],
             ['Cities', 'TestPlugin', false],
             ['Bills', null, false],
             ['Bills', 'TestPlugin', true],

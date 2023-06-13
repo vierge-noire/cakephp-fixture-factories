@@ -15,7 +15,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Core\Configure;
 use Cake\Database\Driver\Postgres;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
@@ -501,7 +501,7 @@ class BaseFactoryAssociationsTest extends TestCase
 
         // Make sure that all was correctly persisted
         $addresses = AddressFactory::find()
-            ->innerJoinWith('City.Country', function (Query $q) use ($country) {
+            ->innerJoinWith('City.Country', function (SelectQuery $q) use ($country) {
                 return $q->where(['Country.id' => $country->id]);
             })
             ->orderAsc('street')

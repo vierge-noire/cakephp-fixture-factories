@@ -14,22 +14,19 @@
         }
     ],
     "license": "MIT",
-    "minimum-stability": "dev",
     "require": {
-        "php": ">=7.2",
-        "cakephp/orm": "^4.2",
-        "fakerphp/faker": "^1.15",
-        "vierge-noire/cakephp-test-suite-light": "^2.1"
+        "php": ">=8.1",
+        "cakephp/orm": "5.x-dev",
+        "fakerphp/faker": "^1.15"
     },
     "require-dev": {
-        "cakephp/bake": "^2.0",
-        "cakephp/cakephp-codesniffer": "^4.0",
-        "cakephp/migrations": "^3.7",
+        "cakephp/bake": "3.x-dev as 3.0.0",
+        "cakephp/cakephp-codesniffer": "^5.1",
+        "cakephp/migrations": "4.x-dev as 4.0.0",
         "josegonzalez/dotenv": "dev-master",
         "phpstan/phpstan": "^1.0",
-        "phpunit/phpunit": "^8.5.31",
-        "vierge-noire/cakephp-test-migrator": "^2.1",
-        "vimeo/psalm": "^4.0"
+        "phpunit/phpunit": "^10.1",
+        "vimeo/psalm": "^5.0"
     },
     "autoload": {
         "psr-4": {
@@ -60,5 +57,7 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

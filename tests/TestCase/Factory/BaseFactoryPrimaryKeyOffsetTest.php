@@ -23,7 +23,7 @@ use TestApp\Model\Entity\Country;
 
 class BaseFactoryPrimaryKeyOffsetTest extends TestCase
 {
-    public function dataForTestSetPrimaryKeyOffset()
+    public static function dataForTestSetPrimaryKeyOffset()
     {
         return [
             [rand(1, 1000000)],

@@ -99,7 +99,7 @@ class EventCollectorTest extends TestCase
         );
     }
 
-    public function provideFactories()
+    public static function provideFactories()
     {
         return [
             [ArticleFactory::make()],
@@ -122,7 +122,7 @@ class EventCollectorTest extends TestCase
         $this->assertNotNull($entity->get('created'));
     }
 
-    public function runSeveralTimesWithOrWithoutEvents()
+    public static function runSeveralTimesWithOrWithoutEvents()
     {
         return [
             [true], [false], [true], [false],

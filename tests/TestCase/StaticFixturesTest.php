@@ -20,7 +20,7 @@ use CakephpFixtureFactories\Test\Fixture\ArticlesFixture;
 
 class StaticFixturesTest extends TestCase
 {
-    protected $fixtures = [
+    protected array $fixtures = [
         ArticlesFixture::class,
     ];
 

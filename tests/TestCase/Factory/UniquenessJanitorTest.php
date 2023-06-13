@@ -24,7 +24,7 @@ use CakephpFixtureFactories\Factory\UniquenessJanitor;
 
 class UniquenessJanitorTest extends TestCase
 {
-    public function dataForSanitizeEntityArrayOnPrimary()
+    public static function dataForSanitizeEntityArrayOnPrimary()
     {
         return [
             [[], false],
@@ -67,7 +67,7 @@ class UniquenessJanitorTest extends TestCase
         UniquenessJanitor::sanitizeEntityArray($factoryStub, $entities, true);
     }
 
-    public function dataForSanitizeEntityArrayOnAssociation()
+    public static function dataForSanitizeEntityArrayOnAssociation()
     {
         $associatedData = [
             ['property_1' => 'foo', 'property_2' => 'foo'],

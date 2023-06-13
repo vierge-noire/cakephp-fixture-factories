@@ -15,7 +15,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
@@ -29,7 +29,7 @@ class BaseFactoryStaticFinderTest extends TestCase
         $this->Articles = TableRegistry::getTableLocator()->get('Articles');
         $this->Articles->getEventManager()->on(
             'Model.beforeFind',
-            function(EventInterface $event, Query $query) {
+            function(EventInterface $event, SelectQuery $query) {
                 return $query->where(['title' => 'Cannot be found.']);
             }
         );

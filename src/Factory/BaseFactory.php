@@ -15,7 +15,7 @@ namespace CakephpFixtureFactories\Factory;
 
 use Cake\Datasource\EntityInterface;
 use Cake\I18n\I18n;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
@@ -605,30 +605,30 @@ abstract class BaseFactory
         return $this;
     }
 
-    /**
-     * Query the factory's related table without before find.
-     *
-     * @param string $type the type of query to perform
-     * @param array $options An array that will be passed to Query::applyOptions()
-     * @return \Cake\ORM\Query The query builder
-     * @see Query::find()
-     */
-    public static function find(string $type = 'all', array $options = []): Query
+  /**
+   * Query the factory's related table without before find.
+   *
+   * @param string $type the type of query to perform
+   * @param mixed ...$options Options passed to the finder
+   * @return \Cake\ORM\Query\SelectQuery The query builder
+   * @see \Cake\ORM\Query\SelectQuery::find()
+   */
+    public static function find(string $type = 'all', mixed ...$options): SelectQuery
     {
-        return (new static())->getTable()->find($type, $options);
+        return (new static())->getTable()->find($type, ...$options);
     }
 
     /**
      * Get from primary key the factory's related table entries, without before find.
      *
      * @param mixed $primaryKey primary key value to find
-     * @param array $options options accepted by `Table::find()`
+     * @param mixed ...$options options accepted by `Table::get()`
      * @return \Cake\Datasource\EntityInterface
      * @see Table::get()
      */
-    public static function get($primaryKey, array $options = []): EntityInterface
+    public static function get(mixed $primaryKey, mixed ...$options): EntityInterface
     {
-        return (new static())->getTable()->get($primaryKey, $options);
+        return (new static())->getTable()->get($primaryKey, 'all', null, null, ...$options);
     }
 
     /**

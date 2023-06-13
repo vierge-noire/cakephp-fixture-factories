@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Test\TestCase\Scenario;
 
 use Cake\Core\Configure;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\FixtureScenarioException;
 use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
@@ -39,7 +39,7 @@ class FixtureScenarioTest extends TestCase
         Configure::delete('FixtureFactories.testFixtureNamespace');
     }
 
-    public function scenarioNames(): array
+    public static function scenarioNames(): array
     {
         return [
             ['NAustralianAuthors', 3],
@@ -80,7 +80,7 @@ class FixtureScenarioTest extends TestCase
     private function countAustralianAuthors(): int
     {
         return AuthorFactory::find()
-            ->innerJoinWith('Address.City.Country', function (Query $q) {
+            ->innerJoinWith('Address.City.Country', function (SelectQuery $q) {
                 return $q->where(['Country.name' => NAustralianAuthorsScenario::COUNTRY_NAME]);
             })
             ->count();

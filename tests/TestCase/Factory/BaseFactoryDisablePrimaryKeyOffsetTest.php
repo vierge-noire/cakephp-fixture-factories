@@ -22,7 +22,7 @@ use TestApp\Model\Entity\Country;
 
 class BaseFactoryDisablePrimaryKeyOffsetTest extends TestCase
 {
-    public function dataForTestDisablePrimaryKeyOffset()
+    public static function dataForTestDisablePrimaryKeyOffset()
     {
         return [
             [rand(1, 1000000)],

@@ -40,7 +40,7 @@ use function is_int;
 
 class BaseFactoryTest extends TestCase
 {
-    public function dataForTestConnectionInDataProvider()
+    public static function dataForTestConnectionInDataProvider()
     {
         return [
             [AuthorFactory::make()],
@@ -641,7 +641,7 @@ class BaseFactoryTest extends TestCase
             ->persist();
 
         $this->assertSame(true, is_int($article->id));
-        $this->equalTo($n, count($article->bills));
+        $this->equalTo($n);
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
             $this->assertEquals($bill->article_id, $article->id);
@@ -668,7 +668,7 @@ class BaseFactoryTest extends TestCase
             ->persist();
 
         $this->assertSame(true, is_int($article->id));
-        $this->equalTo($n, count($article->bills));
+        $this->equalTo($n);
         $this->assertEquals($title, $article->title);
         foreach ($article->bills as $bill) {
             $this->assertSame($bill->article_id, $article->id);
@@ -704,7 +704,7 @@ class BaseFactoryTest extends TestCase
             ->persist();
 
         $this->assertSame(true, is_int($customer->id));
-        $this->equalTo($n, count($customer->bills));
+        $this->equalTo($n);
         $this->assertEquals($name, $customer->name);
         foreach ($customer->bills as $bill) {
             $this->assertEquals($bill->customer_id, $customer->id);
@@ -820,7 +820,7 @@ class BaseFactoryTest extends TestCase
     /**
      * @return array
      */
-    public function feedTestSetTimes()
+    public static function feedTestSetTimes()
     {
         return [[rand(1, 10)], [rand(1, 10)], [rand(1, 10)], ];
     }

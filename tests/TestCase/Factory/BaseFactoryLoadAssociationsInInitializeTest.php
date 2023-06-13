@@ -118,7 +118,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $this->assertSame(1, CountryFactory::count());
     }
 
-    public function dataForClassName(): array
+    public static function dataForClassName(): array
     {
         return [['TableWithoutModel'], ['table_without_model']];
     }

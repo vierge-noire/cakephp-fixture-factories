@@ -25,7 +25,7 @@ class FixtureInjectorTest extends TestCase
      *
      * @return array
      */
-    public function createWithOneFactoryInTheDataProvider()
+    public static function createWithOneFactoryInTheDataProvider()
     {
         $Factory = ArticleFactory::make();
 
@@ -42,7 +42,7 @@ class FixtureInjectorTest extends TestCase
      *
      * @return array[]
      */
-    public function createWithDifferentFactoriesInTheDataProvider()
+    public static function createWithDifferentFactoriesInTheDataProvider()
     {
         return [
             [1, ArticleFactory::make()],

@@ -19,7 +19,6 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
-use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -140,21 +139,23 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function getTableList(ConsoleIo $io): array
     {
-        $dir = new Folder($this->getModelPath());
-        $tables = $dir->find('.*Table.php', true);
+        $tables = glob($this->getModelPath() . '*Table.php') ?: [];
 
         $tables = array_map(function ($a) {
             return preg_replace('/Table.php$/', '', $a);
         }, $tables);
 
-        foreach ($tables as $i => $table) {
+        $return = [];
+        foreach ($tables as $table) {
+            $table = str_replace($this->getModelPath(), '', $table);
             if (!$this->thisTableShouldBeBaked($table, $io)) {
-                unset($tables[$i]);
                 $io->warning("{$table} ignored");
+            } else {
+              $return[] = $table;
             }
         }
 
-        return $tables;
+        return $return;
     }
 
     /**
@@ -166,7 +167,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function thisTableShouldBeBaked(string $table, ConsoleIo $io): bool
     {
-        $tableClassName = $this->plugin ? $this->plugin : Configure::read('App.namespace');
+        $tableClassName = $this->plugin ?: Configure::read('App.namespace');
         $tableClassName .= "\Model\Table\\{$table}Table";
 
         try {

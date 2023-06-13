@@ -17,6 +17,7 @@ namespace CakephpFixtureFactories\Factory;
 use Cake\Core\Configure;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FactoryNotFoundException;
+use function Cake\Core\namespaceSplit;
 
 trait FactoryAwareTrait
 {
