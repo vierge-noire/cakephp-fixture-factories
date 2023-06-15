@@ -89,9 +89,13 @@ class ModelEventsHandler
     {
         foreach (self::$ormEvents as $ormEvent) {
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {
-                if (array_key_exists('callable', $listeners) && is_array($listeners['callable'])) {
-                    foreach ($listeners['callable'] as $listener) {
-                        $this->processListener($table, $listener, $ormEvent);
+                if (array_key_exists('callable', $listeners)) {
+                    try {
+                        $reflection = new \ReflectionFunction($listeners['callable']);
+                        $obj = $reflection->getClosureThis();
+                        $this->processListener($table, $obj, $ormEvent);
+                    } catch (\ReflectionException $e) {
+                        // Do something?
                     }
                 }
             }

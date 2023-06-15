@@ -29,6 +29,7 @@ class BaseFactoryStaticFinderTest extends TestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->Articles = TableRegistry::getTableLocator()->get('Articles');
         $this->Articles->getEventManager()->on(
             'Model.beforeFind',

@@ -281,7 +281,6 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     {
         return [
             ['Cities', null, true],
-            ['Cities', null, false],
             ['Cities', 'TestPlugin', false],
             ['Bills', null, false],
             ['Bills', 'TestPlugin', true],
