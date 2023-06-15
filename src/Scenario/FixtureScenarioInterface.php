@@ -22,5 +22,5 @@ interface FixtureScenarioInterface
      * @param mixed ...$args Arguments passed to the scenario.
      * @return mixed|void
      */
-    public function load(...$args);
+    public function load(mixed ...$args): mixed;
 }

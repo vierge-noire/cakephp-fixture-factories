@@ -28,16 +28,16 @@ final class FactoryTableBeforeSave
     /**
      * @var \Cake\ORM\Table
      */
-    protected $table;
+    protected Table $table;
 
     /**
      * @var \Cake\Datasource\EntityInterface
      */
-    protected $entity;
+    protected EntityInterface $entity;
 
     /**
-     * @param  \Cake\ORM\Table $table Table on which the beforeFind actions are taken.
-     * @param  \Cake\Datasource\EntityInterface $entity Entity concerned by the saving.
+     * @param \Cake\ORM\Table $table Table on which the beforeFind actions are taken.
+     * @param \Cake\Datasource\EntityInterface $entity Entity concerned by the saving.
      */
     public function __construct(Table $table, EntityInterface $entity)
     {
@@ -46,8 +46,8 @@ final class FactoryTableBeforeSave
     }
 
     /**
-     * @param  \Cake\ORM\Table $table Table on which the beforeFind actions are taken.
-     * @param  \Cake\Datasource\EntityInterface $entity Entity concerned by the saving.
+     * @param \Cake\ORM\Table $table Table on which the beforeFind actions are taken.
+     * @param \Cake\Datasource\EntityInterface $entity Entity concerned by the saving.
      * @return void
      */
     public static function handle(Table $table, EntityInterface $entity): void
@@ -102,7 +102,7 @@ final class FactoryTableBeforeSave
     /**
      * @return void
      */
-    public function unsetEntityTemporaryProperties()
+    public function unsetEntityTemporaryProperties(): void
     {
         $this->getEntity()->unset(DataCompiler::MODIFIED_UNIQUE_PROPERTIES);
         $this->getEntity()->unset(DataCompiler::IS_ASSOCIATED);
@@ -112,7 +112,7 @@ final class FactoryTableBeforeSave
      * @param array $conditions Conditions that a duplicate should meet
      * @return array|null
      */
-    public function findDuplicate(array $conditions)
+    public function findDuplicate(array $conditions): ?array
     {
         /** @var array|null $duplicate */
         $duplicate = $this->getTable()

@@ -16,6 +16,9 @@ namespace CakephpFixtureFactories\Event;
 
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
+use CakephpFixtureFactories\Factory\EventCollector;
+use ReflectionException;
+use ReflectionFunction;
 
 /**
  * Class ModelEventsHandler
@@ -27,19 +30,19 @@ class ModelEventsHandler
     /**
      * @var array
      */
-    private $listeningBehaviors = [];
+    private array $listeningBehaviors = [];
 
     /**
      * @var array
      */
-    private $listeningModelEvents = [];
+    private array $listeningModelEvents = [];
 
     /**
      * @var \CakephpFixtureFactories\Factory\EventCollector
      */
-    protected $eventCompiler;
+    protected EventCollector $eventCompiler;
 
-    public static $ormEvents = [
+    public static array $ormEvents = [
         'Model.initialize',
         'Model.beforeMarshal',
         'Model.afterMarshal',
@@ -91,10 +94,10 @@ class ModelEventsHandler
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {
                 if (array_key_exists('callable', $listeners)) {
                     try {
-                        $reflection = new \ReflectionFunction($listeners['callable']);
+                        $reflection = new ReflectionFunction($listeners['callable']);
                         $obj = $reflection->getClosureThis();
                         $this->processListener($table, $obj, $ormEvent);
-                    } catch (\ReflectionException $e) {
+                    } catch (ReflectionException $e) {
                         // Do something?
                     }
                 }
@@ -108,7 +111,7 @@ class ModelEventsHandler
      * @param string $ormEvent Event name
      * @return void
      */
-    private function processListener(Table $table, $listener, string $ormEvent): void
+    private function processListener(Table $table, mixed $listener, string $ormEvent): void
     {
         if ($listener instanceof Table) {
             $this->processModelListener($table, $listener, $ormEvent);
@@ -125,7 +128,7 @@ class ModelEventsHandler
      * @param string $ormEvent Event Name
      * @return void
      */
-    private function processModelListener(Table $table, $listener, string $ormEvent): void
+    private function processModelListener(Table $table, mixed $listener, string $ormEvent): void
     {
         if (
             !in_array(
@@ -143,7 +146,7 @@ class ModelEventsHandler
      * @param string $ormEvent Event name
      * @return void
      */
-    private function processBehaviorListener(Table $table, $listener, string $ormEvent): void
+    private function processBehaviorListener(Table $table, mixed $listener, string $ormEvent): void
     {
         foreach ($this->getListeningBehaviors() as $behavior) {
             if ($this->skipBehavior($table, $behavior)) {

@@ -44,7 +44,7 @@ class FactoryTableLocator extends TableLocator
             $behaviors
         );
 
-        $table->getEventManager()->on('Model.beforeSave', function ($event, $entity, $options) use ($table) {
+        $table->getEventManager()->on('Model.beforeSave', function ($event, $entity, $options) use ($table): void {
             FactoryTableBeforeSave::handle($table, $entity);
         });
 

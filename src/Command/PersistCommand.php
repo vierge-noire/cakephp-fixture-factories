@@ -170,7 +170,7 @@ class PersistCommand extends Command
      * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
-    public function with(Arguments $args, BaseFactory $factory)
+    public function with(Arguments $args, BaseFactory $factory): BaseFactory
     {
         $with = $args->getOption('with');
 
@@ -233,7 +233,6 @@ class PersistCommand extends Command
         $factory = get_class($factory);
 
         $io->success("{$times} {$factory} generated on dry run.");
-        $eol = PHP_EOL;
         foreach ($entities as $i => $entity) {
             $io->hr();
             $io->info("[$i]");

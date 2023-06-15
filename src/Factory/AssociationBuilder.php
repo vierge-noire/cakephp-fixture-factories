@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
@@ -23,6 +24,8 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
+use Exception;
+use Throwable;
 
 /**
  * Class AssociationBuilder
@@ -35,12 +38,12 @@ class AssociationBuilder
         getFactory as getFactoryInstance;
     }
 
-    private $associated = [];
+    private array $associated = [];
 
     /**
      * @var \CakephpFixtureFactories\Factory\BaseFactory
      */
-    private $factory;
+    private BaseFactory $factory;
 
     /**
      * AssociationBuilder constructor.
@@ -65,7 +68,7 @@ class AssociationBuilder
 
         try {
             $association = $this->getTable()->getAssociation($associationName);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new AssociationBuilderException($e->getMessage());
         }
         if ($this->associationIsToOne($association) || $this->associationIsToMany($association)) {
@@ -146,11 +149,13 @@ class AssociationBuilder
      * Get the factory for the association
      *
      * @param string $associationName Association name
-     * @param scalar[]|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
+     * @param \CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|array<scalar>|array<\Cake\Datasource\EntityInterface> $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
-    public function getAssociatedFactory(string $associationName, $data = []): BaseFactory
-    {
+    public function getAssociatedFactory(
+        string $associationName,
+        array|BaseFactory|EntityInterface $data = []
+    ): BaseFactory {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
 
@@ -179,11 +184,11 @@ class AssociationBuilder
      * @param array $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
-    public function getFactoryFromTableName(string $modelName, $data = []): BaseFactory
+    public function getFactoryFromTableName(string $modelName, array $data = []): BaseFactory
     {
         try {
             return $this->getFactoryInstance($modelName, $data);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new AssociationBuilderException($e->getMessage());
         }
     }
@@ -205,7 +210,7 @@ class AssociationBuilder
      * @param string $string String
      * @return int|null
      */
-    public function getTimeBetweenBrackets(string $string)
+    public function getTimeBetweenBrackets(string $string): ?int
     {
         preg_match_all("/\[([^\]]*)\]/", $string, $matches);
         $res = $matches[1];

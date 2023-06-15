@@ -13,15 +13,19 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Factory;
 
+use Cake\Database\ExpressionInterface;
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\ResultSetInterface;
 use Cake\I18n\I18n;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
+use Closure;
 use Faker\Factory;
 use Faker\Generator;
 use InvalidArgumentException;
+use Throwable;
 use function array_merge;
 use function is_array;
 use function is_callable;
@@ -36,16 +40,16 @@ abstract class BaseFactory
     /**
      * @var \Faker\Generator|null
      */
-    private static $faker;
+    private static ?Generator $faker = null;
     /**
      * @deprecated
      * @var bool
      */
-    protected static $applyListenersAndBehaviors = false;
+    protected static bool $applyListenersAndBehaviors = false;
     /**
      * @var array
      */
-    protected $marshallerOptions = [
+    protected array $marshallerOptions = [
         'validate' => false,
         'forceNew' => true,
         'accessibleFields' => ['*' => true],
@@ -53,7 +57,7 @@ abstract class BaseFactory
     /**
      * @var array
      */
-    protected $saveOptions = [
+    protected array $saveOptions = [
         'checkRules' => false,
         'atomic' => false,
         'checkExisting' => false,
@@ -61,17 +65,17 @@ abstract class BaseFactory
     /**
      * @var array Unique fields. Uniqueness applies only to persisted entities.
      */
-    protected $uniqueProperties = [];
+    protected array $uniqueProperties = [];
     /**
      * @var array Fields on which the setters should be skipped.
      */
-    protected $skippedSetters = [];
+    protected array $skippedSetters = [];
     /**
      * The number of records the factory should create
      *
      * @var int
      */
-    private $times = 1;
+    private int $times = 1;
     /**
      * The data compiler gathers the data from the
      * default template, the injection and patched data
@@ -80,20 +84,20 @@ abstract class BaseFactory
      *
      * @var \CakephpFixtureFactories\Factory\DataCompiler
      */
-    private $dataCompiler;
+    private DataCompiler $dataCompiler;
     /**
      * Helper to check and build data in associations
      *
      * @var \CakephpFixtureFactories\Factory\AssociationBuilder
      */
-    private $associationBuilder;
+    private AssociationBuilder $associationBuilder;
     /**
      * Handles the events at the model and behavior level
      * for the table on which the factories will be built
      *
      * @var \CakephpFixtureFactories\Factory\EventCollector
      */
-    private $eventCompiler;
+    private EventCollector $eventCompiler;
 
     /**
      * BaseFactory constructor.
@@ -118,12 +122,14 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|string $makeParameter Injected data
+     * @param \Cake\Datasource\EntityInterface|callable|array|string|int|null $makeParameter Injected data
      * @param int                     $times Number of entities created
      * @return static
      */
-    public static function make($makeParameter = [], int $times = 1): BaseFactory
-    {
+    public static function make(
+        array|callable|int|EntityInterface|string|null $makeParameter = [],
+        int $times = 1
+    ): BaseFactory {
         if (is_numeric($makeParameter)) {
             $factory = self::makeFromNonCallable();
             $times = $makeParameter;
@@ -172,10 +178,10 @@ abstract class BaseFactory
     }
 
     /**
-     * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
+     * @param \Cake\Datasource\EntityInterface|array|array<\Cake\Datasource\EntityInterface> $data Injected data
      * @return static
      */
-    private static function makeFromNonCallable($data = []): BaseFactory
+    private static function makeFromNonCallable(EntityInterface|array $data = []): BaseFactory
     {
         $factory = new static();
         $factory->getDataCompiler()->collectFromInstantiation($data);
@@ -207,7 +213,7 @@ abstract class BaseFactory
             try {
                 $fakerLocale = I18n::getLocale();
                 $faker = Factory::create($fakerLocale);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $fakerLocale = Factory::DEFAULT_LOCALE;
                 $faker = Factory::create($fakerLocale);
             }
@@ -231,7 +237,7 @@ abstract class BaseFactory
     /**
      * Produce a set of entities from the present factory
      *
-     * @return \Cake\Datasource\EntityInterface[]
+     * @return array<\Cake\Datasource\EntityInterface>
      */
     public function getEntities(): array
     {
@@ -264,7 +270,7 @@ abstract class BaseFactory
     /**
      * Fetch entities from the data compiler.
      *
-     * @return \Cake\Datasource\EntityInterface[]
+     * @return array<\Cake\Datasource\EntityInterface>
      */
     protected function toArray(): array
     {
@@ -297,10 +303,10 @@ abstract class BaseFactory
     }
 
     /**
-     * @return \Cake\Datasource\EntityInterface|iterable<\Cake\Datasource\EntityInterface>|\Cake\Datasource\ResultSetInterface
+     * @return \Cake\Datasource\EntityInterface|\Cake\Datasource\ResultSetInterface|iterable<\Cake\Datasource\EntityInterface>
      * @throws \CakephpFixtureFactories\Error\PersistenceException if the entity/entities could not be saved.
      */
-    public function persist()
+    public function persist(): EntityInterface|iterable|ResultSetInterface
     {
         $this->getDataCompiler()->startPersistMode();
         $entities = $this->toArray();
@@ -312,7 +318,7 @@ abstract class BaseFactory
             } else {
                 return $this->getTable()->saveManyOrFail($entities, $this->getSaveOptions());
             }
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $factory = static::class;
             $message = $exception->getMessage();
             throw new PersistenceException("Error in Factory $factory.\n Message: $message \n");
@@ -332,10 +338,10 @@ abstract class BaseFactory
     /**
      * Assigns the values of $data to the $keys of the entities generated
      *
-     * @param array|\Cake\Datasource\EntityInterface $data Data to inject
+     * @param \Cake\Datasource\EntityInterface|array $data Data to inject
      * @return $this
      */
-    public function patchData($data)
+    public function patchData(array|EntityInterface $data)
     {
         if ($data instanceof EntityInterface) {
             $data = $data->toArray();
@@ -352,7 +358,7 @@ abstract class BaseFactory
      * @param mixed $value to assign
      * @return $this
      */
-    public function setField(string $field, $value)
+    public function setField(string $field, mixed $value)
     {
         return $this->patchData([$field => $value]);
     }
@@ -411,11 +417,11 @@ abstract class BaseFactory
     }
 
     /**
-     * @param string[]|string $activeBehaviors Behaviors listened to by the factory
+     * @param array<string>|string $activeBehaviors Behaviors listened to by the factory
      * @return self
      * @throws \CakephpFixtureFactories\Error\FixtureFactoryException on argument passed error
      */
-    public function listeningToBehaviors($activeBehaviors): self
+    public function listeningToBehaviors(array|string $activeBehaviors): self
     {
         $activeBehaviors = (array)$activeBehaviors;
         if (empty($activeBehaviors)) {
@@ -427,11 +433,11 @@ abstract class BaseFactory
     }
 
     /**
-     * @param string[]|string $activeModelEvents Model events listened to by the factory
+     * @param array<string>|string $activeModelEvents Model events listened to by the factory
      * @return self
      * @throws \CakephpFixtureFactories\Error\FixtureFactoryException on argument passed error
      */
-    public function listeningToModelEvents($activeModelEvents): self
+    public function listeningToModelEvents(array|string $activeModelEvents): self
     {
         $activeModelEvents = (array)$activeModelEvents;
         if (empty($activeModelEvents)) {
@@ -452,10 +458,10 @@ abstract class BaseFactory
      * ]
      * If not set, the offset is set randomly
      *
-     * @param int|string|array $primaryKeyOffset Offset
+     * @param array|string|int $primaryKeyOffset Offset
      * @return self
      */
-    public function setPrimaryKeyOffset($primaryKeyOffset): self
+    public function setPrimaryKeyOffset(int|string|array $primaryKeyOffset): self
     {
         $this->getDataCompiler()->setPrimaryKeyOffset($primaryKeyOffset);
 
@@ -496,7 +502,7 @@ abstract class BaseFactory
      * @param array|string|null $fields Unique fields set on the fly.
      * @return $this
      */
-    public function setUniqueProperties($fields)
+    public function setUniqueProperties(array|string|null $fields)
     {
         $this->uniqueProperties = (array)$fields;
 
@@ -522,10 +528,10 @@ abstract class BaseFactory
      * The data can be an array, an integer, an entity interface, a callable or a factory
      *
      * @param string $associationName Association name
-     * @param array|int|callable|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|string $data Injected data
+     * @param \CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|callable|array|string|int $data Injected data
      * @return $this
      */
-    public function with(string $associationName, $data = [])
+    public function with(string $associationName, array|int|callable|BaseFactory|EntityInterface|string $data = [])
     {
         $this->getAssociationBuilder()->getAssociation($associationName);
 
@@ -584,12 +590,12 @@ abstract class BaseFactory
      * Per default setters defined in entities are applied.
      * Here the user may define a list of fields for which setters should be ignored
      *
-     * @param string|string[]|mixed $skippedSetters Field or list of fields for which setters ought to be skipped
+     * @param mixed|array<string>|string $skippedSetters Field or list of fields for which setters ought to be skipped
      * @param bool $merge Merge the first argument with the setters already skipped. False by default.
      * @return $this
      * @throws \CakephpFixtureFactories\Error\FixtureFactoryException is no string or array is passed
      */
-    public function skipSetterFor($skippedSetters, bool $merge = false)
+    public function skipSetterFor(mixed $skippedSetters, bool $merge = false)
     {
         if (!is_string($skippedSetters) && !is_array($skippedSetters)) {
             throw new FixtureFactoryException(
@@ -605,14 +611,14 @@ abstract class BaseFactory
         return $this;
     }
 
-  /**
-   * Query the factory's related table without before find.
-   *
-   * @param string $type the type of query to perform
-   * @param mixed ...$options Options passed to the finder
-   * @return \Cake\ORM\Query\SelectQuery The query builder
-   * @see \Cake\ORM\Query\SelectQuery::find()
-   */
+    /**
+     * Query the factory's related table without before find.
+     *
+     * @param string $type the type of query to perform
+     * @param mixed ...$options Options passed to the finder
+     * @return \Cake\ORM\Query\SelectQuery The query builder
+     * @see \Cake\ORM\Query\SelectQuery::find()
+     */
     public static function find(string $type = 'all', mixed ...$options): SelectQuery
     {
         return (new static())->getTable()->find($type, ...$options);
@@ -649,8 +655,9 @@ abstract class BaseFactory
      * @return \Cake\Datasource\EntityInterface|array The first result from the ResultSet.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When there is no first record.
      */
-    public static function firstOrFail($conditions = null)
-    {
+    public static function firstOrFail(
+        ExpressionInterface|Closure|array|string|null $conditions = null
+    ): EntityInterface|array {
         return self::find()->where($conditions)->firstOrFail();
     }
 }

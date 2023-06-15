@@ -23,7 +23,9 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
+use Exception;
 use ReflectionClass;
+use ReflectionException;
 
 class BakeFixtureFactoryCommand extends BakeCommand
 {
@@ -32,17 +34,17 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * @var string path to the Table dir
      */
-    public $pathToTableDir = 'Model' . DS . 'Table' . DS;
+    public string $pathToTableDir = 'Model' . DS . 'Table' . DS;
 
     /**
      * @var string
      */
-    private $modelName;
+    private string $modelName;
 
     /**
      * @var \Cake\ORM\Table
      */
-    private $table;
+    private Table $table;
 
     /**
      * @return string Name of the command
@@ -89,7 +91,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
         $this->table = TableRegistry::getTableLocator()->get($tableName);
         try {
             $this->table->getSchema();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->warning("The table $tableName could not be found... in " . $this->getModelPath());
             $io->abort($e->getMessage());
         }
@@ -118,9 +120,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * Locate tables
      *
-     * @return string|string[]
+     * @return array<string>|string
      */
-    public function getModelPath()
+    public function getModelPath(): string|array
     {
         if (!empty($this->plugin)) {
             $path = $this->_pluginPath($this->plugin) . APP_DIR . DS . $this->pathToTableDir;
@@ -151,7 +153,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
             if (!$this->thisTableShouldBeBaked($table, $io)) {
                 $io->warning("{$table} ignored");
             } else {
-              $return[] = $table;
+                $return[] = $table;
             }
         }
 
@@ -172,7 +174,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
         try {
             $class = new ReflectionClass($tableClassName);
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             $io->error($e->getMessage());
 
             return false;
@@ -190,7 +192,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\ConsoleIo $io Console
      * @return string
      */
-    private function bakeAllModels(Arguments $args, ConsoleIo $io)
+    private function bakeAllModels(Arguments $args, ConsoleIo $io): string
     {
         $tables = $this->getTableList($io);
         if (empty($tables)) {
@@ -256,9 +258,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param string    $modelName Name of the model
      * @param \Cake\Console\Arguments $args Arguments
      * @param \Cake\Console\ConsoleIo $io Console
-     * @return bool|int
+     * @return int|bool
      */
-    public function bakeFixtureFactory(string $modelName, Arguments $args, ConsoleIo $io)
+    public function bakeFixtureFactory(string $modelName, Arguments $args, ConsoleIo $io): bool|int
     {
         $this->modelName = $modelName;
 
@@ -304,7 +306,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
             $data['manyToMany'] = $associations['manyToMany'];
             $methods = array_merge(array_keys($associations['manyToMany']), $methods);
 
-            array_walk($methods, function (&$value) {
+            array_walk($methods, function (&$value): void {
                 $value = "with$value";
             });
             $data['methods'] = $methods;

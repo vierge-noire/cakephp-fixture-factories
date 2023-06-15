@@ -16,6 +16,7 @@ namespace CakephpFixtureFactories\Factory;
 
 use Cake\Database\Driver\Postgres;
 use Cake\Datasource\EntityInterface;
+use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasOne;
 use Cake\Utility\Hash;
@@ -34,29 +35,29 @@ class DataCompiler
     public const MODIFIED_UNIQUE_PROPERTIES = '___data_compiler__modified_unique_properties';
     public const IS_ASSOCIATED = '___data_compiler__is_associated';
 
-    private $dataFromDefaultTemplate = [];
+    private array $dataFromDefaultTemplate = [];
     /**
-     * @var array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|callable
+     * @var \Cake\Datasource\EntityInterface|callable|array|array<\Cake\Datasource\EntityInterface>
      */
     private $dataFromInstantiation = [];
-    private $dataFromPatch = [];
-    private $dataFromAssociations = [];
-    private $dataFromDefaultAssociations = [];
-    private $primaryKeyOffset = [];
-    private $enforcedFields = [];
-    private $skippedSetters = [];
+    private array $dataFromPatch = [];
+    private array $dataFromAssociations = [];
+    private array $dataFromDefaultAssociations = [];
+    private array $primaryKeyOffset = [];
+    private array $enforcedFields = [];
+    private array $skippedSetters = [];
 
-    private static $inPersistMode = false;
+    private static bool $inPersistMode = false;
 
     /**
      * @var \CakephpFixtureFactories\Factory\BaseFactory
      */
-    private $factory;
+    private BaseFactory $factory;
 
     /**
      * @var bool
      */
-    private $setPrimaryKey = true;
+    private bool $setPrimaryKey = true;
 
     /**
      * DataCompiler constructor.
@@ -71,10 +72,10 @@ class DataCompiler
     /**
      * Data passed in the instantiation by array
      *
-     * @param array|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]|string $data Injected data.
+     * @param \Cake\Datasource\EntityInterface|array|array<\Cake\Datasource\EntityInterface>|string $data Injected data.
      * @return void
      */
-    public function collectFromInstantiation($data): void
+    public function collectFromInstantiation(EntityInterface|array|string $data): void
     {
         $this->dataFromInstantiation = $data;
     }
@@ -156,9 +157,9 @@ class DataCompiler
     /**
      * Populate the factored entity
      *
-     * @return \Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[]
+     * @return \Cake\Datasource\EntityInterface|array<\Cake\Datasource\EntityInterface>
      */
-    public function getCompiledTemplateData()
+    public function getCompiledTemplateData(): EntityInterface|array
     {
         $setPrimaryKey = $this->isInPersistMode();
 
@@ -184,12 +185,14 @@ class DataCompiler
     }
 
     /**
-     * @param array|callable|\Cake\Datasource\EntityInterface|string $injectedData Data from the injection.
+     * @param \Cake\Datasource\EntityInterface|callable|array|string $injectedData Data from the injection.
      * @param bool $setPrimaryKey Set the primary key if this entity is alone or the first of an array.
      * @return \Cake\Datasource\EntityInterface
      */
-    public function compileEntity($injectedData = [], bool $setPrimaryKey = false): EntityInterface
-    {
+    public function compileEntity(
+        array|callable|EntityInterface|string $injectedData = [],
+        bool $setPrimaryKey = false
+    ): EntityInterface {
         if (is_string($injectedData)) {
             $injectedData = $this->setDisplayFieldToInjectedString($injectedData);
         }
@@ -271,7 +274,7 @@ class DataCompiler
      * should be assigned to the display field of the table.
      *
      * @param string $data data injected
-     * @return string[]
+     * @return array<string>
      * @throws \CakephpFixtureFactories\Error\FixtureFactoryException if the display field of the factory's table is not a string
      */
     private function setDisplayFieldToInjectedString(string $data): array
@@ -333,10 +336,10 @@ class DataCompiler
      * Merge with the data injected during the instantiation of the Factory
      *
      * @param \Cake\Datasource\EntityInterface $entity Entity to manipulate.
-     * @param array|callable|\Cake\Datasource\EntityInterface $data Data from the instantiation.
+     * @param \Cake\Datasource\EntityInterface|callable|array $data Data from the instantiation.
      * @return self
      */
-    private function mergeWithInjectedData(EntityInterface $entity, $data): self
+    private function mergeWithInjectedData(EntityInterface $entity, array|callable|EntityInterface $data): self
     {
         if (is_callable($data)) {
             $data = $data(
@@ -442,7 +445,7 @@ class DataCompiler
 
     /**
      * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
-     * @return \Cake\Datasource\EntityInterface[]
+     * @return array<\Cake\Datasource\EntityInterface>
      */
     private function getManyEntities(BaseFactory $factory): array
     {
@@ -492,9 +495,9 @@ class DataCompiler
 
     /**
      * @param string $propertyName Property
-     * @return bool|\Cake\ORM\Association
+     * @return \Cake\ORM\Association|bool
      */
-    public function getAssociationByPropertyName(string $propertyName)
+    public function getAssociationByPropertyName(string $propertyName): bool|Association
     {
         try {
             return $this->getFactory()->getTable()->getAssociation(Inflector::camelize($propertyName));
@@ -562,9 +565,9 @@ class DataCompiler
      * https://github.com/fzaninotto/Faker/blob/master/src/Faker/ORM/CakePHP/ColumnTypeGuesser.php
      *
      * @param string $columnType Column type
-     * @return int|string
+     * @return string|int
      */
-    public function generateRandomPrimaryKey(string $columnType)
+    public function generateRandomPrimaryKey(string $columnType): int|string
     {
         switch ($columnType) {
             case 'uuid':
@@ -598,10 +601,10 @@ class DataCompiler
     }
 
     /**
-     * @param int|string|array $primaryKeyOffset Name of the primary key
+     * @param array|string|int $primaryKeyOffset Name of the primary key
      * @return void
      */
-    public function setPrimaryKeyOffset($primaryKeyOffset): void
+    public function setPrimaryKeyOffset(int|string|array $primaryKeyOffset): void
     {
         if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
             $primaryKey = $this->getFactory()->getTable()->getPrimaryKey();
@@ -712,7 +715,7 @@ class DataCompiler
      * @param array $fields Fields to be marked as enforced.
      * @return void
      */
-    public function addEnforcedFields(array $fields)
+    public function addEnforcedFields(array $fields): void
     {
         $this->enforcedFields = array_merge(
             array_keys($fields),

@@ -26,13 +26,13 @@ trait FactoryAwareTrait
      *
      * Additionnal arguments are passed *as is* to `BaseFactory::make`
      *
-     * @param  string           $name          Factory or model name
-     * @param  string|array[]   ...$arguments  Additional arguments for `BaseFactory::make`
+     * @param string           $name          Factory or model name
+     * @param array<array>|string ...$arguments Additional arguments for `BaseFactory::make`
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
      * @see \CakephpFixtureFactories\Factory\BaseFactory::make
      */
-    public function getFactory(string $name, ...$arguments): BaseFactory
+    public function getFactory(string $name, string|array ...$arguments): BaseFactory
     {
         $factoryClassName = $this->getFactoryClassName($name);
 
@@ -46,7 +46,7 @@ trait FactoryAwareTrait
     /**
      * Converts factory or model name to a fully qualified factory class name
      *
-     * @param  string $name Factory or model name
+     * @param string $name Factory or model name
      * @return string       Fully qualified class name
      */
     public function getFactoryClassName(string $name): string
@@ -61,7 +61,7 @@ trait FactoryAwareTrait
     /**
      * Returns the factory file name
      *
-     * @param  string $name Name of the model or table
+     * @param string $name Name of the model or table
      * @return string       [description]
      */
     public function getFactoryFileName(string $name): string
