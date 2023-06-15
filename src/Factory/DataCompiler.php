@@ -23,6 +23,7 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
+use Closure;
 use InvalidArgumentException;
 
 /**
@@ -35,7 +36,7 @@ class DataCompiler
     public const MODIFIED_UNIQUE_PROPERTIES = '___data_compiler__modified_unique_properties';
     public const IS_ASSOCIATED = '___data_compiler__is_associated';
 
-    private array $dataFromDefaultTemplate = [];
+    private array|Closure $dataFromDefaultTemplate = [];
     /**
      * @var \Cake\Datasource\EntityInterface|callable|array|array<\Cake\Datasource\EntityInterface>
      */
@@ -43,7 +44,7 @@ class DataCompiler
     private array $dataFromPatch = [];
     private array $dataFromAssociations = [];
     private array $dataFromDefaultAssociations = [];
-    private array $primaryKeyOffset = [];
+    private ?array $primaryKeyOffset = [];
     private array $enforcedFields = [];
     private array $skippedSetters = [];
 
@@ -616,12 +617,8 @@ class DataCompiler
             $this->primaryKeyOffset = [
                 $primaryKey => $primaryKeyOffset,
             ];
-        } elseif (is_array($primaryKeyOffset)) {
-            $this->primaryKeyOffset = $primaryKeyOffset;
         } else {
-            throw new FixtureFactoryException(
-                "$primaryKeyOffset must be an integer, a string or an array of format ['primaryKey1' => value, ...]"
-            );
+            $this->primaryKeyOffset = $primaryKeyOffset;
         }
     }
 

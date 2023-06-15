@@ -26,7 +26,7 @@ use Faker\Generator;
  */
 class CityFactory extends BaseFactory
 {
-    protected $uniqueProperties = [
+    protected array $uniqueProperties = [
         'virtual_unique_stamp',
     ];
 

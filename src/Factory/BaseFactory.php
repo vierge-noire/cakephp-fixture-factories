@@ -24,11 +24,9 @@ use CakephpFixtureFactories\Error\PersistenceException;
 use Closure;
 use Faker\Factory;
 use Faker\Generator;
-use InvalidArgumentException;
 use Throwable;
 use function array_merge;
 use function is_array;
-use function is_callable;
 
 /**
  * Class BaseFactory
@@ -137,12 +135,8 @@ abstract class BaseFactory
             $factory = self::makeFromNonCallable();
         } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface || is_string($makeParameter)) {
             $factory = self::makeFromNonCallable($makeParameter);
-        } elseif (is_callable($makeParameter)) {
-            $factory = self::makeFromCallable($makeParameter);
         } else {
-            throw new InvalidArgumentException('
-                ::make only accepts an array, an integer, an EntityInterface, a string or a callable as first parameter.
-            ');
+            $factory = self::makeFromCallable($makeParameter);
         }
 
         $factory->setUp($factory, $times);
@@ -178,10 +172,10 @@ abstract class BaseFactory
     }
 
     /**
-     * @param \Cake\Datasource\EntityInterface|array|array<\Cake\Datasource\EntityInterface> $data Injected data
+     * @param \Cake\Datasource\EntityInterface|array|array<\Cake\Datasource\EntityInterface>|string $data Injected data
      * @return static
      */
-    private static function makeFromNonCallable(EntityInterface|array $data = []): BaseFactory
+    private static function makeFromNonCallable(EntityInterface|array|string $data = []): BaseFactory
     {
         $factory = new static();
         $factory->getDataCompiler()->collectFromInstantiation($data);

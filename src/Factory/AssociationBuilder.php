@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace CakephpFixtureFactories\Factory;
 
-use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
@@ -149,12 +148,12 @@ class AssociationBuilder
      * Get the factory for the association
      *
      * @param string $associationName Association name
-     * @param \CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|array<scalar>|array<\Cake\Datasource\EntityInterface> $data Injected data
+     * @param mixed $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
     public function getAssociatedFactory(
         string $associationName,
-        array|BaseFactory|EntityInterface $data = []
+        mixed $data = []
     ): BaseFactory {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
@@ -181,10 +180,10 @@ class AssociationBuilder
      * Get a factory from a table name
      *
      * @param string $modelName Model Name
-     * @param array $data Injected data
+     * @param mixed $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
-    public function getFactoryFromTableName(string $modelName, array $data = []): BaseFactory
+    public function getFactoryFromTableName(string $modelName, mixed $data = []): BaseFactory
     {
         try {
             return $this->getFactoryInstance($modelName, $data);

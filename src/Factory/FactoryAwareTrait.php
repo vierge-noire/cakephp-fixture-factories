@@ -26,13 +26,13 @@ trait FactoryAwareTrait
      *
      * Additionnal arguments are passed *as is* to `BaseFactory::make`
      *
-     * @param string           $name          Factory or model name
-     * @param array<array>|string ...$arguments Additional arguments for `BaseFactory::make`
+     * @param string $name Factory or model name
+     * @param mixed  ...$arguments Additional arguments for `BaseFactory::make`
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
      * @see \CakephpFixtureFactories\Factory\BaseFactory::make
      */
-    public function getFactory(string $name, string|array ...$arguments): BaseFactory
+    public function getFactory(string $name, mixed ...$arguments): BaseFactory
     {
         $factoryClassName = $this->getFactoryClassName($name);
 
@@ -53,6 +53,7 @@ trait FactoryAwareTrait
     {
         // phpcs:disable
         @[$modelName, $plugin] = array_reverse(explode('.', $name));
+
         // phpcs:enable
 
         return $this->getFactoryNamespace($plugin) . '\\' . $this->getFactoryNameFromModelName($modelName);
@@ -96,11 +97,10 @@ trait FactoryAwareTrait
         if (Configure::check('FixtureFactories.testFixtureNamespace')) {
             return Configure::read('FixtureFactories.testFixtureNamespace');
         } else {
-            return (
-                $plugin ?
-                    str_replace('/', '\\', $plugin) :
-                    Configure::read('App.namespace', 'App')
-                ) . '\Test\Factory';
+            return ($plugin ? str_replace('/', '\\', $plugin) : Configure::read(
+                'App.namespace',
+                'App'
+            )) . '\Test\Factory';
         }
     }
 }

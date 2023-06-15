@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <psalm
-        phpVersion="7.4"
         errorLevel="4"
+        findUnusedPsalmSuppress="true"
+        findUnusedBaselineEntry="true"
+        findUnusedCode="false"
+        resolveFromConfigFile="true"
         allowStringToStandInForClass="true"
         usePhpDocMethodsWithoutMagicCall="true"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,7 +14,6 @@
 >
     <projectFiles>
         <directory name="src"/>
-        <directory name="tests"/>
     </projectFiles>
     <issueHandlers>
         <InvalidScalarArgument errorLevel="suppress" />

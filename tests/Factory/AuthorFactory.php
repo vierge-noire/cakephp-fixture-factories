@@ -31,7 +31,7 @@ class AuthorFactory extends BaseFactory
         'subField2' => 'subFieldValue2',
     ];
 
-    protected $skippedSetters = [
+    protected array $skippedSetters = [
         'field_with_setter_1',
     ];
 

@@ -23,7 +23,8 @@ class SubFolderScenario implements FixtureScenarioInterface
      *
      * @inheritDoc
      */
-    public function load(...$args)
+    public function load(...$args): mixed
     {
+        return null;
     }
 }
