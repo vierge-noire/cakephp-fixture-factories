@@ -13,11 +13,18 @@
             "email": "pabloelcolombiano@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/lordsimal/cakephp-test-suite-light"
+        }
+    ],
     "license": "MIT",
     "require": {
         "php": ">=8.1",
         "cakephp/orm": "5.x-dev",
-        "fakerphp/faker": "^1.15"
+        "fakerphp/faker": "^1.15",
+        "vierge-noire/cakephp-test-suite-light": "dev-main"
     },
     "require-dev": {
         "cakephp/bake": "3.x-dev as 3.0.0",

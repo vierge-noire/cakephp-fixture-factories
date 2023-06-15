@@ -15,6 +15,7 @@ namespace CakephpFixtureFactories\Test\TestCase\Command;
 
 use Cake\Core\Configure;
 use Cake\Console\Arguments;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\City;
 use TestApp\Model\Entity\Author;
 use TestApp\Model\Entity\Address;
@@ -39,6 +40,8 @@ use CakephpFixtureFactories\Test\Util\TestCaseWithFixtureBaking;
  */
 class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 {
+    use TruncateDirtyTables;
+
     /**
      * @var string
      */

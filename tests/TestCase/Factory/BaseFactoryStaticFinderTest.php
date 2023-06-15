@@ -19,9 +19,12 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class BaseFactoryStaticFinderTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public $Articles;
 
     public function setUp(): void
