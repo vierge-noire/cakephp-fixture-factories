@@ -93,13 +93,7 @@ class ModelEventsHandler
         foreach (self::$ormEvents as $ormEvent) {
             foreach ($table->getEventManager()->listeners($ormEvent) as $listeners) {
                 if (array_key_exists('callable', $listeners)) {
-                    try {
-                        $reflection = new ReflectionFunction($listeners['callable']);
-                        $obj = $reflection->getClosureThis();
-                        $this->processListener($table, $obj, $ormEvent);
-                    } catch (ReflectionException $e) {
-                        // Do something?
-                    }
+                    $this->processListener($table, $listeners['callable'], $ormEvent);
                 }
             }
         }
@@ -113,10 +107,19 @@ class ModelEventsHandler
      */
     private function processListener(Table $table, mixed $listener, string $ormEvent): void
     {
-        if ($listener instanceof Table) {
-            $this->processModelListener($table, $listener, $ormEvent);
-        } elseif ($listener instanceof Behavior) {
-            $this->processBehaviorListener($table, $listener, $ormEvent);
+        try {
+            $reflection = new ReflectionFunction($listener);
+            $obj = $reflection->getClosureThis();
+        } catch (ReflectionException $e) {
+            // Do something?
+        }
+
+        if (isset($obj)) {
+            if ($obj instanceof Table) {
+                $this->processModelListener($table, $obj, $ormEvent);
+            } elseif ($obj instanceof Behavior) {
+                $this->processBehaviorListener($table, $obj, $ormEvent);
+            }
         } else {
             $table->getEventManager()->off($ormEvent, $listener);
         }
