@@ -602,10 +602,10 @@ class DataCompiler
     }
 
     /**
-     * @param array|string|int $primaryKeyOffset Name of the primary key
+     * @param mixed $primaryKeyOffset Name of the primary key
      * @return void
      */
-    public function setPrimaryKeyOffset(int|string|array $primaryKeyOffset): void
+    public function setPrimaryKeyOffset(mixed $primaryKeyOffset): void
     {
         if (is_int($primaryKeyOffset) || is_string($primaryKeyOffset)) {
             $primaryKey = $this->getFactory()->getTable()->getPrimaryKey();
@@ -617,8 +617,12 @@ class DataCompiler
             $this->primaryKeyOffset = [
                 $primaryKey => $primaryKeyOffset,
             ];
-        } else {
+        } elseif (is_array($primaryKeyOffset)) {
             $this->primaryKeyOffset = $primaryKeyOffset;
+        } else {
+            throw new FixtureFactoryException(
+                "$primaryKeyOffset must be an integer, a string or an array of format ['primaryKey1' => value, ...]"
+            );
         }
     }
 

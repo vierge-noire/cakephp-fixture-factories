@@ -24,6 +24,7 @@ use CakephpFixtureFactories\Error\PersistenceException;
 use Closure;
 use Faker\Factory;
 use Faker\Generator;
+use InvalidArgumentException;
 use Throwable;
 use function array_merge;
 use function is_array;
@@ -120,12 +121,12 @@ abstract class BaseFactory
     abstract protected function setDefaultTemplate(): void;
 
     /**
-     * @param \Cake\Datasource\EntityInterface|callable|array|string|int|null $makeParameter Injected data
-     * @param int                     $times Number of entities created
+     * @param mixed $makeParameter Injected data
+     * @param int   $times Number of entities created
      * @return static
      */
     public static function make(
-        array|callable|int|EntityInterface|string|null $makeParameter = [],
+        mixed $makeParameter = [],
         int $times = 1
     ): BaseFactory {
         if (is_numeric($makeParameter)) {
@@ -135,8 +136,12 @@ abstract class BaseFactory
             $factory = self::makeFromNonCallable();
         } elseif (is_array($makeParameter) || $makeParameter instanceof EntityInterface || is_string($makeParameter)) {
             $factory = self::makeFromNonCallable($makeParameter);
-        } else {
+        } elseif (is_callable($makeParameter)) {
             $factory = self::makeFromCallable($makeParameter);
+        } else {
+            throw new InvalidArgumentException('
+                ::make only accepts an array, an integer, an EntityInterface, a string or a callable as first parameter.
+            ');
         }
 
         $factory->setUp($factory, $times);
