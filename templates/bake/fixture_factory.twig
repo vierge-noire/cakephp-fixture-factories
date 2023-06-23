@@ -5,6 +5,11 @@ namespace {{ namespace }};
 
 use CakephpFixtureFactories\Factory\BaseFactory as CakephpBaseFactory;
 use Faker\Generator;
+{% if useStatements %}
+{% for useStatement in useStatements %}
+use {{ useStatement }};
+{% endfor %}
+{% endif %}
 
 /**
  * {{ factory }}
@@ -42,7 +47,7 @@ class {{ factory }} extends CakephpBaseFactory
             ];
         });
     }
-{% for association, associationFactory in toOne %}
+{% for association, associationData in toOne %}
 
     /**
      * @param array|callable|null|int $parameter
@@ -52,11 +57,11 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            \{{ associationFactory }}::make($parameter)
+            {{ associationData.className }}::make($parameter)
         );
     }
 {% endfor %}
-{% for association, associationFactory in oneToMany %}
+{% for association, associationData in oneToMany %}
 
     /**
      * @param array|callable|null|int $parameter
@@ -67,11 +72,11 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            \{{ associationFactory }}::make($parameter, $n)
+            {{ associationData.className }}::make($parameter, $n)
         );
     }
 {% endfor %}
-{% for association, associationFactory in manyToMany %}
+{% for association, associationData in manyToMany %}
 
     /**
      * @param array|callable|null|int $parameter
@@ -82,7 +87,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            \{{ associationFactory }}::make($parameter, $n)->without('{{ modelName }}')
+            {{ associationData.className }}::make($parameter, $n)->without('{{ modelName }}')
         );
     }
 {% endfor %}

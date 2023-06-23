@@ -21,6 +21,7 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 use Exception;
@@ -294,22 +295,42 @@ class BakeFixtureFactoryCommand extends BakeCommand
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace($this->plugin),
         ];
+        $useStatements = $methods = [];
         if ($arg->getOption('methods')) {
             $associations = $this->getAssociations();
 
-            $data['toOne'] = $associations['toOne'];
-            $methods = array_keys($associations['toOne']);
+            if ($associations['toOne']) {
+                $data['toOne'] = $associations['toOne'];
+                $useStatements[] = Hash::extract($associations['toOne'], '{s}.fqcn');
+                $methods = array_keys($associations['toOne']);
+            }
 
-            $data['oneToMany'] = $associations['oneToMany'];
-            $methods = array_merge(array_keys($associations['oneToMany']), $methods);
+            if ($associations['oneToMany']) {
+                $data['oneToMany'] = $associations['oneToMany'];
+                $useStatements[] = Hash::extract($associations['oneToMany'], '{s}.fqcn');
+                $methods = array_merge(array_keys($associations['oneToMany']), $methods);
+            }
 
-            $data['manyToMany'] = $associations['manyToMany'];
-            $methods = array_merge(array_keys($associations['manyToMany']), $methods);
+            if ($associations['manyToMany']) {
+                $data['manyToMany'] = $associations['manyToMany'];
+                $useStatements[] = Hash::extract($associations['manyToMany'], '{s}.fqcn');
+                $methods = array_merge(array_keys($associations['manyToMany']), $methods);
+            }
 
             array_walk($methods, function (&$value): void {
                 $value = "with$value";
             });
             $data['methods'] = $methods;
+            $data['useStatements'] = array_unique(array_values(Hash::flatten($useStatements)));
+        }
+
+        if ($data['useStatements']) {
+            foreach ($data['useStatements'] as $index => $useStatement) {
+                $nameSpaceCheck = str_replace($data['namespace'] . '\\', '', $useStatement);
+                if (!str_contains($nameSpaceCheck, '\\')) {
+                    unset($data['useStatements'][$index]);
+                }
+            }
         }
 
         return $data;
@@ -331,16 +352,26 @@ class BakeFixtureFactoryCommand extends BakeCommand
         foreach ($this->getTable()->associations() as $association) {
             $modelName = $association->getClassName();
             $factory = $this->getFactoryClassName($modelName);
+            $factoryClassName = $this->getFactorySimpleClassName($modelName);
             switch ($association->type()) {
                 case 'oneToOne':
                 case 'manyToOne':
-                    $associations['toOne'][$association->getName()] = $factory;
+                    $associations['toOne'][$association->getName()] = [
+                        'fqcn' => $factory,
+                        'className' => $factoryClassName,
+                    ];
                     break;
                 case 'oneToMany':
-                    $associations['oneToMany'][$association->getName()] = $factory;
+                    $associations['oneToMany'][$association->getName()] = [
+                        'fqcn' => $factory,
+                        'className' => $factoryClassName,
+                    ];
                     break;
                 case 'manyToMany':
-                    $associations['manyToMany'][$association->getName()] = $factory;
+                    $associations['manyToMany'][$association->getName()] = [
+                        'fqcn' => $factory,
+                        'className' => $factoryClassName,
+                    ];
                     break;
             }
         }

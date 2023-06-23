@@ -60,6 +60,19 @@ trait FactoryAwareTrait
     }
 
     /**
+     * Converts factory or model name to a simple factory class name
+     *
+     * @param string $name Factory or model name
+     * @return string       Fully qualified class name
+     */
+    public function getFactorySimpleClassName(string $name): string
+    {
+        [$modelName] = array_reverse(explode('.', $name));
+
+        return $this->getFactoryNameFromModelName($modelName);
+    }
+
+    /**
      * Returns the factory file name
      *
      * @param string $name Name of the model or table

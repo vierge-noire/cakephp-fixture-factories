@@ -97,12 +97,24 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $expected = [
             'toOne' => [],
             'oneToMany' => [
-                'Bills' => 'TestPlugin\Test\Factory\BillFactory',
-                'ArticlesAuthors' => 'TestApp\Test\Factory\ArticlesAuthorFactory'
+                'Bills' => [
+                    'fqcn' => 'TestPlugin\Test\Factory\BillFactory',
+                    'className' => 'BillFactory'
+                ],
+                'ArticlesAuthors' => [
+                    'fqcn' => 'TestApp\Test\Factory\ArticlesAuthorFactory',
+                    'className' => 'ArticlesAuthorFactory'
+                ],
             ],
             'manyToMany' => [
-                'Authors' => 'TestApp\Test\Factory\AuthorFactory',
-                'ExclusivePremiumAuthors' => 'TestApp\Test\Factory\PremiumAuthorFactory',
+                'Authors' => [
+                    'fqcn' => 'TestApp\Test\Factory\AuthorFactory',
+                    'className' => 'AuthorFactory'
+                ],
+                'ExclusivePremiumAuthors' => [
+                    'fqcn' => 'TestApp\Test\Factory\PremiumAuthorFactory',
+                    'className' => 'PremiumAuthorFactory'
+                ],
             ],
         ];
         $this->assertEquals($expected, $associations);
@@ -113,11 +125,22 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $associations = $this->FactoryCommand->setTable('Authors', $this->io)->getAssociations();
         $expected = [
             'toOne' => [
-                'Address' => 'TestApp\Test\Factory\AddressFactory',
-                'BusinessAddress' => 'TestApp\Test\Factory\AddressFactory',
+                'Address' => [
+                    'fqcn' => 'TestApp\Test\Factory\AddressFactory',
+                    'className' => 'AddressFactory'
+                ],
+                'BusinessAddress' => [
+                    'fqcn' => 'TestApp\Test\Factory\AddressFactory',
+                    'className' => 'AddressFactory'
+                ],
             ],
             'oneToMany' => [],
-            'manyToMany' => ['Articles' => 'TestApp\Test\Factory\ArticleFactory'],
+            'manyToMany' => [
+                'Articles' => [
+                    'fqcn' => 'TestApp\Test\Factory\ArticleFactory',
+                    'className' => 'ArticleFactory'
+                ]
+            ],
         ];
         $this->assertEquals($expected, $associations);
     }
@@ -126,8 +149,18 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
     {
         $associations = $this->FactoryCommand->setTable('Addresses', $this->io)->getAssociations();
         $expected = [
-            'toOne' => ['City' => 'TestApp\Test\Factory\CityFactory'],
-            'oneToMany' => ['Authors' => 'TestApp\Test\Factory\AuthorFactory',],
+            'toOne' => [
+                'City' => [
+                    'fqcn' => 'TestApp\Test\Factory\CityFactory',
+                    'className' => 'CityFactory'
+                ],
+            ],
+            'oneToMany' => [
+                'Authors' => [
+                    'fqcn' => 'TestApp\Test\Factory\AuthorFactory',
+                    'className' => 'AuthorFactory'
+                ],
+            ],
             'manyToMany' => [],
         ];
         $this->assertEquals($expected, $associations);
@@ -150,7 +183,16 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
         $associations = $this->FactoryCommand->setTable('Bills', $this->io)->getAssociations();
 
         $expected = [
-            'toOne' => ['Article' => 'TestApp\Test\Factory\ArticleFactory', 'Customer' => 'TestPlugin\Test\Factory\CustomerFactory'],
+            'toOne' => [
+                'Article' => [
+                    'fqcn' => 'TestApp\Test\Factory\ArticleFactory',
+                    'className' => 'ArticleFactory'
+                ],
+                'Customer' => [
+                    'fqcn' => 'TestPlugin\Test\Factory\CustomerFactory',
+                    'className' => 'CustomerFactory'
+                ]
+            ],
             'oneToMany' => [],
             'manyToMany' => [],
         ];
