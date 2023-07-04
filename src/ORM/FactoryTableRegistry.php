@@ -40,12 +40,12 @@ class FactoryTableRegistry extends TableRegistry
      *
      * @var string
      */
-    protected static $_defaultLocatorClass = FactoryTableLocator::class;
+    protected static string $_defaultLocatorClass = FactoryTableLocator::class;
 
     /**
      * @var \CakephpFixtureFactories\ORM\FactoryTableLocator|null
      */
-    protected static $_locator;
+    protected static ?FactoryTableLocator $_locator = null;
 
     /**
      * Returns a singleton instance of LocatorInterface implementation.

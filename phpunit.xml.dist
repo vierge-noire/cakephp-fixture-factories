@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-    colors="true"
-    processIsolation="false"
-    stopOnFailure="false"
-    bootstrap="./tests/bootstrap.php"
-    >
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         bootstrap="./tests/bootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd"
+         cacheDirectory=".phpunit.cache">
+
     <php>
         <ini name="memory_limit" value="-1"/>
         <ini name="apc.enable_cli" value="1"/>
+        <env name="FIXTURE_SCHEMA_METADATA" value="./tests/schema.php"/>
     </php>
+
+    <extensions>
+        <bootstrap class="Cake\TestSuite\Fixture\Extension\PHPUnitExtension"/>
+    </extensions>
 
     <!-- Add any additional test suites you want to run here -->
     <testsuites>
@@ -17,19 +24,10 @@
         </testsuite>
     </testsuites>
 
-    <!-- Setup a listener for fixtures -->
-    <listeners>
-        <listener class="CakephpTestSuiteLight\FixtureInjector">
-            <arguments>
-                <object class="CakephpTestSuiteLight\FixtureManager" />
-            </arguments>
-        </listener>
-    </listeners>
-
     <!-- Ignore vendor tests in code coverage reports -->
-    <filter>
-        <whitelist>
+    <source>
+        <include>
             <directory suffix=".php">./src/</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </source>
 </phpunit>

@@ -9,11 +9,9 @@ use CakephpFixtureFactories\Error\FactoryNotFoundException;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\PremiumAuthorFactory;
-use CakephpTestSuiteLight\SkipTablesTruncation;
 
 class FactoryAwareTraitIntegrationTest extends TestCase
 {
-    use SkipTablesTruncation;
 
     public static function setUpBeforeClass(): void
     {
@@ -25,7 +23,7 @@ class FactoryAwareTraitIntegrationTest extends TestCase
         Configure::delete('FixtureFactories.testFixtureNamespace');
     }
 
-    public function factoryFoundData(): array
+    public static function factoryFoundData(): array
     {
         return [
           ['country', CountryFactory::class],

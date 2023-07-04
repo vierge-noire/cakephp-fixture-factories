@@ -19,9 +19,12 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\AuthorFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class BaseFactoryArrayNotationTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');

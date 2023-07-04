@@ -26,9 +26,12 @@ use CakephpFixtureFactories\Test\Factory\ArticleFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class PersistCommandTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     /**
      * @var PersistCommand
      */
@@ -60,7 +63,7 @@ class PersistCommandTest extends TestCase
         unset($this->io);
     }
 
-    public function dataProviderForStringFactories(): array
+    public static function dataProviderForStringFactories(): array
     {
         return [
           ['Articles'],
@@ -82,7 +85,7 @@ class PersistCommandTest extends TestCase
         $this->assertSame(1, ArticleFactory::count());
     }
 
-    public function dataProviderForStringPluginFactories(): array
+    public static function dataProviderForStringPluginFactories(): array
     {
         return [
             ['TestPlugin.Bills'],

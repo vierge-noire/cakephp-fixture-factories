@@ -23,7 +23,7 @@ class Country extends Entity
     /**
      * @inheritdoc
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'created' => true,
         'modified' => true,

@@ -23,12 +23,15 @@ use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\TableWithoutModelFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Country;
 use function count;
 
 class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     public static function setUpBeforeClass(): void
     {
         Configure::write('FixtureFactories.testFixtureNamespace', 'CakephpFixtureFactories\Test\Factory');
@@ -118,7 +121,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $this->assertSame(1, CountryFactory::count());
     }
 
-    public function dataForClassName(): array
+    public static function dataForClassName(): array
     {
         return [['TableWithoutModel'], ['table_without_model']];
     }

@@ -17,6 +17,7 @@ namespace CakephpFixtureFactories\Factory;
 use Cake\Core\Configure;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FactoryNotFoundException;
+use function Cake\Core\namespaceSplit;
 
 trait FactoryAwareTrait
 {
@@ -25,13 +26,13 @@ trait FactoryAwareTrait
      *
      * Additionnal arguments are passed *as is* to `BaseFactory::make`
      *
-     * @param  string           $name          Factory or model name
-     * @param  string|array[]   ...$arguments  Additional arguments for `BaseFactory::make`
+     * @param string $name Factory or model name
+     * @param mixed  ...$arguments Additional arguments for `BaseFactory::make`
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
      * @see \CakephpFixtureFactories\Factory\BaseFactory::make
      */
-    public function getFactory(string $name, ...$arguments): BaseFactory
+    public function getFactory(string $name, mixed ...$arguments): BaseFactory
     {
         $factoryClassName = $this->getFactoryClassName($name);
 
@@ -45,22 +46,36 @@ trait FactoryAwareTrait
     /**
      * Converts factory or model name to a fully qualified factory class name
      *
-     * @param  string $name Factory or model name
+     * @param string $name Factory or model name
      * @return string       Fully qualified class name
      */
     public function getFactoryClassName(string $name): string
     {
         // phpcs:disable
         @[$modelName, $plugin] = array_reverse(explode('.', $name));
+
         // phpcs:enable
 
         return $this->getFactoryNamespace($plugin) . '\\' . $this->getFactoryNameFromModelName($modelName);
     }
 
     /**
+     * Converts factory or model name to a simple factory class name
+     *
+     * @param string $name Factory or model name
+     * @return string       Fully qualified class name
+     */
+    public function getFactorySimpleClassName(string $name): string
+    {
+        [$modelName] = array_reverse(explode('.', $name));
+
+        return $this->getFactoryNameFromModelName($modelName);
+    }
+
+    /**
      * Returns the factory file name
      *
-     * @param  string $name Name of the model or table
+     * @param string $name Name of the model or table
      * @return string       [description]
      */
     public function getFactoryFileName(string $name): string
@@ -95,11 +110,10 @@ trait FactoryAwareTrait
         if (Configure::check('FixtureFactories.testFixtureNamespace')) {
             return Configure::read('FixtureFactories.testFixtureNamespace');
         } else {
-            return (
-                $plugin ?
-                    str_replace('/', '\\', $plugin) :
-                    Configure::read('App.namespace', 'App')
-                ) . '\Test\Factory';
+            return ($plugin ? str_replace('/', '\\', $plugin) : Configure::read(
+                'App.namespace',
+                'App'
+            )) . '\Test\Factory';
         }
     }
 }
