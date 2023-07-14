@@ -60,6 +60,21 @@ class BaseFactoryArrayNotationTest extends TestCase
         $this->assertNull($author->get('json_field.subField1'));
     }
 
+    public function testBaseFactoryArrayNotation_OverwriteMultipleSelectedNestedFields()
+    {
+        $author = AuthorFactory::make([
+            'json_field.subField1' => 'newVal1',
+            'json_field.subField2' => 'newVal2',
+        ])->getEntity();
+
+        $expectedValue = AuthorFactory::JSON_FIELD_DEFAULT_VALUE;
+        $expectedValue['subField1'] = 'newVal1';
+        $expectedValue['subField2'] = 'newVal2';
+
+        $this->assertSame($expectedValue, $author->json_field);
+        $this->assertNull($author->get('json_field.subField1'));
+    }
+
     public function testBaseFactoryArrayNotation_overwrite_one_field_with_set_field()
     {
         $author = AuthorFactory::make()
