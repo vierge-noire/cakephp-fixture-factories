@@ -128,7 +128,12 @@ overwrite the value of `key2` only and keep the default value of `key1` as follo
 ```php
 use App\Test\Factory\ArticleFactory;
 ...
-$article = ArticleFactory::make(['array_field.key2' => 'newValue'])->persist();
+$article = ArticleFactory::make(['array_field.key2' => 'newValue'])->getEntity();
 // or
-$article = ArticleFactory::make()->setField('array_field.key2', 'newValue')->persist();
+$article = ArticleFactory::make([
+   'array_field.key1' => 'foo',
+   'array_field.key2' => 'bar',
+])->getEntity();
+// or
+$article = ArticleFactory::make()->setField('array_field.key2', 'newValue')->getEntity();
 ```
