@@ -75,6 +75,20 @@ class BaseFactoryArrayNotationTest extends TestCase
         $this->assertNull($author->get('json_field.subField1'));
     }
 
+    public function testBaseFactoryArrayNotation_OverwriteMultipleSelectedNestedFields_On_Mae_And_SetField()
+    {
+        $author = AuthorFactory::make(['json_field.subField1' => 'newVal1'])
+            ->setField('json_field.subField2', 'newVal2')
+            ->getEntity();
+
+        $expectedValue = AuthorFactory::JSON_FIELD_DEFAULT_VALUE;
+        $expectedValue['subField1'] = 'newVal1';
+        $expectedValue['subField2'] = 'newVal2';
+
+        $this->assertSame($expectedValue, $author->json_field);
+        $this->assertNull($author->get('json_field.subField1'));
+    }
+
     public function testBaseFactoryArrayNotation_overwrite_one_field_with_set_field()
     {
         $author = AuthorFactory::make()
@@ -96,6 +110,26 @@ class BaseFactoryArrayNotationTest extends TestCase
             ]])
             ->setField('json_field.subField1.subSubField2', 'blah')
             ->getEntity();
+
+        $expectedValue = [
+            'subField1' => [
+                'subSubField1' => 'subSubValue1',
+                'subSubField2' => 'blah',
+            ],
+            'subField2' => 'subFieldValue2',
+        ];
+
+        $this->assertSame($expectedValue, $author->json_field);
+    }
+
+    public function testBaseFactoryArrayNotation_overwrite_one_field_with_deep_association_inline()
+    {
+        $author = AuthorFactory::make([
+            'json_field.subField1.subSubField1' => 'subSubValue1',
+            'json_field.subField1.subSubField2' => 'subSubValue2',
+        ])
+        ->setField('json_field.subField1.subSubField2', 'blah')
+        ->getEntity();
 
         $expectedValue = [
             'subField1' => [
