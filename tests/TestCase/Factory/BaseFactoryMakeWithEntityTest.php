@@ -131,4 +131,12 @@ class BaseFactoryMakeWithEntityTest extends TestCase
         $this->assertSame($n * $m, count($authors));
         $this->assertSame($n, AuthorFactory::count());
     }
+
+    public function testMakeEntityWithoutDefaultAssociations()
+    {
+        $article1 = ArticleFactory::make()->persist();
+        $this->assertSame(ArticleFactory::DEFAULT_NUMBER_OF_AUTHORS, count($article1->authors));
+        $article2 = ArticleFactory::make($article1)->persist();
+        $this->assertSame(ArticleFactory::DEFAULT_NUMBER_OF_AUTHORS, count($article1->authors));
+    }
 }

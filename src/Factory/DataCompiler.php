@@ -193,14 +193,15 @@ class DataCompiler
         if (is_string($injectedData)) {
             $injectedData = $this->setDisplayFieldToInjectedString($injectedData);
         }
-        if ($injectedData instanceof EntityInterface) {
+        $isEntityInjected = $injectedData instanceof EntityInterface;
+        if ($isEntityInjected) {
             $entity = $injectedData;
         } else {
             $entity = $this->getEntityFromDefaultTemplate();
             $this->mergeWithInjectedData($entity, $injectedData);
         }
 
-        $this->mergeWithPatchedData($entity)->mergeWithAssociatedData($entity);
+        $this->mergeWithPatchedData($entity)->mergeWithAssociatedData($entity, $isEntityInjected);
 
         if ($this->isInPersistMode() && !empty($this->getModifiedUniqueFields())) {
             $entity->set(self::MODIFIED_UNIQUE_PROPERTIES, $this->getModifiedUniqueFields());
@@ -376,12 +377,17 @@ class DataCompiler
      * Merge with the data from the associations
      *
      * @param \Cake\Datasource\EntityInterface $entity Entity produced by the factory.
+     * @param bool $isEntityInjected Whether \Cake\Datasource\EntityInterface is injected or not.
      * @return self
      */
-    private function mergeWithAssociatedData(EntityInterface $entity): self
+    private function mergeWithAssociatedData(EntityInterface $entity, bool $isEntityInjected): self
     {
-        // Overwrite the default associations if these are found in the associations
-        $associatedData = array_merge($this->dataFromDefaultAssociations, $this->dataFromAssociations);
+        if ($isEntityInjected) {
+            $associatedData = $this->dataFromAssociations;
+        } else {
+            // Overwrite the default associations if these are found in the associations
+            $associatedData = array_merge($this->dataFromDefaultAssociations, $this->dataFromAssociations);
+        }
 
         foreach ($associatedData as $propertyName => $data) {
             $association = $this->getAssociationByPropertyName($propertyName);
