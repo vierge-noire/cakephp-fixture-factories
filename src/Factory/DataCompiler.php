@@ -257,13 +257,13 @@ class DataCompiler
             }
             $subData = Hash::expand([$key => $value]);
             $rootKey = array_key_first($subData);
-            $entityValue = $entity->get($rootKey) ?? [];
+            $entityValue = $entityValue ?? ($entity->get($rootKey) ?? []);
             if (!is_array($entityValue)) {
                 throw new FixtureFactoryException(
                     "Value $entityValue cannot be merged with array notation $key => $value"
                 );
             }
-            $data[$rootKey] = array_replace_recursive($entityValue, $subData[$rootKey]);
+            $data[$rootKey] = $entityValue = array_replace_recursive($entityValue, $subData[$rootKey]);
             unset($data[$key]);
         }
 

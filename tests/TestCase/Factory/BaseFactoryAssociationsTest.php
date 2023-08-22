@@ -664,7 +664,9 @@ class BaseFactoryAssociationsTest extends TestCase
         foreach ($articles as $article) {
             $this->assertSame(5, count($article->articles_authors));
             foreach ($article->articles_authors as $aa) {
-                $this->assertSame('Foo', $aa->author->biography);
+                /** @var \TestApp\Model\Entity\Author $author */
+                $author = $aa->get('author');
+                $this->assertSame('Foo', $author->biography);
             }
             $this->assertSame(1, count($article->bills));
         }
