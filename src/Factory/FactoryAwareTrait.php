@@ -26,17 +26,18 @@ trait FactoryAwareTrait
      * Additionnal arguments are passed *as is* to `BaseFactory::make`
      *
      * @param  string           $name          Factory or model name
-     * @param  string|array[]   ...$arguments  Additional arguments for `BaseFactory::make`
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|string $makeParameter Injected data
+     * @param int               $times         Number of entities created
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
      * @see \CakephpFixtureFactories\Factory\BaseFactory::make
      */
-    public function getFactory(string $name, ...$arguments): BaseFactory
+    public function getFactory(string $name, $makeParameter = [], int $times = 1): BaseFactory
     {
         $factoryClassName = $this->getFactoryClassName($name);
 
         if (class_exists($factoryClassName)) {
-            return $factoryClassName::make(...$arguments);
+            return $factoryClassName::make($makeParameter, $times);
         }
 
         throw new FactoryNotFoundException("Unable to locate factory class $factoryClassName");
