@@ -195,6 +195,7 @@ class DataCompiler
         }
         $isEntityInjected = $injectedData instanceof EntityInterface;
         if ($isEntityInjected) {
+            /** @var EntityInterface */
             $entity = $injectedData;
         } else {
             $entity = $this->getEntityFromDefaultTemplate();
