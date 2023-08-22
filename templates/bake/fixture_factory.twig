@@ -45,7 +45,7 @@ class {{ factory }} extends CakephpBaseFactory
 {% for association, associationFactory in toOne %}
 
     /**
-     * @param array|callable|null|int $parameter
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|string $parameter
      * @return {{ factory }}
      */
     public function with{{ association }}($parameter = null): {{ factory }}
@@ -59,7 +59,7 @@ class {{ factory }} extends CakephpBaseFactory
 {% for association, associationFactory in oneToMany %}
 
     /**
-     * @param array|callable|null|int $parameter
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|string $parameter
      * @param int $n
      * @return {{ factory }}
      */
@@ -74,7 +74,7 @@ class {{ factory }} extends CakephpBaseFactory
 {% for association, associationFactory in manyToMany %}
 
     /**
-     * @param array|callable|null|int $parameter
+     * @param array|callable|null|int|\Cake\Datasource\EntityInterface|string $parameter
      * @param int $n
      * @return {{ factory }}
      */
