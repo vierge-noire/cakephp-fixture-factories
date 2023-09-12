@@ -30,8 +30,6 @@ use Cake\ORM\TableRegistry;
  * - Speeding up the fixture data injection to the database
  *
  * Class FactoryTableRegistry
- *
- * @internal
  */
 class FactoryTableRegistry extends TableRegistry
 {
