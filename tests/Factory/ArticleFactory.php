@@ -53,6 +53,7 @@ class ArticleFactory extends BaseFactory
         $this->setDefaultData(function (Generator $faker) {
             return [
                 'title' => $faker->text(120),
+                'body' => null,
             ];
         })
         ->withAuthors(null, self::DEFAULT_NUMBER_OF_AUTHORS);

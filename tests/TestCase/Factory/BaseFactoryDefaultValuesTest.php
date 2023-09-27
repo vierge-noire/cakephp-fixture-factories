@@ -124,11 +124,20 @@ class BaseFactoryDefaultValuesTest extends TestCase
      * When creating multiples Authors for an article,
      * these authors should be different
      */
-    public function testDefautlValuesOfArticleAuthorsDifferent()
+    public function testDefaultValuesOfArticleAuthorsDifferent()
     {
         $n = 5;
         $article = ArticleFactory::make()->withAuthors($n)->getEntity();
         $authorNames = Hash::extract($article, 'authors.{n}.name');
         $this->assertEquals($n, count(array_unique($authorNames)));
+    }
+
+    public function testDefaultValuesNullGetOriginal()
+    {
+        $article = ArticleFactory::make()->without('Authors')->getEntity();
+        $this->assertNull($article->body);
+        $bodyContent = 'body';
+        $article->body = $bodyContent;
+        $this->assertNull($article->getOriginal('body'));
     }
 }
