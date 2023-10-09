@@ -21,7 +21,7 @@ use Cake\Utility\Text;
 
 class SluggableBehavior extends Behavior
 {
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'field' => 'title',
         'slug' => 'slug',
         'replacement' => '-',

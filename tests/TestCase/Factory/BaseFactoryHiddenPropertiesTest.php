@@ -48,7 +48,7 @@ class BaseFactoryHiddenPropertiesTest extends TestCase
         }
     }
 
-    public function iterate()
+    public static function iterate()
     {
         return [
             [1, false],

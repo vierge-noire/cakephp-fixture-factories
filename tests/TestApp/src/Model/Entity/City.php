@@ -23,7 +23,7 @@ class City extends Entity
     /**
      * @inheritdoc
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'country_id' => true,
         'created' => true,

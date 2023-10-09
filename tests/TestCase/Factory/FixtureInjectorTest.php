@@ -15,9 +15,12 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 
 class FixtureInjectorTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     /**
      * For each of the data provided, their should be
      * 10 Articles found, which is the last value given to times
@@ -25,7 +28,7 @@ class FixtureInjectorTest extends TestCase
      *
      * @return array
      */
-    public function createWithOneFactoryInTheDataProvider()
+    public static function createWithOneFactoryInTheDataProvider()
     {
         $Factory = ArticleFactory::make();
 
@@ -42,7 +45,7 @@ class FixtureInjectorTest extends TestCase
      *
      * @return array[]
      */
-    public function createWithDifferentFactoriesInTheDataProvider()
+    public static function createWithDifferentFactoriesInTheDataProvider()
     {
         return [
             [1, ArticleFactory::make()],

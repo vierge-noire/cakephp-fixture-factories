@@ -16,11 +16,9 @@ use Migrations\AbstractMigration;
 
 class TableWithoutModelMigration extends AbstractMigration
 {
-    public $autoId = false;
-
     public function up()
     {
-        $this->table('table_without_model')
+        $this->table('table_without_model', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
                 'limit' => 11,

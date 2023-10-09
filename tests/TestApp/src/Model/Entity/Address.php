@@ -22,7 +22,7 @@ class Address extends Entity
     /**
      * @inheritdoc
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'street' => true,
         'city_id' => true,
         'created' => true,

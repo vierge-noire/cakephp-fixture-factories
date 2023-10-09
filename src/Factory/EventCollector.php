@@ -17,6 +17,7 @@ namespace CakephpFixtureFactories\Factory;
 use Cake\Core\Configure;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\ORM\FactoryTableRegistry;
+use RuntimeException;
 
 /**
  * Class EventCollector
@@ -31,27 +32,27 @@ class EventCollector
     /**
      * @var \Cake\ORM\Table|null
      */
-    private $table;
+    private ?Table $table = null;
 
     /**
      * @var array
      */
-    private $listeningBehaviors = [];
+    private array $listeningBehaviors = [];
 
     /**
      * @var array
      */
-    private $listeningModelEvents = [];
+    private array $listeningModelEvents = [];
 
     /**
      * @var array
      */
-    private $defaultListeningBehaviors = [];
+    private array $defaultListeningBehaviors = [];
 
     /**
      * @var string
      */
-    private $rootTableRegistryName;
+    private string $rootTableRegistryName;
 
     /**
      * EventCollector constructor.
@@ -83,7 +84,7 @@ class EventCollector
 
         try {
             $table = FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, $options);
-        } catch (\RuntimeException $exception) {
+        } catch (RuntimeException $exception) {
             FactoryTableRegistry::getTableLocator()->remove($this->rootTableRegistryName);
             $table = FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, $options);
         }

@@ -16,13 +16,12 @@ use Migrations\AbstractMigration;
 
 class InitialMigration extends AbstractMigration
 {
-    public $autoId = false;
-
     public function up()
     {
-        $this->table('authors')
+        $this->table('authors', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
+                'identity' => true,
                 'limit' => 11,
                 'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
             ])
@@ -60,14 +59,13 @@ class InitialMigration extends AbstractMigration
                 'default' => null,
                 'null' => true,
             ])
-            ->addIndex('address_id')
-            ->addIndex('business_address_id')
             ->addTimestamps('created', 'modified')
             ->create();
 
-        $this->table('articles')
+        $this->table('articles', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
+                'identity' => true,
                 'limit' => 11,
                 'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
             ])
@@ -92,9 +90,10 @@ class InitialMigration extends AbstractMigration
             ->addTimestamps('created', 'modified')
             ->create();
 
-        $this->table('articles_authors')
+        $this->table('articles_authors', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
+                'identity' => true,
                 'limit' => 11,
                 'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
             ])
@@ -107,17 +106,12 @@ class InitialMigration extends AbstractMigration
                 'limit' => 11,
                 'null' => false,
             ])
-            ->addIndex([
-                'author_id',
-            ])
-            ->addIndex([
-                'article_id',
-            ])
             ->create();
 
-        $this->table('addresses')
+        $this->table('addresses', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
+                'identity' => true,
                 'limit' => 11,
                 'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
             ])
@@ -134,9 +128,10 @@ class InitialMigration extends AbstractMigration
             ->addTimestamps('created', 'modified')
             ->create();
 
-        $this->table('cities')
+        $this->table('cities', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
+                'identity' => true,
                 'limit' => 11,
                 'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
             ])
@@ -153,7 +148,6 @@ class InitialMigration extends AbstractMigration
                 'limit' => 11,
                 'null' => false,
             ])
-            ->addIndex('country_id')
             // These fields should not be set by the DB by default
             // They are used to test that the TimeStampBehavior is
             // correctly applied by default.
@@ -161,9 +155,10 @@ class InitialMigration extends AbstractMigration
             ->addColumn('modified', 'timestamp', ['null' => true])
             ->create();
 
-        $this->table('countries')
+        $this->table('countries', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
+                'identity' => true,
                 'limit' => 11,
                 'generated' => \Phinx\Db\Adapter\PostgresAdapter::GENERATED_BY_DEFAULT,
             ])

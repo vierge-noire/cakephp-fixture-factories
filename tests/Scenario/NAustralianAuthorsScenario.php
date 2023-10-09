@@ -26,7 +26,7 @@ class NAustralianAuthorsScenario implements FixtureScenarioInterface
      * @param mixed $args the number of authors
      * @return Author|Author[]
      */
-    public function load(...$args)
+    public function load(...$args): mixed
     {
         $n = $args[0];
         return AuthorFactory::make($n)->fromCountry(self::COUNTRY_NAME)->persist();

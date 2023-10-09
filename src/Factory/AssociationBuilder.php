@@ -23,6 +23,8 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
+use Exception;
+use Throwable;
 
 /**
  * Class AssociationBuilder
@@ -35,12 +37,12 @@ class AssociationBuilder
         getFactory as getFactoryInstance;
     }
 
-    private $associated = [];
+    private array $associated = [];
 
     /**
      * @var \CakephpFixtureFactories\Factory\BaseFactory
      */
-    private $factory;
+    private BaseFactory $factory;
 
     /**
      * AssociationBuilder constructor.
@@ -65,7 +67,7 @@ class AssociationBuilder
 
         try {
             $association = $this->getTable()->getAssociation($associationName);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new AssociationBuilderException($e->getMessage());
         }
         if ($this->associationIsToOne($association) || $this->associationIsToMany($association)) {
@@ -146,11 +148,13 @@ class AssociationBuilder
      * Get the factory for the association
      *
      * @param string $associationName Association name
-     * @param scalar[]|\CakephpFixtureFactories\Factory\BaseFactory|\Cake\Datasource\EntityInterface|\Cake\Datasource\EntityInterface[] $data Injected data
+     * @param mixed $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
-    public function getAssociatedFactory(string $associationName, $data = []): BaseFactory
-    {
+    public function getAssociatedFactory(
+        string $associationName,
+        mixed $data = []
+    ): BaseFactory {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
 
@@ -176,14 +180,14 @@ class AssociationBuilder
      * Get a factory from a table name
      *
      * @param string $modelName Model Name
-     * @param array $data Injected data
+     * @param mixed $data Injected data
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      */
-    public function getFactoryFromTableName(string $modelName, $data = []): BaseFactory
+    public function getFactoryFromTableName(string $modelName, mixed $data = []): BaseFactory
     {
         try {
             return $this->getFactoryInstance($modelName, $data);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new AssociationBuilderException($e->getMessage());
         }
     }
@@ -205,7 +209,7 @@ class AssociationBuilder
      * @param string $string String
      * @return int|null
      */
-    public function getTimeBetweenBrackets(string $string)
+    public function getTimeBetweenBrackets(string $string): ?int
     {
         preg_match_all("/\[([^\]]*)\]/", $string, $matches);
         $res = $matches[1];

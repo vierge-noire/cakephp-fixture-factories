@@ -19,12 +19,14 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
-use Cake\Filesystem\Folder;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
+use Exception;
 use ReflectionClass;
+use ReflectionException;
 
 class BakeFixtureFactoryCommand extends BakeCommand
 {
@@ -33,17 +35,17 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * @var string path to the Table dir
      */
-    public $pathToTableDir = 'Model' . DS . 'Table' . DS;
+    public string $pathToTableDir = 'Model' . DS . 'Table' . DS;
 
     /**
      * @var string
      */
-    private $modelName;
+    private string $modelName;
 
     /**
      * @var \Cake\ORM\Table
      */
-    private $table;
+    private Table $table;
 
     /**
      * @return string Name of the command
@@ -90,7 +92,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
         $this->table = TableRegistry::getTableLocator()->get($tableName);
         try {
             $this->table->getSchema();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->warning("The table $tableName could not be found... in " . $this->getModelPath());
             $io->abort($e->getMessage());
         }
@@ -119,9 +121,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * Locate tables
      *
-     * @return string|string[]
+     * @return array<string>|string
      */
-    public function getModelPath()
+    public function getModelPath(): string|array
     {
         if (!empty($this->plugin)) {
             $path = $this->_pluginPath($this->plugin) . APP_DIR . DS . $this->pathToTableDir;
@@ -140,21 +142,23 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function getTableList(ConsoleIo $io): array
     {
-        $dir = new Folder($this->getModelPath());
-        $tables = $dir->find('.*Table.php', true);
+        $tables = glob($this->getModelPath() . '*Table.php') ?: [];
 
         $tables = array_map(function ($a) {
             return preg_replace('/Table.php$/', '', $a);
         }, $tables);
 
-        foreach ($tables as $i => $table) {
+        $return = [];
+        foreach ($tables as $table) {
+            $table = str_replace($this->getModelPath(), '', $table);
             if (!$this->thisTableShouldBeBaked($table, $io)) {
-                unset($tables[$i]);
                 $io->warning("{$table} ignored");
+            } else {
+                $return[] = $table;
             }
         }
 
-        return $tables;
+        return $return;
     }
 
     /**
@@ -166,12 +170,12 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function thisTableShouldBeBaked(string $table, ConsoleIo $io): bool
     {
-        $tableClassName = $this->plugin ? $this->plugin : Configure::read('App.namespace');
+        $tableClassName = $this->plugin ?: Configure::read('App.namespace');
         $tableClassName .= "\Model\Table\\{$table}Table";
 
         try {
             $class = new ReflectionClass($tableClassName);
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             $io->error($e->getMessage());
 
             return false;
@@ -189,7 +193,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\ConsoleIo $io Console
      * @return string
      */
-    private function bakeAllModels(Arguments $args, ConsoleIo $io)
+    private function bakeAllModels(Arguments $args, ConsoleIo $io): string
     {
         $tables = $this->getTableList($io);
         if (empty($tables)) {
@@ -255,9 +259,9 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param string    $modelName Name of the model
      * @param \Cake\Console\Arguments $args Arguments
      * @param \Cake\Console\ConsoleIo $io Console
-     * @return bool|int
+     * @return int|bool
      */
-    public function bakeFixtureFactory(string $modelName, Arguments $args, ConsoleIo $io)
+    public function bakeFixtureFactory(string $modelName, Arguments $args, ConsoleIo $io): bool|int
     {
         $this->modelName = $modelName;
 
@@ -291,22 +295,42 @@ class BakeFixtureFactoryCommand extends BakeCommand
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace($this->plugin),
         ];
+        $useStatements = $methods = [];
         if ($arg->getOption('methods')) {
             $associations = $this->getAssociations();
 
-            $data['toOne'] = $associations['toOne'];
-            $methods = array_keys($associations['toOne']);
+            if ($associations['toOne']) {
+                $data['toOne'] = $associations['toOne'];
+                $useStatements[] = Hash::extract($associations['toOne'], '{s}.fqcn');
+                $methods = array_keys($associations['toOne']);
+            }
 
-            $data['oneToMany'] = $associations['oneToMany'];
-            $methods = array_merge(array_keys($associations['oneToMany']), $methods);
+            if ($associations['oneToMany']) {
+                $data['oneToMany'] = $associations['oneToMany'];
+                $useStatements[] = Hash::extract($associations['oneToMany'], '{s}.fqcn');
+                $methods = array_merge(array_keys($associations['oneToMany']), $methods);
+            }
 
-            $data['manyToMany'] = $associations['manyToMany'];
-            $methods = array_merge(array_keys($associations['manyToMany']), $methods);
+            if ($associations['manyToMany']) {
+                $data['manyToMany'] = $associations['manyToMany'];
+                $useStatements[] = Hash::extract($associations['manyToMany'], '{s}.fqcn');
+                $methods = array_merge(array_keys($associations['manyToMany']), $methods);
+            }
 
-            array_walk($methods, function (&$value) {
+            array_walk($methods, function (&$value): void {
                 $value = "with$value";
             });
             $data['methods'] = $methods;
+            $data['useStatements'] = array_unique(array_values(Hash::flatten($useStatements)));
+        }
+
+        if ($data['useStatements']) {
+            foreach ($data['useStatements'] as $index => $useStatement) {
+                $nameSpaceCheck = str_replace($data['namespace'] . '\\', '', $useStatement);
+                if (!str_contains($nameSpaceCheck, '\\')) {
+                    unset($data['useStatements'][$index]);
+                }
+            }
         }
 
         return $data;
@@ -328,16 +352,26 @@ class BakeFixtureFactoryCommand extends BakeCommand
         foreach ($this->getTable()->associations() as $association) {
             $modelName = $association->getClassName();
             $factory = $this->getFactoryClassName($modelName);
+            $factoryClassName = $this->getFactorySimpleClassName($modelName);
             switch ($association->type()) {
                 case 'oneToOne':
                 case 'manyToOne':
-                    $associations['toOne'][$association->getName()] = $factory;
+                    $associations['toOne'][$association->getName()] = [
+                        'fqcn' => $factory,
+                        'className' => $factoryClassName,
+                    ];
                     break;
                 case 'oneToMany':
-                    $associations['oneToMany'][$association->getName()] = $factory;
+                    $associations['oneToMany'][$association->getName()] = [
+                        'fqcn' => $factory,
+                        'className' => $factoryClassName,
+                    ];
                     break;
                 case 'manyToMany':
-                    $associations['manyToMany'][$association->getName()] = $factory;
+                    $associations['manyToMany'][$association->getName()] = [
+                        'fqcn' => $factory,
+                        'className' => $factoryClassName,
+                    ];
                     break;
             }
         }

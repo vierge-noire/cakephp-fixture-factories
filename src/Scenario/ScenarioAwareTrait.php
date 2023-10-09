@@ -16,6 +16,8 @@ namespace CakephpFixtureFactories\Scenario;
 
 use CakephpFixtureFactories\Error\FixtureScenarioException;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
+use Exception;
+use Throwable;
 
 trait ScenarioAwareTrait
 {
@@ -29,7 +31,7 @@ trait ScenarioAwareTrait
      * @return mixed
      * @throws \CakephpFixtureFactories\Error\FixtureScenarioException if the scenario could not be found.
      */
-    public function loadFixtureScenario(string $scenario, ...$args)
+    public function loadFixtureScenario(string $scenario, mixed ...$args): mixed
     {
         if (!class_exists($scenario)) {
             // phpcs:disable
@@ -45,9 +47,9 @@ trait ScenarioAwareTrait
             if ($scenarioClass instanceof FixtureScenarioInterface) {
                 return $scenarioClass->load(...$args);
             } else {
-                throw new \Exception("{$scenario} must implement " . FixtureScenarioInterface::class);
+                throw new Exception("{$scenario} must implement " . FixtureScenarioInterface::class);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new FixtureScenarioException($e->getMessage());
         }
     }

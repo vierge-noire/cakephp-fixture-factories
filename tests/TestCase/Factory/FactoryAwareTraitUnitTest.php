@@ -5,14 +5,12 @@ namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
 use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
-use CakephpTestSuiteLight\SkipTablesTruncation;
 
 class FactoryAwareTraitUnitTest extends TestCase
 {
     use FactoryAwareTrait;
-    use SkipTablesTruncation;
 
-    public function getFactoryNamespaceData(): array
+    public static function getFactoryNamespaceData(): array
     {
         return [
           [null, 'TestApp\Test\Factory'],
@@ -28,7 +26,7 @@ class FactoryAwareTraitUnitTest extends TestCase
         $this->assertEquals($expected, $trait->getFactoryNamespace($plugin));
     }
 
-    public function getFactoryClassNameData(): array
+    public static function getFactoryClassNameData(): array
     {
         return [
           ['Apples', 'TestApp\Test\Factory\AppleFactory'],
@@ -43,7 +41,7 @@ class FactoryAwareTraitUnitTest extends TestCase
         $this->assertEquals($expected, $trait->getFactoryClassName($name));
     }
 
-    public function getFactoryNameData(): array
+    public static function getFactoryNameData(): array
     {
         return [
             ['Apples', 'AppleFactory', 'AppleFactory.php'],
