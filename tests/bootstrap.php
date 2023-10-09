@@ -16,7 +16,7 @@ use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\Utility\Inflector;
-use CakephpTestMigrator\Migrator;
+use function Cake\Core\env;
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
@@ -59,6 +59,7 @@ require_once CORE_PATH . 'config/bootstrap.php';
 Configure::write('debug', true);
 Configure::write('App', [
     'namespace' => 'TestApp',
+    'encoding' => 'UTF-8',
     'paths' => [
         'plugins' => [TEST_APP . 'plugins' . DS],
         'templates' => [
@@ -96,7 +97,7 @@ $loadEnv = function(string $fileName) {
 if (!getenv('DB_DRIVER')) {
     putenv('DB_DRIVER=Sqlite');
 }
-$driver =  getenv('DB_DRIVER');
+$driver = getenv('DB_DRIVER');
 $testDir = ROOT . DS . 'tests' . DS;
 
 if (!file_exists("$testDir.env")) {
@@ -136,7 +137,13 @@ $dbConnection = [
 ConnectionManager::setConfig('test', $dbConnection);
 $dbConnection['dummy_key'] = 'DummyKeyValue';
 ConnectionManager::setConfig('dummy', $dbConnection);
+ConnectionManager::alias('test', 'default');
 
 Inflector::rules('singular', ['/(ss)$/i' => '\1']);
 
-Migrator::migrate();
+(new \Migrations\TestSuite\Migrator())->runMany([
+  // TestApp Migrations
+  [],
+
+  ['plugin' => 'TestPlugin'],
+]);

@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['7.4']
+        php-version: ['8.1']
 
     name: PHP ${{ matrix.php-version }}
 
@@ -41,10 +41,10 @@ jobs:
         run: composer update --prefer-dist --no-progress --no-suggest --prefer-stable
 
       - name: Bake factories to perform analysis in the following steps
-        run : vendor/bin/phpunit vendor/bin/phpunit tests/TestCase/Command/BakeFixtureFactoryCommandTest.php
+        run : vendor/bin/phpunit tests/TestCase/Command/BakeFixtureFactoryCommandTest.php
 
       - name: Run phpstan
-        run: composer phpstan
+        run: composer stan
 
       - name: Run phpcs
         run: composer cs-check

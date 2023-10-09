@@ -33,7 +33,7 @@ class FactoryTableRegistryTest extends TestCase
         TableRegistry::getTableLocator()->clear();
     }
 
-    public function tables()
+    public static function tables()
     {
         return [
             ['Articles', ArticlesTable::class],

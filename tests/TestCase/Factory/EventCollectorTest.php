@@ -28,6 +28,7 @@ use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
 use CakephpFixtureFactories\Test\Factory\CustomerFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\Address;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Entity\City;
@@ -36,6 +37,8 @@ use TestPlugin\Model\Behavior\SomePluginBehavior;
 
 class EventCollectorTest extends TestCase
 {
+    use TruncateDirtyTables;
+
     /**
      * @var CountriesTable
      */
@@ -99,7 +102,7 @@ class EventCollectorTest extends TestCase
         );
     }
 
-    public function provideFactories()
+    public static function provideFactories()
     {
         return [
             [ArticleFactory::make()],
@@ -122,7 +125,7 @@ class EventCollectorTest extends TestCase
         $this->assertNotNull($entity->get('created'));
     }
 
-    public function runSeveralTimesWithOrWithoutEvents()
+    public static function runSeveralTimesWithOrWithoutEvents()
     {
         return [
             [true], [false], [true], [false],

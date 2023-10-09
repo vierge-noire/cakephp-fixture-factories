@@ -29,9 +29,9 @@ class UniquenessJanitor
      * in order to warn the user that she is about to create duplicates.
      *
      * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory on which the entity will be built.
-     * @param \Cake\Datasource\EntityInterface[] $entities Array of data meant to be patched into entities.
+     * @param array<\Cake\Datasource\EntityInterface> $entities Array of data meant to be patched into entities.
      * @param bool $isStrict Throw an exception if unique fields in $entities collide.
-     * @return \Cake\Datasource\EntityInterface[]
+     * @return array<\Cake\Datasource\EntityInterface>
      * @throws \CakephpFixtureFactories\Error\UniquenessException
      */
     public static function sanitizeEntityArray(BaseFactory $factory, array $entities, bool $isStrict = true): array

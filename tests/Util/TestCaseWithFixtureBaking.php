@@ -78,7 +78,7 @@ class TestCaseWithFixtureBaking extends TestCase
     public static function tearDownAfterClass(): void
     {
         /** @psalm-suppress InternalMethod */
-        $test = new self();
+        $test = new self('SomeTest');
         $test->setUp();
         $test->bake([], ['methods' => true, 'all' => true]);
         $test->bake([], ['plugin' => 'TestPlugin', 'all' => true, 'methods' => true,]);
@@ -88,6 +88,7 @@ class TestCaseWithFixtureBaking extends TestCase
     {
         $options['force'] = $options['force'] ?? true;
         $options['quiet'] = $options['quiet'] ?? true;
+        $options['connection'] = $options['connection'] ?? 'default';
         $args = new Arguments($args, $options, $argNames);
         $this->assertEquals(0, $this->FactoryCommand->execute($args, $this->io));
     }

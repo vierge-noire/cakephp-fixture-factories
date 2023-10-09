@@ -18,11 +18,14 @@ use Cake\TestSuite\TestCase;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
 use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
+use CakephpTestSuiteLight\Fixture\TruncateDirtyTables;
 use TestApp\Model\Entity\Country;
 
 class BaseFactoryDisablePrimaryKeyOffsetTest extends TestCase
 {
-    public function dataForTestDisablePrimaryKeyOffset()
+    use TruncateDirtyTables;
+
+    public static function dataForTestDisablePrimaryKeyOffset()
     {
         return [
             [rand(1, 1000000)],

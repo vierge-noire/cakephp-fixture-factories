@@ -26,7 +26,7 @@ use Faker\Generator;
  */
 class CountryFactory extends BaseFactory
 {
-    protected $uniqueProperties = [
+    protected array $uniqueProperties = [
         'unique_stamp',
     ];
 

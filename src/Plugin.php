@@ -23,14 +23,14 @@ class Plugin extends BasePlugin
     /**
      * Plugin name.
      *
-     * @var string
+     * @var string|null
      */
-    protected $name = 'CakephpFixtureFactories';
+    protected ?string $name = 'CakephpFixtureFactories';
 
     /**
      * Don't try to load routes.
      *
      * @var bool
      */
-    protected $routesEnabled = false;
+    protected bool $routesEnabled = false;
 }

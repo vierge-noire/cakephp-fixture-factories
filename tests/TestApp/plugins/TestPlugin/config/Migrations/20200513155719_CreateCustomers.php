@@ -16,8 +16,6 @@ use Migrations\AbstractMigration;
 
 class CreateCustomers extends AbstractMigration
 {
-    public $autoId = false;
-
     /**
      * Change Method.
      *
@@ -28,7 +26,7 @@ class CreateCustomers extends AbstractMigration
      */
     public function up()
     {
-        $this->table('customers')
+        $this->table('customers', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
                 'limit' => 11,

@@ -3,7 +3,7 @@ tmp/
 .idea
 composer.lock
 **/test_fixture_factories
-.phpunit.result.cache
+.phpunit.cache
 tests/.env
 
 # These factories are baked by TestFixtureFactoryTaskTest
