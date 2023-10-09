@@ -18,7 +18,7 @@
         "php": ">=8.1",
         "cakephp/orm": "^5.0",
         "fakerphp/faker": "^1.15",
-        "vierge-noire/cakephp-test-suite-light": "dev-next"
+        "vierge-noire/cakephp-test-suite-light": "^3.0"
     },
     "require-dev": {
         "cakephp/bake": "^3.0.0",
@@ -48,7 +48,7 @@
         "mysql": "bash run_tests.sh Mysql",
         "pgsql": "bash run_tests.sh Postgres",
         "sqlite": "bash run_tests.sh Sqlite",
-        "phpstan": "vendor/bin/phpstan analyse --memory-limit=-1",
+        "stan": "vendor/bin/phpstan analyse --memory-limit=-1",
         "psalm": "vendor/bin/psalm",
         "cs-check": "vendor/bin/phpcs --colors -p -s --extensions=php src/ tests/TestApp/tests/Factory tests/TestApp/plugins/TestPlugin/tests/Factory",
         "cs-fix": "vendor/bin/phpcbf --colors -p -s --extensions=php src/ tests/TestApp/tests/Factory"

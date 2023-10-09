@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Factory;
 
 use Cake\Core\Configure;
+use Cake\Datasource\EntityInterface;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FactoryNotFoundException;
 use function Cake\Core\namespaceSplit;
@@ -26,18 +27,22 @@ trait FactoryAwareTrait
      *
      * Additionnal arguments are passed *as is* to `BaseFactory::make`
      *
-     * @param string $name Factory or model name
-     * @param mixed  ...$arguments Additional arguments for `BaseFactory::make`
+     * @param string           $name          Factory or model name
+     * @param \Cake\Datasource\EntityInterface|callable|array|string|int|null $makeParameter Injected data
+     * @param int               $times         Number of entities created
      * @return \CakephpFixtureFactories\Factory\BaseFactory
      * @throws \CakephpFixtureFactories\Error\FactoryNotFoundException if the factory could not be found
      * @see \CakephpFixtureFactories\Factory\BaseFactory::make
      */
-    public function getFactory(string $name, mixed ...$arguments): BaseFactory
-    {
+    public function getFactory(
+        string $name,
+        array|callable|int|EntityInterface|string|null $makeParameter = [],
+        int $times = 1
+    ): BaseFactory {
         $factoryClassName = $this->getFactoryClassName($name);
 
         if (class_exists($factoryClassName)) {
-            return $factoryClassName::make(...$arguments);
+            return $factoryClassName::make($makeParameter, $times);
         }
 
         throw new FactoryNotFoundException("Unable to locate factory class $factoryClassName");
