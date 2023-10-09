@@ -16,8 +16,6 @@ use Migrations\AbstractMigration;
 
 class CreateBills extends AbstractMigration
 {
-    public $autoId = false;
-
     /**
      * Change Method.
      *
@@ -28,7 +26,7 @@ class CreateBills extends AbstractMigration
      */
     public function up()
     {
-        $this->table('bills')
+        $this->table('bills', ['id' => false])
             ->addColumn('id', 'integer', [
                 'autoIncrement' => true,
                 'limit' => 11,
