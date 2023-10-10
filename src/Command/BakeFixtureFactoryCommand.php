@@ -420,6 +420,8 @@ class BakeFixtureFactoryCommand extends BakeCommand
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
         $parser = new ConsoleOptionParser($name);
 
+        $parser = $this->_setCommonOptions($parser);
+
         $parser->setDescription(
             'Fixture factory generator.'
         )
