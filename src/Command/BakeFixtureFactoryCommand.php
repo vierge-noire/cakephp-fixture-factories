@@ -324,7 +324,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
             $data['useStatements'] = array_unique(array_values(Hash::flatten($useStatements)));
         }
 
-        if ($data['useStatements']) {
+        if (!empty($data['useStatements'])) {
             foreach ($data['useStatements'] as $index => $useStatement) {
                 $nameSpaceCheck = str_replace($data['namespace'] . '\\', '', $useStatement);
                 if (!str_contains($nameSpaceCheck, '\\')) {
