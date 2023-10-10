@@ -343,4 +343,10 @@ class BakeFixtureFactoryCommandTest extends TestCaseWithFixtureBaking
 
         $this->assertSame($expected, $this->FactoryCommand->thisTableShouldBeBaked($model, $this->io));
     }
+
+    public function testCommandHasCommonOptions()
+    {
+        $options = $this->FactoryCommand->getOptionParser()->toArray();
+        $this->assertArrayHasKey('connection', $options['options']);
+    }
 }
