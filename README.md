@@ -58,7 +58,7 @@ PHP 7.0 is supported up to v1.1.* only.
 
 ## Contribute
 
-The development branch is named `next` (CakePHP 4.x based). Feel free to send us your pull requests!
+The development branch is named `next` (CakePHP 4.x based). Send us your pull requests!
 
 ## Support
 Contact us at vierge.noire.info@gmail.com for professional assistance.
@@ -72,6 +72,6 @@ Juan Pablo Ramirez and Nicolas Masson
 
 The CakePHPFixtureFactories plugin is offered under an [MIT license](https://opensource.org/licenses/mit-license.php).
 
-Copyright 2021 Juan Pablo Ramirez and Nicolas Masson
+Copyright 2023 Juan Pablo Ramirez and Nicolas Masson
 
 Licensed under The MIT License Redistributions of files must retain the above copyright notice.
