@@ -53,6 +53,12 @@ In order to persist the data generated, use the method `persist` instead of `get
 $articles = ArticleFactory::make(3)->persist();
 ```
 
+You may want to retrieve your entities as a result set, allowing you conveniently query the entities created:
+```php
+$articles = ArticleFactory::make(3)->getResultSet(); // Will not persist in the DB
+$articles = ArticleFactory::make(3)->getPersistedResultSet(); // Will persist in the DB
+```
+
 Do not forget to check the [plugin's tests](../tests) for
 more insights!
 
@@ -137,3 +143,20 @@ $article = ArticleFactory::make([
 // or
 $article = ArticleFactory::make()->setField('array_field.key2', 'newValue')->getEntity();
 ```
+
+### Mocking select queries
+
+You might come across tests where you want to avoid the communication
+with the database, and yet you would need to simulate the output of a select query.
+
+For example in a `ArticlesIndexController` you want to emulate a query returning
+10 articles and want to test that the rendering is made properly.
+
+In your test, where `$this` is the TestCase extending [CakePHP's TestCase](https://book.cakephp.org/4/en/development/testing.html#mocking-model-methods):
+```php
+$articleFactory = ArticleFactory::make(10)->withAuthors();
+\CakephpFixtureFactories\ORM\SelectQueryMocker::mock($this, $articleFactory);
+```
+
+Any select queries on the `ArticlesTable` will now return these 10 articles with their associations.
+The queries themselves, involving the interaction with the DB, should be tested elsewhere.

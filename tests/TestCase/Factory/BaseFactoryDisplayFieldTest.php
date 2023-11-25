@@ -13,32 +13,13 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\TestCase\Factory;
 
-use Cake\Datasource\EntityInterface;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
-use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Test\Factory\AddressFactory;
 use CakephpFixtureFactories\Test\Factory\ArticleFactory;
-use CakephpFixtureFactories\Test\Factory\AuthorFactory;
 use CakephpFixtureFactories\Test\Factory\BillFactory;
-use CakephpFixtureFactories\Test\Factory\CityFactory;
 use CakephpFixtureFactories\Test\Factory\CountryFactory;
-use CakephpFixtureFactories\Test\Factory\CustomerFactory;
-use Faker\Generator;
-use TestApp\Model\Entity\Address;
-use TestApp\Model\Entity\Article;
-use TestApp\Model\Entity\Author;
-use TestApp\Model\Entity\City;
-use TestApp\Model\Entity\Country;
-use TestApp\Model\Table\ArticlesTable;
-use TestApp\Model\Table\CountriesTable;
-use TestPlugin\Model\Entity\Bill;
 use TestPlugin\Model\Table\BillsTable;
-use function count;
-use function is_array;
-use function is_int;
 
 class BaseFactoryDisplayFieldTest extends TestCase
 {
@@ -88,6 +69,8 @@ class BaseFactoryDisplayFieldTest extends TestCase
     public function testUseDisplayFieldErrorIfDisplayFieldAnArray()
     {
         $this->expectException(FixtureFactoryException::class);
+        $expectedMessage = "The display field of a table must be a string when injecting a string into its factory. You injected 'Some bill' in CakephpFixtureFactories\Test\Factory\BillFactory but TestPlugin\Model\Table\BillsTable's display field is not a string.";
+        $this->expectExceptionMessage($expectedMessage);
         BillFactory::make('Some bill')->persist();
     }
 }

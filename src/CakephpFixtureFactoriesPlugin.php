@@ -16,21 +16,8 @@ namespace CakephpFixtureFactories;
 use Cake\Core\BasePlugin;
 
 /**
- * Plugin class for migrations
+ * Plugin class for creating test fixtures
  */
-class Plugin extends BasePlugin
+class CakephpFixtureFactoriesPlugin extends BasePlugin
 {
-    /**
-     * Plugin name.
-     *
-     * @var string|null
-     */
-    protected ?string $name = 'CakephpFixtureFactories';
-
-    /**
-     * Don't try to load routes.
-     *
-     * @var bool
-     */
-    protected bool $routesEnabled = false;
 }
