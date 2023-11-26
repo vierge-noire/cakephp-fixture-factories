@@ -41,7 +41,7 @@ per default located in the root folder of your application:
      <listeners>
          <listener class="CakephpTestSuiteLight\FixtureInjector">
              <arguments>
-                 <object class="CakephpTestSuiteLight\FixtureManager" />
+                 <object class="CakephpTestSuiteLight\FixtureManager"/>
              </arguments>
          </listener>
      </listeners>

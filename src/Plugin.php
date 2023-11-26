@@ -16,7 +16,7 @@ namespace CakephpFixtureFactories;
 use Cake\Core\BasePlugin;
 
 /**
- * Plugin class for migrations
+ * Plugin class for CakephpFixtureFactories
  */
 class Plugin extends BasePlugin
 {
