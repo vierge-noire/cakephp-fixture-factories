@@ -31,16 +31,16 @@
     },
     "autoload": {
         "psr-4": {
-            "CakephpFixtureFactories\\": "src"
+            "CakephpFixtureFactories\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CakephpFixtureFactories\\Test\\": "tests",
-            "TestApp\\": "tests/TestApp/src",
-            "TestApp\\Test\\": "tests/TestApp/tests",
-            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src",
-            "TestPlugin\\Test\\": "tests/TestApp/plugins/TestPlugin/tests"
+            "CakephpFixtureFactories\\Test\\": "tests/",
+            "TestApp\\": "tests/TestApp/src/",
+            "TestApp\\Test\\": "tests/TestApp/tests/",
+            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src/",
+            "TestPlugin\\Test\\": "tests/TestApp/plugins/TestPlugin/tests/"
         }
     },
     "scripts": {
@@ -59,6 +59,6 @@
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
