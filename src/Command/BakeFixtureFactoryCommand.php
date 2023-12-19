@@ -19,6 +19,7 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
+use Cake\ORM\AssociationCollection;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -46,6 +47,24 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @var \Cake\ORM\Table
      */
     private Table $table;
+
+    /**
+     * @var array
+     */
+    protected $map = [
+        'string' => [
+            'name' => 'name',
+            'slug' => 'slug',
+            'description' => 'words',
+            'postal_code' => 'postcode',
+        ],
+        'float' => [
+            'latitude' => 'latitude',
+            'longitude' => 'longitude',
+        ],
+        'integer' => [
+        ],
+    ];
 
     /**
      * @return string Name of the command
@@ -271,6 +290,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
         $renderer = new TemplateRenderer('CakephpFixtureFactories');
         $renderer->set($this->templateData($args));
+        $renderer->viewBuilder()->addHelper('CakephpFixtureFactories.FactoryBake');
 
         $contents = $renderer->generate($this->template());
 
@@ -294,6 +314,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
             'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace($this->plugin),
+            'defaultData' => $this->defaultData(),
         ];
         $useStatements = $methods = [];
         if ($arg->getOption('methods')) {
@@ -457,5 +478,120 @@ class BakeFixtureFactoryCommand extends BakeCommand
             ]);
 
         return $parser;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function defaultData(): array
+    {
+        $defaultData = [];
+
+        $modelName = $this->getTable()->getAlias();
+        $schema = $this->getTable()->getSchema();
+        $columns = $schema->columns();
+        $foreignKeys = $this->foreignKeys($this->getTable()->associations());
+        foreach ($columns as $column) {
+            $keys = $schema->getPrimaryKey();
+            if (in_array($column, $keys, true) || in_array($column, $foreignKeys, true)) {
+                continue;
+            }
+
+            $columnSchema = $schema->getColumn($column);
+            if ($columnSchema['null'] || $columnSchema['default'] !== null) {
+                continue;
+            }
+
+            if (!in_array($columnSchema['type'], ['integer', 'string', 'date', 'datetime', 'time', 'bool', 'float'])) {
+                continue;
+            }
+
+            $guessedDefault = $this->guessDefault($column, $modelName, $columnSchema);
+            if ($guessedDefault) {
+                $defaultData[$column] = $guessedDefault;
+            }
+        }
+
+        return $defaultData;
+    }
+
+    /**
+     * @param string $column
+     * @param string $modelName
+     * @param array $columnSchema
+     * @return mixed
+     */
+    protected function guessDefault(string $column, string $modelName, array $columnSchema): mixed
+    {
+        $map = array_merge_recursive($this->map, (array)Configure::read('FixtureFactories.defaultDataMap'));
+        $map = $map[$columnSchema['type']] ?? [];
+
+        $modelNameMap = [
+            'Countries' => 'country',
+            'Cities' => 'city',
+        ];
+
+        if ($columnSchema['type'] === 'string') {
+            if ($column === 'name' && isset($modelNameMap[$modelName])) {
+                return '$faker->' . $modelNameMap[$modelName] . '()';
+            }
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->text(' . $columnSchema['length'] . ')';
+        }
+        if ($columnSchema['type'] === 'integer') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->randomNumber()';
+        }
+        if ($columnSchema['type'] === 'boolean') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->boolean()';
+        }
+        if ($columnSchema['type'] === 'date') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->date()';
+        }
+        if ($columnSchema['type'] === 'datetime') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->datetime()';
+        }
+        if ($columnSchema['type'] === 'time') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->time()';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \Cake\ORM\AssociationCollection $associations
+     * @return array<string>
+     */
+    protected function foreignKeys(AssociationCollection $associations): array
+    {
+        $keys = [];
+
+        foreach ($associations as $association) {
+            $keys[] = $association->getForeignKey();
+        }
+
+        return $keys;
     }
 }
