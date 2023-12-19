@@ -14,8 +14,10 @@ class FactoryBakeHelper extends Helper
     public function defaultData(array $defaultData): string
     {
         $rows = [];
+        $indent = str_repeat(' ', 4 * 4);
+
         foreach ($defaultData as $key => $value) {
-            $rows[] = "\t\t\t\t" . '\'' . $key . '\' => ' . $value . ',';
+            $rows[] = $indent . '\'' . $key . '\' => ' . $value . ',';
         }
 
         $string = implode(PHP_EOL, $rows);

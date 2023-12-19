@@ -51,12 +51,23 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * @var array
      */
-    protected $map = [
+    protected array $map = [
         'string' => [
             'name' => 'name',
+            'first_name' => 'firstName',
+            'last_name' => 'lastName',
+            'username' => 'userName',
             'slug' => 'slug',
+            'email' => 'email',
             'description' => 'words',
             'postal_code' => 'postcode',
+            'city' => 'city',
+            'address' => 'address',
+            'url' => 'url',
+            'ip_address' => 'ipv4',
+            'currency' => 'currencyCode',
+            'phone_number' => 'phoneNumber',
+            'timezone' => 'timezone',
         ],
         'float' => [
             'latitude' => 'latitude',
@@ -589,7 +600,11 @@ class BakeFixtureFactoryCommand extends BakeCommand
         $keys = [];
 
         foreach ($associations as $association) {
-            $keys[] = $association->getForeignKey();
+            $key = $association->getForeignKey();
+            if ($key === false) {
+                continue;
+            }
+            $keys = array_merge($keys, (array)$key);
         }
 
         return $keys;
