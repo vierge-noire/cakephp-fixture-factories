@@ -15,8 +15,8 @@ use {{ useStatement }};
  * {{ factory }}
  *
  * @method {{ entityClass }} getEntity()
- * @method {{ entityClass }}[] getEntities()
- * @method {{ entityClass }}|{{ entityClass }}[] persist()
+ * @method array<{{ entityClass }}> getEntities()
+ * @method {{ entityClass }}|array<{{ entityClass }}> persist()
  * @method static {{ entityClass }} get(mixed $primaryKey, array $options = [])
  */
 class {{ factory }} extends CakephpBaseFactory
