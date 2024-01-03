@@ -18,7 +18,7 @@
     "require": {
         "php": ">=7.2",
         "cakephp/orm": "^4.2",
-        "fakerphp/faker": "^1.15",
+        "fakerphp/faker": "^1.23",
         "vierge-noire/cakephp-test-suite-light": "^2.1"
     },
     "require-dev": {
