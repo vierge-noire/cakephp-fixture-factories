@@ -2,7 +2,7 @@
     "name": "vierge-noire/cakephp-fixture-factories",
     "description": "CakePHP Dynamic Fixtures",
     "type": "cakephp-plugin",
-    "keywords": ["cakephp", "tests", "dynamic", "fixtures"],
+    "keywords": ["cakephp", "tests", "dynamic", "fixtures", "dev", "cli"],
     "authors": [
         {
             "name": "Nicolas Masson",
