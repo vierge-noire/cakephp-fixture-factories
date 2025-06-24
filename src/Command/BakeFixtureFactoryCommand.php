@@ -200,6 +200,10 @@ class BakeFixtureFactoryCommand extends BakeCommand
      */
     public function thisTableShouldBeBaked(string $table, ConsoleIo $io): bool
     {
+        if (!$table) {
+            return false;
+        }
+
         $tableClassName = $this->plugin ?: Configure::read('App.namespace');
         $tableClassName .= "\Model\Table\\{$table}Table";
 
