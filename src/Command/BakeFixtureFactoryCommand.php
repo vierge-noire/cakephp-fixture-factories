@@ -550,6 +550,10 @@ class BakeFixtureFactoryCommand extends BakeCommand
                 return '$faker->' . $map[$column] . '()';
             }
 
+            if ($columnSchema['length'] && $columnSchema['length'] < 5) {
+                return 'mb_substr($faker->text(5), 0, ' . $columnSchema['length'] . ')';
+            }
+
             return '$faker->text(' . $columnSchema['length'] . ')';
         }
         if ($columnSchema['type'] === 'integer') {
