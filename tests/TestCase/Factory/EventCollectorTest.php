@@ -335,4 +335,31 @@ class EventCollectorTest extends TestCase
         $bill = CustomerFactory::make()->withBills()->persist()->bills[0];
         $this->assertTrue($bill->get('afterSaveTriggeredPerDefault'));
     }
+
+    public function testSetConnection()
+    {
+        $factory = ArticleFactory::make();
+        $originalConnectionName = $factory->getTable()->getConnection()->configName();
+        
+        // Set a different connection and verify it's applied
+        $factory->setConnection('dummy');
+        $newConnectionName = $factory->getTable()->getConnection()->configName();
+        
+        $this->assertNotSame($originalConnectionName, $newConnectionName);
+        $this->assertSame('dummy', $newConnectionName);
+    }
+
+    public function testSetConnectionChaining()
+    {
+        $article = ArticleFactory::make()
+            ->setConnection('dummy')
+            ->listeningToBehaviors('Sluggable')
+            ->getEntity();
+            
+        $this->assertInstanceOf(Article::class, $article);
+        
+        // Verify the connection was set correctly
+        $factory = ArticleFactory::make()->setConnection('dummy');
+        $this->assertSame('dummy', $factory->getTable()->getConnection()->configName());
+    }
 }
