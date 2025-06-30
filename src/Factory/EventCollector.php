@@ -55,6 +55,11 @@ class EventCollector
     private string $rootTableRegistryName;
 
     /**
+     * @var string|null
+     */
+    private ?string $connectionName = null;
+
+    /**
      * EventCollector constructor.
      *
      * @param string $rootTableRegistryName Name of the model of the master factory
@@ -82,6 +87,10 @@ class EventCollector
             self::MODEL_BEHAVIORS => $this->getListeningBehaviors(),
         ];
 
+        if ($this->connectionName !== null) {
+            $options['connection'] = $this->connectionName;
+        }
+
         try {
             $table = FactoryTableRegistry::getTableLocator()->get($this->rootTableRegistryName, $options);
         } catch (RuntimeException $exception) {
@@ -98,6 +107,19 @@ class EventCollector
     public function getListeningBehaviors(): array
     {
         return $this->listeningBehaviors;
+    }
+
+    /**
+     * Set the database connection to use for the table.
+     *
+     * @param string $connectionName Name of the database connection
+     * @return string The connection name that was set
+     */
+    public function setConnection(string $connectionName): string
+    {
+        unset($this->table);
+        
+        return $this->connectionName = $connectionName;
     }
 
     /**
@@ -147,5 +169,22 @@ class EventCollector
     public function getDefaultListeningBehaviors(): array
     {
         return $this->defaultListeningBehaviors;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConnectionName(): ?string
+    {
+        return $this->connectionName;
+    }
+
+    /**
+     * @param string|null $connectionName
+     * @return void
+     */
+    public function setConnectionName(?string $connectionName): void
+    {
+        $this->connectionName = $connectionName;
     }
 }
