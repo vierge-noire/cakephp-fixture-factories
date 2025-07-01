@@ -57,7 +57,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            {{ associationData.className }}::make($parameter)
+            {{ associationData.className }}::make($parameter),
         );
     }
 {% endfor %}
@@ -72,7 +72,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            {{ associationData.className }}::make($parameter, $n)
+            {{ associationData.className }}::make($parameter, $n),
         );
     }
 {% endfor %}
@@ -87,7 +87,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            {{ associationData.className }}::make($parameter, $n)->without('{{ modelName }}')
+            {{ associationData.className }}::make($parameter, $n)->without('{{ modelName }}'),
         );
     }
 {% endfor %}

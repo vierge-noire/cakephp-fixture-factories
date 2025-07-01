@@ -23,6 +23,7 @@ use CakephpFixtureFactories\Error\FactoryNotFoundException;
 use CakephpFixtureFactories\Error\PersistenceException;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
+use Override;
 
 class PersistCommand extends Command
 {
@@ -33,7 +34,7 @@ class PersistCommand extends Command
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public static function defaultName(): string
     {
         return 'fixture_factories_persist';
@@ -42,7 +43,7 @@ class PersistCommand extends Command
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     protected function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser
     {
         $parser
@@ -85,7 +86,7 @@ class PersistCommand extends Command
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function execute(Arguments $args, ConsoleIo $io): int
     {
         $factory = null;
@@ -196,7 +197,7 @@ class PersistCommand extends Command
     {
         ConnectionManager::alias(
             $connection,
-            $factory->getTable()->getConnection()->configName()
+            $factory->getTable()->getConnection()->configName(),
         );
     }
 

@@ -25,6 +25,7 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 use Exception;
+use Override;
 use ReflectionClass;
 use ReflectionException;
 
@@ -66,7 +67,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public static function defaultName(): string
     {
         return 'bake fixture_factory';
@@ -105,7 +106,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\Arguments $args Arguments
      * @return string
      */
-    #[\Override]
+    #[Override]
     public function getPath(Arguments $args): string
     {
         $outputDir = Configure::read('FixtureFactories.testFixtureOutputDir', 'Factory/');
@@ -216,7 +217,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\ConsoleIo $io The console io
      * @return int|null The exit code or null for success
      */
-    #[\Override]
+    #[Override]
     public function execute(Arguments $args, ConsoleIo $io): ?int
     {
         $this->extractCommonProperties($args);
@@ -396,8 +397,8 @@ class BakeFixtureFactoryCommand extends BakeCommand
                 $io->abort(
                     sprintf(
                         'A factory with the name `%s` already exists.',
-                        $name
-                    )
+                        $name,
+                    ),
                 );
             }
 
@@ -418,7 +419,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      *
      * @return \Cake\Console\ConsoleOptionParser
      */
-    #[\Override]
+    #[Override]
     public function getOptionParser(): ConsoleOptionParser
     {
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
@@ -427,7 +428,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
         $parser = $this->_setCommonOptions($parser);
 
         $parser->setDescription(
-            'Fixture factory generator.'
+            'Fixture factory generator.',
         )
             ->addArgument('model', [
                 'help' => 'Name of the model the factory will create entities from' .

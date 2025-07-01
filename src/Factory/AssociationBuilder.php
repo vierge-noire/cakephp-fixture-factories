@@ -75,7 +75,7 @@ class AssociationBuilder
         } else {
             $associationType = get_class($association);
             throw new AssociationBuilderException(
-                "Unknown association type $associationType on table {$this->getTable()->getAlias()}"
+                "Unknown association type $associationType on table {$this->getTable()->getAlias()}",
             );
         }
     }
@@ -122,7 +122,7 @@ class AssociationBuilder
     {
         if ($this->associationIsToOne($this->getAssociation($associationName)) && $associationFactory->getTimes() > 1) {
             throw new AssociationBuilderException(
-                "Association $associationName on " . $this->getTable()->getEntityClass() . ' cannot be multiple'
+                "Association $associationName on " . $this->getTable()->getEntityClass() . ' cannot be multiple',
             );
         }
 
@@ -153,7 +153,7 @@ class AssociationBuilder
      */
     public function getAssociatedFactory(
         string $associationName,
-        mixed $data = []
+        mixed $data = [],
     ): BaseFactory {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
@@ -259,8 +259,8 @@ class AssociationBuilder
         $this->setAssociated(
             Hash::remove(
                 $this->getAssociated(),
-                $associationName
-            )
+                $associationName,
+            ),
         );
     }
 
