@@ -63,7 +63,7 @@ class AssociationBuilder
      */
     public function getAssociation(string $associationName): Association
     {
-        $this->removeBrackets($associationName);
+        $associationName = $this->removeBrackets($associationName);
 
         try {
             $association = $this->getTable()->getAssociation($associationName);
@@ -159,7 +159,7 @@ class AssociationBuilder
         $firstAssociation = array_shift($associations);
 
         $times = $this->getTimeBetweenBrackets($firstAssociation);
-        $this->removeBrackets($firstAssociation);
+        $firstAssociation = $this->removeBrackets($firstAssociation);
 
         $table = $this->getTable()->getAssociation($firstAssociation)->getClassName();
 
@@ -193,14 +193,14 @@ class AssociationBuilder
     }
 
     /**
-     * Remove the brackets and there content in a n 'Association1[i].Association2[j]' formatted string
+     * Remove the brackets and their content in an 'Association1[i].Association2[j]' formatted string
      *
      * @param string $string String
-     * @return string
+     * @return string|null
      */
-    public function removeBrackets(string &$string): string
+    public function removeBrackets(string $string): ?string
     {
-        return $string = preg_replace("/\[[^]]+\]/", '', $string);
+        return preg_replace("/\[[^]]+\]/", '', $string);
     }
 
     /**

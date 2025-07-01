@@ -29,6 +29,7 @@ class FactoryTableLocator extends TableLocator
     /**
      * @inheritDoc
      */
+    #[\Override]
     protected function _create(array $options): Table
     {
         $table = parent::_create($options);

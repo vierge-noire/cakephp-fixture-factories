@@ -27,7 +27,7 @@
         "josegonzalez/dotenv": "^4.0.0",
         "phpstan/phpstan": "^1.0",
         "phpunit/phpunit": "^10.1",
-        "vimeo/psalm": "^5.0"
+        "vimeo/psalm": "^6.0"
     },
     "autoload": {
         "psr-4": {

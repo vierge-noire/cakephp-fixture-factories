@@ -52,6 +52,7 @@ class FactoryTableRegistry extends TableRegistry
      *
      * @return \Cake\ORM\Locator\LocatorInterface
      */
+    #[\Override]
     public static function getTableLocator(): LocatorInterface
     {
         if (isset(self::$_locator)) {

@@ -66,6 +66,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * @inheritDoc
      */
+    #[\Override]
     public static function defaultName(): string
     {
         return 'bake fixture_factory';
@@ -104,6 +105,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\Arguments $args Arguments
      * @return string
      */
+    #[\Override]
     public function getPath(Arguments $args): string
     {
         $outputDir = Configure::read('FixtureFactories.testFixtureOutputDir', 'Factory/');
@@ -214,6 +216,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\ConsoleIo $io The console io
      * @return int|null The exit code or null for success
      */
+    #[\Override]
     public function execute(Arguments $args, ConsoleIo $io): ?int
     {
         $this->extractCommonProperties($args);
@@ -415,6 +418,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      *
      * @return \Cake\Console\ConsoleOptionParser
      */
+    #[\Override]
     public function getOptionParser(): ConsoleOptionParser
     {
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
@@ -431,24 +435,10 @@ class BakeFixtureFactoryCommand extends BakeCommand
                     'to bake a factory for the model Bars located in the plugin Foo. \n
                     Factories are located in the folder test\Factory of your app, resp. plugin.',
             ])
-            ->addOption('plugin', [
-                'short' => 'p',
-                'help' => 'Plugin to bake into.',
-            ])
             ->addOption('all', [
                 'short' => 'a',
                 'boolean' => true,
                 'help' => 'Bake factories for all models.',
-            ])
-            ->addOption('force', [
-                'short' => 'f',
-                'boolean' => true,
-                'help' => 'Force overwriting existing file if a factory already exists with the same name.',
-            ])
-            ->addOption('quiet', [
-                'short' => 'q',
-                'boolean' => true,
-                'help' => 'Enable quiet output.',
             ])
             ->addOption('methods', [
                 'short' => 'm',
