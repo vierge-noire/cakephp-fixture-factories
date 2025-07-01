@@ -34,7 +34,7 @@ class BaseFactoryStaticFinderTest extends TestCase
         $this->Articles->getEventManager()->on(
             'Model.beforeFind',
             function(EventInterface $event, SelectQuery $query) {
-                return $query->where(['title' => 'Cannot be found.']);
+                $query->where(['title' => 'Cannot be found.']);
             }
         );
     }

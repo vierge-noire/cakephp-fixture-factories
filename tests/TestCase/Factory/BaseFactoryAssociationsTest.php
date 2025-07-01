@@ -323,7 +323,7 @@ class BaseFactoryAssociationsTest extends TestCase
         /** @var Article $article */
         $article = ArticleFactory::find()
             ->contain('Authors', function ($q) {
-                return $q->order('Authors.name');
+                return $q->orderBy('Authors.name');
             })
             ->first();
 
@@ -507,7 +507,7 @@ class BaseFactoryAssociationsTest extends TestCase
             ->innerJoinWith('City.Country', function (SelectQuery $q) use ($country) {
                 return $q->where(['Country.id' => $country->id]);
             })
-            ->orderAsc('street')
+            ->orderByAsc('street')
             ->toArray();
 
         $this->assertSame(2, count($addresses));
@@ -530,7 +530,7 @@ class BaseFactoryAssociationsTest extends TestCase
         // Make sure that all was correctly persisted
         $cities = CityFactory::find()
             ->where(['country_id' => $country->id])
-            ->orderAsc('name')
+            ->orderByAsc('name')
             ->toArray();
 
         $this->assertSame(2, count($cities));
@@ -557,7 +557,7 @@ class BaseFactoryAssociationsTest extends TestCase
         // Make sure that all was correctly persisted
         $cities = CityFactory::find()
             ->where(['country_id' => $country->id])
-            ->orderAsc('name')
+            ->orderByAsc('name')
             ->toArray();
 
         $this->assertSame(3, count($cities));

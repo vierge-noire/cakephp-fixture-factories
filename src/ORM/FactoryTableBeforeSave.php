@@ -171,8 +171,8 @@ final class FactoryTableBeforeSave
         return array_unique(
             array_merge(
                 (array)$this->getTable()->getPrimaryKey(),
-                $this->getEntityModifiedUniqueProperties()
-            )
+                $this->getEntityModifiedUniqueProperties(),
+            ),
         );
     }
 

@@ -192,7 +192,7 @@ class DataCompiler
      */
     public function compileEntity(
         array|callable|EntityInterface|string $injectedData = [],
-        bool $setPrimaryKey = false
+        bool $setPrimaryKey = false,
     ): EntityInterface {
         if (is_string($injectedData)) {
             $injectedData = $this->setDisplayFieldToInjectedString($injectedData);
@@ -238,7 +238,7 @@ class DataCompiler
         return $this->getFactory()->getTable()->patchEntity(
             $entity,
             $data,
-            $this->getFactory()->getMarshallerOptions()
+            $this->getFactory()->getMarshallerOptions(),
         );
     }
 
@@ -262,7 +262,7 @@ class DataCompiler
             $entityValue = $entityValue ?? ($entity->get($rootKey) ?? []);
             if (!is_array($entityValue)) {
                 throw new FixtureFactoryException(
-                    "Value $entityValue cannot be merged with array notation $key => $value"
+                    "Value $entityValue cannot be merged with array notation $key => $value",
                 );
             }
             $data[$rootKey] = $entityValue = array_replace_recursive($entityValue, $subData[$rootKey]);
@@ -291,7 +291,7 @@ class DataCompiler
         $table = get_class($this->getFactory()->getTable());
         throw new FixtureFactoryException(
             'The display field of a table must be a string when injecting a string into its factory. ' .
-            "You injected '$data' in $factory but $table's display field is not a string."
+            "You injected '$data' in $factory but $table's display field is not a string.",
         );
     }
 
@@ -347,7 +347,7 @@ class DataCompiler
         if (is_callable($data)) {
             $data = $data(
                 $this->getFactory(),
-                $this->getFactory()->getFaker()
+                $this->getFactory()->getFaker(),
             );
         } elseif (is_array($data)) {
             $this->addEnforcedFields($data);
@@ -561,7 +561,7 @@ class DataCompiler
         $res = [];
         foreach ($primaryKeys as $pk) {
             $res[$pk] = $this->generateRandomPrimaryKey(
-                $this->getFactory()->getTable()->getSchema()->getColumnType($pk)
+                $this->getFactory()->getTable()->getSchema()->getColumnType($pk),
             );
         }
 
@@ -618,7 +618,7 @@ class DataCompiler
             $primaryKey = $this->getFactory()->getTable()->getPrimaryKey();
             if (!is_string($primaryKey)) {
                 throw new FixtureFactoryException(
-                    "The primary key assigned must be a string as $primaryKeyOffset is a string or an integer."
+                    "The primary key assigned must be a string as $primaryKeyOffset is a string or an integer.",
                 );
             }
             $this->primaryKeyOffset = [
@@ -628,7 +628,7 @@ class DataCompiler
             $this->primaryKeyOffset = $primaryKeyOffset;
         } else {
             throw new FixtureFactoryException(
-                "$primaryKeyOffset must be an integer, a string or an array of format ['primaryKey1' => value, ...]"
+                "$primaryKeyOffset must be an integer, a string or an array of format ['primaryKey1' => value, ...]",
             );
         }
     }
@@ -656,7 +656,7 @@ class DataCompiler
 		            SELECT pg_get_serial_sequence('$tableName','$pk')")->fetchAll()[0][0];
                 if ($seq !== null) {
                     $table->getConnection()->execute(
-                        "SELECT setval('$seq', $offset);"
+                        "SELECT setval('$seq', $offset);",
                     );
                 }
             }
@@ -676,9 +676,9 @@ class DataCompiler
                 $this->getEnforcedFields(),
                 array_merge(
                     $this->getFactory()->getUniqueProperties(),
-                    (array)$this->getFactory()->getTable()->getPrimaryKey()
-                )
-            )
+                    (array)$this->getFactory()->getTable()->getPrimaryKey(),
+                ),
+            ),
         );
     }
 
@@ -727,7 +727,7 @@ class DataCompiler
     {
         $this->enforcedFields = array_merge(
             array_keys($fields),
-            $this->enforcedFields
+            $this->enforcedFields,
         );
     }
 

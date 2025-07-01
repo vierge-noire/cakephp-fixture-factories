@@ -32,9 +32,11 @@ class CityFactory extends BaseFactory
 
     protected function initialize(): void
     {
-        $this->getTable()->hasMany('TableWithoutModel', [
-            'foreignKey' => 'foreign_key',
-        ]);
+        if (!$this->getTable()->hasAssociation('TableWithoutModel')){
+            $this->getTable()->hasMany('TableWithoutModel', [
+                'foreignKey' => 'foreign_key',
+            ]);
+        }
     }
 
     protected function getRootTableRegistryName(): string
