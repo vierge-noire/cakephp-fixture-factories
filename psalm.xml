@@ -14,9 +14,8 @@
 >
     <projectFiles>
         <directory name="src/"/>
+        <ignoreFiles>
+            <file name="vendor/cakephp/cakephp/src/ORM/Locator/TableLocator.php" />
+        </ignoreFiles>
     </projectFiles>
-    <issueHandlers>
-        <InvalidScalarArgument errorLevel="suppress"/>
-        <NoInterfaceProperties errorLevel="suppress"/>
-    </issueHandlers>
 </psalm>

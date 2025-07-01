@@ -18,6 +18,7 @@ use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\Event\ModelEventsHandler;
 use CakephpFixtureFactories\Factory\EventCollector;
+use Override;
 
 /**
  * Class FactoryTableLocator
@@ -29,6 +30,7 @@ class FactoryTableLocator extends TableLocator
     /**
      * @inheritDoc
      */
+    #[Override]
     protected function _create(array $options): Table
     {
         $table = parent::_create($options);
@@ -41,7 +43,7 @@ class FactoryTableLocator extends TableLocator
         ModelEventsHandler::handle(
             $table,
             $options[EventCollector::MODEL_EVENTS] ?? [],
-            $behaviors
+            $behaviors,
         );
 
         $table->getEventManager()->on('Model.beforeSave', function ($event, $entity, $options) use ($table): void {
