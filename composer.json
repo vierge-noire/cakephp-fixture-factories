@@ -2,7 +2,7 @@
     "name": "vierge-noire/cakephp-fixture-factories",
     "description": "CakePHP Dynamic Fixtures",
     "type": "cakephp-plugin",
-    "keywords": ["cakephp", "tests", "dynamic", "fixtures"],
+    "keywords": ["cakephp", "tests", "dynamic", "fixtures", "dev", "cli"],
     "authors": [
         {
             "name": "Nicolas Masson",
@@ -17,7 +17,7 @@
     "require": {
         "php": ">=8.1",
         "cakephp/orm": "^5.0",
-        "fakerphp/faker": "^1.15",
+        "fakerphp/faker": "^1.23",
         "vierge-noire/cakephp-test-suite-light": "^3.0"
     },
     "require-dev": {
@@ -32,16 +32,16 @@
     },
     "autoload": {
         "psr-4": {
-            "CakephpFixtureFactories\\": "src"
+            "CakephpFixtureFactories\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CakephpFixtureFactories\\Test\\": "tests",
-            "TestApp\\": "tests/TestApp/src",
-            "TestApp\\Test\\": "tests/TestApp/tests",
-            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src",
-            "TestPlugin\\Test\\": "tests/TestApp/plugins/TestPlugin/tests"
+            "CakephpFixtureFactories\\Test\\": "tests/",
+            "TestApp\\": "tests/TestApp/src/",
+            "TestApp\\Test\\": "tests/TestApp/tests/",
+            "TestPlugin\\": "tests/TestApp/plugins/TestPlugin/src/",
+            "TestPlugin\\Test\\": "tests/TestApp/plugins/TestPlugin/tests/"
         }
     },
     "scripts": {
@@ -60,6 +60,6 @@
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

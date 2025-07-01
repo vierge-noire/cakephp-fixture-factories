@@ -41,7 +41,7 @@ per default located in the root folder of your application:
      <listeners>
          <listener class="CakephpTestSuiteLight\FixtureInjector">
              <arguments>
-                 <object class="CakephpTestSuiteLight\FixtureManager" />
+                 <object class="CakephpTestSuiteLight\FixtureManager"/>
              </arguments>
          </listener>
      </listeners>
@@ -71,7 +71,7 @@ use TruncateDirtyTables
 
 No modification to your PHPUnit configuration is required when using the trait.
 
-**We recommend using migrations for managing the schema of your test DB with the [CakePHP Migrator tool.](https://book.cakephp.org/migrations/2/en/index.html#using-migrations-for-tests)**
+**We recommend using migrations for managing the schema of your test DB with the [CakePHP Migrator tool.](https://book.cakephp.org/migrations/3/en/index.html#using-migrations-for-tests)**
 
 
 

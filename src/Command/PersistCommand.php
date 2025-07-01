@@ -68,7 +68,7 @@ class PersistCommand extends Command
             ->addOption('number', [
                 'help' => 'Number of entities to persist.',
                 'short' => 'n',
-                'default' => 1,
+                'default' => '1',
             ])
             ->addOption('with', [
                 'help' => 'With associated entity/entities.',
