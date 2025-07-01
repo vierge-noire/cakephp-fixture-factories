@@ -18,6 +18,7 @@ use Cake\Datasource\EntityInterface;
 use Cake\Datasource\ResultSetInterface;
 use Cake\I18n\I18n;
 use Cake\ORM\Query\SelectQuery;
+use Cake\ORM\ResultSet;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\Error\FixtureFactoryException;
 use CakephpFixtureFactories\Error\PersistenceException;
@@ -228,6 +229,7 @@ abstract class BaseFactory
      * Produce one entity from the present factory
      *
      * @return \Cake\Datasource\EntityInterface
+     * @deprecated Use getResultSet instead. Will be removed in v4.
      */
     public function getEntity(): EntityInterface
     {
@@ -238,10 +240,31 @@ abstract class BaseFactory
      * Produce a set of entities from the present factory
      *
      * @return array<\Cake\Datasource\EntityInterface>
+     * @deprecated Use getResultSet instead. Will be removed in v4.
      */
     public function getEntities(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * Creates a result set of non-persisted entities
+     *
+     * @return \Cake\ORM\ResultSet
+     */
+    public function getResultSet(): ResultSet
+    {
+        return new ResultSet($this->toArray());
+    }
+
+    /**
+     * Creates a result set of persisted entities
+     *
+     * @return \Cake\ORM\ResultSet
+     */
+    public function getPersistedResultSet(): ResultSet
+    {
+        return new ResultSet((array)$this->persist());
     }
 
     /**
@@ -251,9 +274,7 @@ abstract class BaseFactory
     {
         $associated = $this->getAssociationBuilder()->getAssociated();
         if (!empty($associated)) {
-            return array_merge($this->marshallerOptions, [
-                'associated' => $this->getAssociationBuilder()->getAssociated(),
-            ]);
+            return array_merge($this->marshallerOptions, compact('associated'));
         } else {
             return $this->marshallerOptions;
         }
@@ -261,6 +282,7 @@ abstract class BaseFactory
 
     /**
      * @return array
+     * @deprecated will be removed in v4
      */
     public function getAssociated(): array
     {
@@ -305,12 +327,16 @@ abstract class BaseFactory
     /**
      * @return \Cake\Datasource\EntityInterface|\Cake\Datasource\ResultSetInterface|iterable<\Cake\Datasource\EntityInterface>
      * @throws \CakephpFixtureFactories\Error\PersistenceException if the entity/entities could not be saved.
+     * @deprecated Use getPersistedResultSet. Will be removed in v4. Use getPersistedResultSet
      */
     public function persist(): EntityInterface|iterable|ResultSetInterface
     {
         $this->getDataCompiler()->startPersistMode();
-        $entities = $this->toArray();
-        $this->getDataCompiler()->endPersistMode();
+        try {
+            $entities = $this->toArray();
+        } finally {
+            $this->getDataCompiler()->endPersistMode();
+        }
 
         try {
             if (count($entities) === 1) {
@@ -331,7 +357,7 @@ abstract class BaseFactory
     private function getSaveOptions(): array
     {
         return array_merge($this->saveOptions, [
-            'associated' => $this->getAssociated(),
+            'associated' => $this->getAssociationBuilder()->getAssociated(),
         ]);
     }
 
@@ -550,7 +576,7 @@ abstract class BaseFactory
         $isToOne = $this->getAssociationBuilder()->processToOneAssociation($associationName, $factory);
         $this->getDataCompiler()->collectAssociation($associationName, $factory, $isToOne);
 
-        $this->getAssociationBuilder()->collectAssociatedFactory($associationName, $factory);
+        $this->getAssociationBuilder()->addAssociation($associationName, $factory);
 
         return $this;
     }
@@ -576,12 +602,7 @@ abstract class BaseFactory
      */
     public function mergeAssociated(array $data)
     {
-        $this->getAssociationBuilder()->setAssociated(
-            array_merge(
-                $this->getAssociationBuilder()->getAssociated(),
-                $data,
-            ),
-        );
+        $this->getAssociationBuilder()->addManualAssociations($data);
 
         return $this;
     }
