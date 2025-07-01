@@ -39,7 +39,7 @@ class SelectQueryMocker
         BaseFactory $factory,
         ?string $alias = null,
         array $methods = [],
-        array $options = []
+        array $options = [],
     ): Table|MockObject {
         $alias = $alias ?? $factory->getTable()->getAlias();
         $resultSet = $factory->getResultSet();
