@@ -129,6 +129,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
     /** @dataProvider dataForClassName */
     public function testLoadAssociationOnTheFly_HasMany_With_Magic_Persist($className)
     {
+        CityFactory::make()->getTable()->associations()->remove('Addresses');
         CityFactory::make()->getTable()->hasMany('Addresses', compact('className'));
 
         $name = 'Foo';
@@ -155,6 +156,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $country = CountryFactory::make()->persist();
 
         $factory = CityFactory::make();
+        $factory->getTable()->associations()->remove('Country');
         $factory->getTable()->belongsTo('Country', compact('className'));
 
         $name = 'Foo';
@@ -209,6 +211,7 @@ class BaseFactoryLoadAssociationsInInitializeTest extends TestCase
         $factory = CityFactory::make();
         $this->assertTrue($factory->getTable()->hasAssociation('Addresses'));
 
+        $factory->getTable()->associations()->remove('Addresses');
         $factory->getTable()->hasMany('Addresses', [
             'className' => 'TableWithoutModel',
             'foreignKey' => 'foreign_key',

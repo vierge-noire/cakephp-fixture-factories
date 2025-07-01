@@ -15,8 +15,8 @@ use {{ useStatement }};
  * {{ factory }}
  *
  * @method {{ entityClass }} getEntity()
- * @method {{ entityClass }}[] getEntities()
- * @method {{ entityClass }}|{{ entityClass }}[] persist()
+ * @method array<{{ entityClass }}> getEntities()
+ * @method {{ entityClass }}|array<{{ entityClass }}> persist()
  * @method static {{ entityClass }} get(mixed $primaryKey, array $options = [])
  */
 class {{ factory }} extends CakephpBaseFactory
@@ -41,9 +41,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         $this->setDefaultData(function (Generator $faker) {
             return [
-                // set the model's default values
-                // For example:
-                // 'name' => $faker->lastName
+                {{ FactoryBake.defaultData(defaultData)|raw }}
             ];
         });
     }
@@ -57,7 +55,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            {{ associationData.className }}::make($parameter)
+            {{ associationData.className }}::make($parameter),
         );
     }
 {% endfor %}
@@ -72,7 +70,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            {{ associationData.className }}::make($parameter, $n)
+            {{ associationData.className }}::make($parameter, $n),
         );
     }
 {% endfor %}
@@ -87,7 +85,7 @@ class {{ factory }} extends CakephpBaseFactory
     {
         return $this->with(
             '{{ association }}',
-            {{ associationData.className }}::make($parameter, $n)->without('{{ modelName }}')
+            {{ associationData.className }}::make($parameter, $n)->without('{{ modelName }}'),
         );
     }
 {% endfor %}

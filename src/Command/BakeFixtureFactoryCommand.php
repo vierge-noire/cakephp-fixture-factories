@@ -19,12 +19,14 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
+use Cake\ORM\AssociationCollection;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Factory\FactoryAwareTrait;
 use Exception;
+use Override;
 use ReflectionClass;
 use ReflectionException;
 
@@ -48,6 +50,35 @@ class BakeFixtureFactoryCommand extends BakeCommand
     private Table $table;
 
     /**
+     * @var array
+     */
+    protected array $map = [
+        'string' => [
+            'name' => 'name',
+            'first_name' => 'firstName',
+            'last_name' => 'lastName',
+            'username' => 'userName',
+            'slug' => 'slug',
+            'email' => 'email',
+            'description' => 'words',
+            'postal_code' => 'postcode',
+            'city' => 'city',
+            'address' => 'address',
+            'url' => 'url',
+            'ip_address' => 'ipv4',
+            'currency' => 'currencyCode',
+            'phone_number' => 'phoneNumber',
+            'timezone' => 'timezone',
+        ],
+        'float' => [
+            'latitude' => 'latitude',
+            'longitude' => 'longitude',
+        ],
+        'integer' => [
+        ],
+    ];
+
+    /**
      * @return string Name of the command
      */
     public function name(): string
@@ -66,6 +97,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
     /**
      * @inheritDoc
      */
+    #[Override]
     public static function defaultName(): string
     {
         return 'bake fixture_factory';
@@ -104,6 +136,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\Arguments $args Arguments
      * @return string
      */
+    #[Override]
     public function getPath(Arguments $args): string
     {
         $outputDir = Configure::read('FixtureFactories.testFixtureOutputDir', 'Factory/');
@@ -214,6 +247,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      * @param \Cake\Console\ConsoleIo $io The console io
      * @return int|null The exit code or null for success
      */
+    #[Override]
     public function execute(Arguments $args, ConsoleIo $io): ?int
     {
         $this->extractCommonProperties($args);
@@ -271,6 +305,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
 
         $renderer = new TemplateRenderer('CakephpFixtureFactories');
         $renderer->set($this->templateData($args));
+        $renderer->viewBuilder()->addHelper('CakephpFixtureFactories.FactoryBake');
 
         $contents = $renderer->generate($this->template());
 
@@ -294,6 +329,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
             'modelName' => $this->modelName,
             'factory' => Inflector::singularize($this->modelName) . 'Factory',
             'namespace' => $this->getFactoryNamespace($this->plugin),
+            'defaultData' => $this->defaultData(),
         ];
         $useStatements = $methods = [];
         if ($arg->getOption('methods')) {
@@ -393,8 +429,8 @@ class BakeFixtureFactoryCommand extends BakeCommand
                 $io->abort(
                     sprintf(
                         'A factory with the name `%s` already exists.',
-                        $name
-                    )
+                        $name,
+                    ),
                 );
             }
 
@@ -415,6 +451,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
      *
      * @return \Cake\Console\ConsoleOptionParser
      */
+    #[Override]
     public function getOptionParser(): ConsoleOptionParser
     {
         $name = ($this->plugin ? $this->plugin . '.' : '') . $this->name;
@@ -423,7 +460,7 @@ class BakeFixtureFactoryCommand extends BakeCommand
         $parser = $this->_setCommonOptions($parser);
 
         $parser->setDescription(
-            'Fixture factory generator.'
+            'Fixture factory generator.',
         )
             ->addArgument('model', [
                 'help' => 'Name of the model the factory will create entities from' .
@@ -431,24 +468,10 @@ class BakeFixtureFactoryCommand extends BakeCommand
                     'to bake a factory for the model Bars located in the plugin Foo. \n
                     Factories are located in the folder test\Factory of your app, resp. plugin.',
             ])
-            ->addOption('plugin', [
-                'short' => 'p',
-                'help' => 'Plugin to bake into.',
-            ])
             ->addOption('all', [
                 'short' => 'a',
                 'boolean' => true,
                 'help' => 'Bake factories for all models.',
-            ])
-            ->addOption('force', [
-                'short' => 'f',
-                'boolean' => true,
-                'help' => 'Force overwriting existing file if a factory already exists with the same name.',
-            ])
-            ->addOption('quiet', [
-                'short' => 'q',
-                'boolean' => true,
-                'help' => 'Enable quiet output.',
             ])
             ->addOption('methods', [
                 'short' => 'm',
@@ -457,5 +480,128 @@ class BakeFixtureFactoryCommand extends BakeCommand
             ]);
 
         return $parser;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function defaultData(): array
+    {
+        $defaultData = [];
+
+        $modelName = $this->getTable()->getAlias();
+        $schema = $this->getTable()->getSchema();
+        $columns = $schema->columns();
+        $foreignKeys = $this->foreignKeys($this->getTable()->associations());
+        foreach ($columns as $column) {
+            $keys = $schema->getPrimaryKey();
+            if (in_array($column, $keys, true) || in_array($column, $foreignKeys, true)) {
+                continue;
+            }
+
+            $columnSchema = $schema->getColumn($column);
+            if ($columnSchema['null'] || $columnSchema['default'] !== null) {
+                continue;
+            }
+
+            if (!in_array($columnSchema['type'], ['integer', 'string', 'date', 'datetime', 'time', 'bool', 'float'])) {
+                continue;
+            }
+
+            $guessedDefault = $this->guessDefault($column, $modelName, $columnSchema);
+            if ($guessedDefault) {
+                $defaultData[$column] = $guessedDefault;
+            }
+        }
+
+        return $defaultData;
+    }
+
+    /**
+     * @param string $column
+     * @param string $modelName
+     * @param array $columnSchema
+     * @return mixed
+     */
+    protected function guessDefault(string $column, string $modelName, array $columnSchema): mixed
+    {
+        $map = array_merge_recursive($this->map, (array)Configure::read('FixtureFactories.defaultDataMap'));
+        $map = $map[$columnSchema['type']] ?? [];
+
+        $modelNameMap = [
+            'Countries' => 'country',
+            'Cities' => 'city',
+        ];
+
+        if ($columnSchema['type'] === 'string') {
+            if ($column === 'name' && isset($modelNameMap[$modelName])) {
+                return '$faker->' . $modelNameMap[$modelName] . '()';
+            }
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            if ($columnSchema['length'] && $columnSchema['length'] < 5) {
+                return 'mb_substr($faker->text(5), 0, ' . $columnSchema['length'] . ')';
+            }
+
+            return '$faker->text(' . $columnSchema['length'] . ')';
+        }
+        if ($columnSchema['type'] === 'integer') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->randomNumber()';
+        }
+        if ($columnSchema['type'] === 'boolean') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->boolean()';
+        }
+        if ($columnSchema['type'] === 'date') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->date()';
+        }
+        if ($columnSchema['type'] === 'datetime') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->datetime()';
+        }
+        if ($columnSchema['type'] === 'time') {
+            if (isset($map[$column])) {
+                return '$faker->' . $map[$column] . '()';
+            }
+
+            return '$faker->time()';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \Cake\ORM\AssociationCollection $associations
+     * @return array<string>
+     */
+    protected function foreignKeys(AssociationCollection $associations): array
+    {
+        $keys = [];
+
+        foreach ($associations as $association) {
+            $key = $association->getForeignKey();
+            if ($key === false) {
+                continue;
+            }
+            $keys = array_merge($keys, (array)$key);
+        }
+
+        return $keys;
     }
 }

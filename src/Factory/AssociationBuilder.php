@@ -70,7 +70,7 @@ class AssociationBuilder
      */
     public function getAssociation(string $associationName): Association
     {
-        $this->removeBrackets($associationName);
+        $associationName = $this->removeBrackets($associationName);
 
         try {
             $association = $this->getTable()->getAssociation($associationName);
@@ -82,7 +82,7 @@ class AssociationBuilder
         } else {
             $associationType = get_class($association);
             throw new AssociationBuilderException(
-                "Unknown association type $associationType on table {$this->getTable()->getAlias()}"
+                "Unknown association type $associationType on table {$this->getTable()->getAlias()}",
             );
         }
     }
@@ -111,7 +111,7 @@ class AssociationBuilder
     {
         if ($this->associationIsToOne($this->getAssociation($associationName)) && $associationFactory->getTimes() > 1) {
             throw new AssociationBuilderException(
-                "Association $associationName on " . $this->getTable()->getEntityClass() . ' cannot be multiple'
+                "Association $associationName on " . $this->getTable()->getEntityClass() . ' cannot be multiple',
             );
         }
 
@@ -142,13 +142,13 @@ class AssociationBuilder
      */
     public function getAssociatedFactory(
         string $associationName,
-        mixed $data = []
+        mixed $data = [],
     ): BaseFactory {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
 
         $times = $this->getTimeBetweenBrackets($firstAssociation);
-        $this->removeBrackets($firstAssociation);
+        $firstAssociation = $this->removeBrackets($firstAssociation);
 
         $table = $this->getTable()->getAssociation($firstAssociation)->getClassName();
 
@@ -182,14 +182,14 @@ class AssociationBuilder
     }
 
     /**
-     * Remove the brackets and there content in a n 'Association1[i].Association2[j]' formatted string
+     * Remove the brackets and their content in an 'Association1[i].Association2[j]' formatted string
      *
      * @param string $string String
-     * @return string
+     * @return string|null
      */
-    public function removeBrackets(string &$string): string
+    public function removeBrackets(string $string): ?string
     {
-        return $string = preg_replace("/\[[^]]+\]/", '', $string);
+        return preg_replace("/\[[^]]+\]/", '', $string);
     }
 
     /**

@@ -14,8 +14,8 @@ use Cake\ORM\Entity;
  * @property int|null $business_address_id
  * @property string|null $biography
  * @property string|null $json_field
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime|null $modified
+ * @property \Cake\I18n\DateTime $created
+ * @property \Cake\I18n\DateTime|null $modified
  *
  * @property \TestApp\Model\Entity\Address $address
  * @property \TestApp\Model\Entity\Address|string[] $business_address

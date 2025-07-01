@@ -16,7 +16,7 @@ namespace CakephpFixtureFactories;
 use Cake\Core\BasePlugin;
 
 /**
- * Plugin class for creating test fixtures
+ * Plugin class for CakephpFixtureFactories
  */
 class CakephpFixtureFactoriesPlugin extends BasePlugin
 {

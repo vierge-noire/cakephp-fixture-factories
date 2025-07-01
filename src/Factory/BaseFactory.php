@@ -129,7 +129,7 @@ abstract class BaseFactory
      */
     public static function make(
         mixed $makeParameter = [],
-        int $times = 1
+        int $times = 1,
     ): BaseFactory {
         if (is_numeric($makeParameter)) {
             $factory = self::makeFromNonCallable();
@@ -620,7 +620,7 @@ abstract class BaseFactory
     {
         if (!is_string($skippedSetters) && !is_array($skippedSetters)) {
             throw new FixtureFactoryException(
-                'BaseFactory::skipSettersFor() accepts an array of string or a string as argument.'
+                'BaseFactory::skipSettersFor() accepts an array of string or a string as argument.',
             );
         }
         $skippedSetters = (array)$skippedSetters;
@@ -663,7 +663,7 @@ abstract class BaseFactory
         array|string $finder = 'all',
         CacheInterface|string|null $cache = null,
         Closure|string|null $cacheKey = null,
-        mixed ...$args
+        mixed ...$args,
     ): EntityInterface {
         return (new static())->getTable()->get($primaryKey, $finder, $cache, $cacheKey, ...$args);
     }
@@ -687,7 +687,7 @@ abstract class BaseFactory
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When there is no first record.
      */
     public static function firstOrFail(
-        ExpressionInterface|Closure|array|string|null $conditions = null
+        ExpressionInterface|Closure|array|string|null $conditions = null,
     ): EntityInterface|array {
         return self::find()->where($conditions)->firstOrFail();
     }
