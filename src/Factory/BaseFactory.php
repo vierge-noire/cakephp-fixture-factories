@@ -459,6 +459,19 @@ abstract class BaseFactory
     }
 
     /**
+     * Set the database connection to use for the table.
+     *
+     * @param string $connectionName Name of the database connection
+     * @return self
+     */
+    public function setConnection(string $connectionName): self
+    {
+        $this->getEventCompiler()->setConnection($connectionName);
+
+        return $this;
+    }
+
+    /**
      * @param array<string>|string $activeModelEvents Model events listened to by the factory
      * @return self
      * @throws \CakephpFixtureFactories\Error\FixtureFactoryException on argument passed error
