@@ -70,7 +70,7 @@ class UniquenessJanitor
         $propertyIsUnique = function (string $property) use ($factory): bool {
             return in_array($property, array_merge(
                 $factory->getUniqueProperties(),
-                (array)$factory->getTable()->getPrimaryKey()
+                (array)$factory->getTable()->getPrimaryKey(),
             ));
         };
 
@@ -86,7 +86,7 @@ class UniquenessJanitor
                     if ($isStrict) {
                         $factoryName = get_class($factory);
                         throw new UniquenessException(
-                            "Error in {$factoryName}. The uniqueness of {$property} was not respected."
+                            "Error in {$factoryName}. The uniqueness of {$property} was not respected.",
                         );
                     } else {
                         $indexesToRemove[] = $getIndex($k2);

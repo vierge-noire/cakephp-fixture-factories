@@ -122,6 +122,6 @@ class ArticleFactory extends BaseFactory
 
     public function unpublished()
     {
-        return $this->setField('published', false);
+        return $this->setField('published', 0);
     }
 }

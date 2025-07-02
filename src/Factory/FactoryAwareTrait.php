@@ -37,7 +37,7 @@ trait FactoryAwareTrait
     public function getFactory(
         string $name,
         array|callable|int|EntityInterface|string|null $makeParameter = [],
-        int $times = 1
+        int $times = 1,
     ): BaseFactory {
         $factoryClassName = $this->getFactoryClassName($name);
 
@@ -117,7 +117,7 @@ trait FactoryAwareTrait
         } else {
             return ($plugin ? str_replace('/', '\\', $plugin) : Configure::read(
                 'App.namespace',
-                'App'
+                'App',
             )) . '\Test\Factory';
         }
     }

@@ -20,7 +20,6 @@ use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Association\HasOne;
 use Cake\ORM\Table;
-use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use CakephpFixtureFactories\Error\AssociationBuilderException;
 use Exception;
@@ -37,7 +36,15 @@ class AssociationBuilder
         getFactory as getFactoryInstance;
     }
 
-    private array $associated = [];
+    /**
+     * @var array<\CakephpFixtureFactories\Factory\BaseFactory>
+     */
+    private array $associations = [];
+
+    /**
+     * @var array
+     */
+    private array $manualAssociations = [];
 
     /**
      * @var \CakephpFixtureFactories\Factory\BaseFactory
@@ -63,7 +70,7 @@ class AssociationBuilder
      */
     public function getAssociation(string $associationName): Association
     {
-        $this->removeBrackets($associationName);
+        $associationName = $this->removeBrackets($associationName);
 
         try {
             $association = $this->getTable()->getAssociation($associationName);
@@ -75,27 +82,9 @@ class AssociationBuilder
         } else {
             $associationType = get_class($association);
             throw new AssociationBuilderException(
-                "Unknown association type $associationType on table {$this->getTable()->getAlias()}"
+                "Unknown association type $associationType on table {$this->getTable()->getAlias()}",
             );
         }
-    }
-
-    /**
-     * Collect an associated factory to the BaseFactory
-     *
-     * @param string $associationName Association
-     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
-     * @return void
-     */
-    public function collectAssociatedFactory(string $associationName, BaseFactory $factory): void
-    {
-        $associations = $this->getAssociated();
-
-        if (!in_array($associationName, $associations)) {
-            $associations[$associationName] = $factory->getMarshallerOptions();
-        }
-
-        $this->setAssociated($associations);
     }
 
     /**
@@ -122,7 +111,7 @@ class AssociationBuilder
     {
         if ($this->associationIsToOne($this->getAssociation($associationName)) && $associationFactory->getTimes() > 1) {
             throw new AssociationBuilderException(
-                "Association $associationName on " . $this->getTable()->getEntityClass() . ' cannot be multiple'
+                "Association $associationName on " . $this->getTable()->getEntityClass() . ' cannot be multiple',
             );
         }
 
@@ -153,13 +142,13 @@ class AssociationBuilder
      */
     public function getAssociatedFactory(
         string $associationName,
-        mixed $data = []
+        mixed $data = [],
     ): BaseFactory {
         $associations = explode('.', $associationName);
         $firstAssociation = array_shift($associations);
 
         $times = $this->getTimeBetweenBrackets($firstAssociation);
-        $this->removeBrackets($firstAssociation);
+        $firstAssociation = $this->removeBrackets($firstAssociation);
 
         $table = $this->getTable()->getAssociation($firstAssociation)->getClassName();
 
@@ -193,14 +182,14 @@ class AssociationBuilder
     }
 
     /**
-     * Remove the brackets and there content in a n 'Association1[i].Association2[j]' formatted string
+     * Remove the brackets and their content in an 'Association1[i].Association2[j]' formatted string
      *
      * @param string $string String
-     * @return string
+     * @return string|null
      */
-    public function removeBrackets(string &$string): string
+    public function removeBrackets(string $string): ?string
     {
-        return $string = preg_replace("/\[[^]]+\]/", '', $string);
+        return preg_replace("/\[[^]]+\]/", '', $string);
     }
 
     /**
@@ -256,12 +245,16 @@ class AssociationBuilder
      */
     public function dropAssociation(string $associationName): void
     {
-        $this->setAssociated(
-            Hash::remove(
-                $this->getAssociated(),
-                $associationName
-            )
-        );
+        $explode = explode('.', $associationName);
+        $baseAssociationName = array_shift($explode);
+        if (!isset($this->associations[$baseAssociationName])) {
+            return;
+        }
+        if (count($explode) === 0) {
+            unset($this->associations[$baseAssociationName]);
+        } else {
+            $this->associations[$baseAssociationName]->without(implode('.', $explode));
+        }
     }
 
     /**
@@ -269,16 +262,32 @@ class AssociationBuilder
      */
     public function getAssociated(): array
     {
-        return $this->associated;
+        $result = [];
+        foreach ($this->associations as $name => $associatedFactory) {
+            $result[$name] = $associatedFactory->getMarshallerOptions();
+        }
+
+        return array_merge_recursive($result, $this->manualAssociations);
     }
 
     /**
-     * @param array $associated Associations of the master factory
+     * @return array<\CakephpFixtureFactories\Factory\BaseFactory>
+     */
+    public function getAssociations(): array
+    {
+        return $this->associations;
+    }
+
+    /**
+     * Add an associated factory to the BaseFactory
+     *
+     * @param string $associationName Association
+     * @param \CakephpFixtureFactories\Factory\BaseFactory $factory Factory
      * @return void
      */
-    public function setAssociated(array $associated): void
+    public function addAssociation(string $associationName, BaseFactory $factory): void
     {
-        $this->associated = $associated;
+        $this->associations[$associationName] = $factory;
     }
 
     /**
@@ -287,5 +296,14 @@ class AssociationBuilder
     public function getTable(): Table
     {
         return $this->getFactory()->getTable();
+    }
+
+    /**
+     * @param array $associations
+     * @return void
+     */
+    public function addManualAssociations(array $associations): void
+    {
+        $this->manualAssociations = array_merge_recursive($associations, $this->manualAssociations);
     }
 }

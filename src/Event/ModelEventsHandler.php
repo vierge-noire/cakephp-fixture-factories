@@ -136,7 +136,7 @@ class ModelEventsHandler
         if (
             !in_array(
                 $ormEvent,
-                $this->getListeningModelEvents()
+                $this->getListeningModelEvents(),
             )
         ) {
             $table->getEventManager()->off($ormEvent, $listener);
