@@ -118,7 +118,7 @@ class EventCollector
     public function setConnection(string $connectionName): string
     {
         unset($this->table);
-        
+
         return $this->connectionName = $connectionName;
     }
 
