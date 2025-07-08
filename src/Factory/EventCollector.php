@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace CakephpFixtureFactories\Factory;
 
 use Cake\Core\Configure;
+use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Table;
 use CakephpFixtureFactories\ORM\FactoryTableRegistry;
 use RuntimeException;
@@ -88,7 +89,8 @@ class EventCollector
         ];
 
         if ($this->connectionName !== null) {
-            $options['connection'] = $this->connectionName;
+            $connectionObject = ConnectionManager::get($this->connectionName);
+            $options['connection'] = $connectionObject;
         }
 
         try {
