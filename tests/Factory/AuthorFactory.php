@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 namespace CakephpFixtureFactories\Test\Factory;
 
+use Cake\I18n\DateTime;
 use CakephpFixtureFactories\Factory\BaseFactory;
 use Faker\Generator;
 
@@ -50,6 +51,8 @@ class AuthorFactory extends BaseFactory
                     'field_with_setter_2' => $faker->word,
                     'field_with_setter_3' => $faker->word,
                     'json_field' => self::JSON_FIELD_DEFAULT_VALUE,
+                    'created' => DateTime::now()->subDays($faker->randomNumber(4)),
+                    'modified' => DateTime::now()->subDays($faker->randomNumber(4)),
                 ];
             })
             ->withAddress();
